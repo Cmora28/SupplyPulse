@@ -22,9 +22,11 @@ const plans = [
     price: "$0",
     period: "/month",
     description: "Get started with basic supply chain monitoring.",
+    badge: null,
+    highlight: null,
     features: [
       "Monitor 1 supplier",
-      "Weekly AI-generated risk report",
+      "Weekly AI risk report",
       "Email delivery every Monday",
       "PDF download",
       "Basic email support",
@@ -35,12 +37,14 @@ const plans = [
   {
     name: "Standard",
     tier: "STANDARD",
-    price: "$49",
+    price: "$29",
     period: "/month",
     description: "For teams monitoring multiple critical suppliers.",
+    badge: null,
+    highlight: null,
     features: [
       "Monitor up to 5 suppliers",
-      "Weekly AI-generated risk reports",
+      "Weekly AI risk reports",
       "Email delivery every Monday",
       "PDF downloads with full citations",
       "Priority email support",
@@ -52,12 +56,16 @@ const plans = [
   {
     name: "Premium",
     tier: "PREMIUM",
-    price: "$99",
+    price: "$199",
     period: "/month",
-    description: "Advanced monitoring with full history and exports.",
+    description: "Deep Research intelligence for serious supply chain teams.",
+    badge: "Deep Research",
+    highlight: "10x more detailed AI analysis with deep web research, financial data, and geopolitical intelligence per supplier.",
     features: [
-      "Monitor up to 20 suppliers",
-      "Weekly AI-generated risk reports",
+      "Monitor up to 15 suppliers",
+      "Deep Research AI — 10x more detailed reports",
+      "In-depth geopolitical & financial risk analysis",
+      "Multi-source intelligence with cited evidence",
       "Email delivery every Monday",
       "PDF downloads with full citations",
       "Priority email support",
@@ -74,9 +82,11 @@ const plans = [
     price: "Custom",
     period: "",
     description: "Tailored solutions for large organizations.",
+    badge: "Deep Research",
+    highlight: null,
     features: [
       "Unlimited suppliers",
-      "Weekly AI-generated risk reports",
+      "Deep Research AI reports",
       "Custom report scheduling",
       "Dedicated account manager",
       "API access for integration",
@@ -178,7 +188,11 @@ export default function PricingPage() {
               <Card
                 key={plan.tier}
                 className={`relative flex flex-col ${
-                  plan.popular ? "border-primary shadow-lg" : ""
+                  plan.popular
+                    ? "border-primary shadow-lg"
+                    : plan.tier === "PREMIUM"
+                    ? "border-amber-500 shadow-lg shadow-amber-100"
+                    : ""
                 }`}
               >
                 {plan.popular && (
@@ -188,28 +202,54 @@ export default function PricingPage() {
                     </Badge>
                   </div>
                 )}
+                {plan.badge && !plan.popular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <Badge className="bg-amber-500 text-white">
+                      {plan.badge}
+                    </Badge>
+                  </div>
+                )}
                 <CardHeader>
                   <CardTitle>{plan.name}</CardTitle>
                   <CardDescription>{plan.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1">
-                  <div className="mb-6">
+                  <div className="mb-4">
                     <span className="text-4xl font-bold">{plan.price}</span>
                     <span className="text-muted-foreground">{plan.period}</span>
                   </div>
+                  {plan.highlight && (
+                    <div className="mb-4 rounded-md bg-amber-50 border border-amber-200 p-3">
+                      <p className="text-xs font-medium text-amber-800">
+                        {plan.highlight}
+                      </p>
+                    </div>
+                  )}
                   <ul className="space-y-2.5">
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-2 text-sm">
-                        <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                        <span>{feature}</span>
+                        <Check className={`h-4 w-4 mt-0.5 flex-shrink-0 ${
+                          feature.includes("Deep Research")
+                            ? "text-amber-500"
+                            : "text-primary"
+                        }`} />
+                        <span className={
+                          feature.includes("Deep Research") || feature.includes("In-depth")
+                            ? "font-medium"
+                            : ""
+                        }>{feature}</span>
                       </li>
                     ))}
                   </ul>
                 </CardContent>
                 <CardFooter>
                   <Button
-                    className="w-full"
-                    variant={plan.popular ? "default" : "outline"}
+                    className={`w-full ${
+                      plan.tier === "PREMIUM"
+                        ? "bg-amber-500 hover:bg-amber-600 text-white"
+                        : ""
+                    }`}
+                    variant={plan.popular ? "default" : plan.tier === "PREMIUM" ? "default" : "outline"}
                     disabled={isCurrent}
                     onClick={() => handleUpgrade(plan.tier)}
                   >

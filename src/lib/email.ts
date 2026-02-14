@@ -4,7 +4,7 @@ import { format } from "date-fns";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-const FROM_EMAIL = process.env.EMAIL_FROM || "reports@supplypulse.com";
+const FROM_EMAIL = process.env.EMAIL_FROM || "onboarding@resend.dev";
 
 function buildEmailHtml(
   userName: string,

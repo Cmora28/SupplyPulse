@@ -7,156 +7,256 @@ interface SupplierWithReport {
   report: SupplierReport;
 }
 
-const MARGIN = 50;
-const PAGE_WIDTH = 612; // Letter size
+const MARGIN = 54;
+const PAGE_WIDTH = 612;
 const PAGE_HEIGHT = 792;
 const CONTENT_WIDTH = PAGE_WIDTH - 2 * MARGIN;
+const FOOTER_Y = PAGE_HEIGHT - 40;
+const USABLE_BOTTOM = FOOTER_Y - 8;
 
 const COLORS = {
-  primary: "#2563eb",
-  text: "#111827",
-  muted: "#6b7280",
+  primary: "#1e40af",
+  primaryLight: "#3b82f6",
+  accent: "#0f172a",
+  text: "#1e293b",
+  textLight: "#475569",
+  muted: "#94a3b8",
   link: "#2563eb",
-  border: "#e5e7eb",
+  border: "#cbd5e1",
+  bgLight: "#f1f5f9",
+  white: "#ffffff",
 };
 
-function addPageFooter(doc: PDFKit.PDFDocument, pageNum: number, totalPages: number) {
-  const y = PAGE_HEIGHT - 30;
-  doc
-    .fontSize(8)
-    .fillColor(COLORS.muted)
-    .text(
-      `Page ${pageNum} of ${totalPages}`,
-      MARGIN,
-      y,
-      { width: CONTENT_WIDTH, align: "right" }
-    )
-    .text(
-      `Generated ${format(new Date(), "MMMM d, yyyy 'at' h:mm a")}`,
-      MARGIN,
-      y,
-      { width: CONTENT_WIDTH, align: "left" }
-    );
+// ---- State ----
+let pageNum = 0;
+let generatedDate = "";
+
+// ---- Text Preprocessing ----
+
+function stripMarkdown(text: string): string {
+  let t = text;
+  t = t.replace(/\*\*([^*]+)\*\*/g, "$1");
+  t = t.replace(/\*([^*]+)\*/g, "$1");
+  t = t.replace(/__([^_]+)__/g, "$1");
+  t = t.replace(/_([^_]+)_/g, "$1");
+  t = t.replace(/`([^`]+)`/g, "$1");
+  t = t.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+  return t;
 }
 
-function parseMarkdownLine(
-  doc: PDFKit.PDFDocument,
-  line: string,
-  x: number,
-  maxWidth: number
-) {
-  const trimmed = line.trim();
+type Block =
+  | { type: "h1"; text: string }
+  | { type: "h2"; text: string }
+  | { type: "h3"; text: string }
+  | { type: "h4"; text: string }
+  | { type: "hr" }
+  | { type: "bullet"; text: string }
+  | { type: "numbered"; num: string; text: string }
+  | { type: "paragraph"; text: string }
+  | { type: "blank" };
 
-  if (!trimmed) {
-    doc.moveDown(0.3);
-    return;
-  }
+function parseContentToBlocks(content: string): Block[] {
+  const lines = content.split("\n");
+  const blocks: Block[] = [];
 
-  // H1 headers
-  if (trimmed.startsWith("# ")) {
-    doc
-      .fontSize(18)
-      .font("Helvetica-Bold")
-      .fillColor(COLORS.text)
-      .text(trimmed.substring(2), x, undefined, { width: maxWidth });
-    doc.moveDown(0.3);
-    return;
-  }
+  for (const raw of lines) {
+    const trimmed = raw.trim();
 
-  // H2 headers
-  if (trimmed.startsWith("## ")) {
-    doc
-      .fontSize(16)
-      .font("Helvetica-Bold")
-      .fillColor(COLORS.text)
-      .text(trimmed.substring(3), x, undefined, { width: maxWidth });
-    doc.moveDown(0.3);
-    return;
-  }
-
-  // H3 headers
-  if (trimmed.startsWith("### ")) {
-    doc
-      .fontSize(13)
-      .font("Helvetica-Bold")
-      .fillColor(COLORS.text)
-      .text(trimmed.substring(4), x, undefined, { width: maxWidth });
-    doc.moveDown(0.2);
-    return;
-  }
-
-  // Bullet points
-  if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
-    const bulletText = trimmed.substring(2);
-    const indent = 15;
-
-    doc
-      .fontSize(11)
-      .font("Helvetica")
-      .fillColor(COLORS.text);
-
-    // Draw bullet
-    doc.text("•", x + indent, undefined, { continued: true, width: 10 });
-    doc.text(` ${bulletText}`, { width: maxWidth - indent - 10 });
-    doc.moveDown(0.1);
-    return;
-  }
-
-  // Numbered lists
-  const numberedMatch = trimmed.match(/^(\d+)\.\s(.+)/);
-  if (numberedMatch) {
-    const indent = 15;
-    doc
-      .fontSize(11)
-      .font("Helvetica")
-      .fillColor(COLORS.text)
-      .text(`${numberedMatch[1]}.`, x + indent, undefined, {
-        continued: true,
-        width: 20,
-      })
-      .text(` ${numberedMatch[2]}`, { width: maxWidth - indent - 20 });
-    doc.moveDown(0.1);
-    return;
-  }
-
-  // Bold text within **...**
-  if (trimmed.includes("**")) {
-    const parts = trimmed.split(/\*\*([^*]+)\*\*/g);
-    let first = true;
-    for (let i = 0; i < parts.length; i++) {
-      const part = parts[i];
-      if (!part) continue;
-
-      const isBold = i % 2 === 1;
-      const isLast = i === parts.length - 1;
-
-      doc.fontSize(11).font(isBold ? "Helvetica-Bold" : "Helvetica").fillColor(COLORS.text);
-
-      if (first) {
-        doc.text(part, x, undefined, {
-          continued: !isLast,
-          width: maxWidth,
-        });
-        first = false;
-      } else {
-        doc.text(part, {
-          continued: !isLast,
-          width: maxWidth,
-        });
-      }
+    if (!trimmed) {
+      blocks.push({ type: "blank" });
+      continue;
     }
-    doc.moveDown(0.1);
-    return;
+    if (trimmed === "---" || trimmed === "***" || trimmed === "___") {
+      blocks.push({ type: "hr" });
+      continue;
+    }
+    if (trimmed.startsWith("#### ")) {
+      blocks.push({ type: "h4", text: stripMarkdown(trimmed.substring(5)) });
+      continue;
+    }
+    if (trimmed.startsWith("### ")) {
+      blocks.push({ type: "h3", text: stripMarkdown(trimmed.substring(4)) });
+      continue;
+    }
+    if (trimmed.startsWith("## ")) {
+      blocks.push({ type: "h2", text: stripMarkdown(trimmed.substring(3)) });
+      continue;
+    }
+    if (trimmed.startsWith("# ")) {
+      blocks.push({ type: "h1", text: stripMarkdown(trimmed.substring(2)) });
+      continue;
+    }
+    if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
+      blocks.push({ type: "bullet", text: stripMarkdown(trimmed.substring(2)) });
+      continue;
+    }
+    const numMatch = trimmed.match(/^(\d+)\.\s+(.+)/);
+    if (numMatch) {
+      blocks.push({ type: "numbered", num: numMatch[1], text: stripMarkdown(numMatch[2]) });
+      continue;
+    }
+    blocks.push({ type: "paragraph", text: stripMarkdown(trimmed) });
   }
-
-  // Regular paragraph
-  doc
-    .fontSize(11)
-    .font("Helvetica")
-    .fillColor(COLORS.text)
-    .text(trimmed, x, undefined, { width: maxWidth });
-  doc.moveDown(0.1);
+  return blocks;
 }
+
+// ---- PDF Page Helpers ----
+
+function stampFooter(doc: PDFKit.PDFDocument) {
+  const savedY = doc.y;
+  // Temporarily remove bottom margin so PDFKit doesn't auto-paginate
+  // when writing text below the normal content area
+  const savedBottom = doc.page.margins.bottom;
+  doc.page.margins.bottom = 0;
+
+  // Thin line above footer
+  doc
+    .moveTo(MARGIN, FOOTER_Y - 4)
+    .lineTo(MARGIN + CONTENT_WIDTH, FOOTER_Y - 4)
+    .strokeColor(COLORS.border)
+    .lineWidth(0.3)
+    .stroke();
+
+  doc.fontSize(7).font("Helvetica").fillColor(COLORS.muted);
+  doc.text(generatedDate, MARGIN, FOOTER_Y, {
+    width: CONTENT_WIDTH / 2,
+    lineBreak: false,
+  });
+  doc.text(`Page ${pageNum}`, MARGIN + CONTENT_WIDTH / 2, FOOTER_Y, {
+    width: CONTENT_WIDTH / 2,
+    align: "right",
+    lineBreak: false,
+  });
+
+  // Restore margins and Y position
+  doc.page.margins.bottom = savedBottom;
+  doc.y = savedY;
+}
+
+function newPage(doc: PDFKit.PDFDocument) {
+  // Stamp footer on current page before moving to next
+  if (pageNum > 0) {
+    stampFooter(doc);
+  }
+  doc.addPage();
+  pageNum++;
+  doc.y = MARGIN;
+}
+
+function checkSpace(doc: PDFKit.PDFDocument, needed: number) {
+  if (doc.y + needed > USABLE_BOTTOM) {
+    newPage(doc);
+  }
+}
+
+// ---- Block Renderers ----
+
+function renderBlock(doc: PDFKit.PDFDocument, block: Block) {
+  switch (block.type) {
+    case "blank":
+      doc.y += 4;
+      break;
+
+    case "hr":
+      checkSpace(doc, 16);
+      doc.y += 6;
+      doc
+        .moveTo(MARGIN, doc.y)
+        .lineTo(MARGIN + CONTENT_WIDTH, doc.y)
+        .strokeColor(COLORS.border)
+        .lineWidth(0.5)
+        .stroke();
+      doc.y += 10;
+      break;
+
+    case "h1":
+      checkSpace(doc, 32);
+      doc.y += 8;
+      doc.fontSize(16).font("Helvetica-Bold").fillColor(COLORS.primary)
+        .text(block.text, MARGIN, doc.y, { width: CONTENT_WIDTH });
+      doc.y += 2;
+      // Accent underline
+      doc
+        .moveTo(MARGIN, doc.y)
+        .lineTo(MARGIN + 60, doc.y)
+        .strokeColor(COLORS.primaryLight)
+        .lineWidth(1.5)
+        .stroke();
+      doc.y += 6;
+      break;
+
+    case "h2":
+      checkSpace(doc, 28);
+      doc.y += 6;
+      doc.fontSize(13).font("Helvetica-Bold").fillColor(COLORS.primary)
+        .text(block.text, MARGIN, doc.y, { width: CONTENT_WIDTH });
+      doc.y += 4;
+      break;
+
+    case "h3":
+      checkSpace(doc, 24);
+      doc.y += 5;
+      doc.fontSize(11.5).font("Helvetica-Bold").fillColor(COLORS.accent)
+        .text(block.text, MARGIN, doc.y, { width: CONTENT_WIDTH });
+      doc.y += 3;
+      break;
+
+    case "h4":
+      checkSpace(doc, 20);
+      doc.y += 4;
+      doc.fontSize(10.5).font("Helvetica-Bold").fillColor(COLORS.text)
+        .text(block.text, MARGIN, doc.y, { width: CONTENT_WIDTH });
+      doc.y += 2;
+      break;
+
+    case "bullet": {
+      const indent = 12;
+      const bulletW = 8;
+      const textX = MARGIN + indent + bulletW;
+      const textW = CONTENT_WIDTH - indent - bulletW;
+
+      const h = doc.fontSize(9.5).font("Helvetica").heightOfString(block.text, { width: textW });
+      checkSpace(doc, h + 5);
+
+      const sy = doc.y;
+      // Small filled circle as bullet
+      doc.circle(MARGIN + indent + 2.5, sy + 5, 1.8).fill(COLORS.textLight);
+      doc.fontSize(9.5).font("Helvetica").fillColor(COLORS.text)
+        .text(block.text, textX, sy, { width: textW });
+      doc.y += 2;
+      break;
+    }
+
+    case "numbered": {
+      const indent = 12;
+      const numW = 16;
+      const textX = MARGIN + indent + numW;
+      const textW = CONTENT_WIDTH - indent - numW;
+
+      const h = doc.fontSize(9.5).font("Helvetica").heightOfString(block.text, { width: textW });
+      checkSpace(doc, h + 5);
+
+      const sy = doc.y;
+      doc.fontSize(9.5).font("Helvetica-Bold").fillColor(COLORS.primaryLight)
+        .text(`${block.num}.`, MARGIN + indent, sy, { width: numW, lineBreak: false });
+      doc.fontSize(9.5).font("Helvetica").fillColor(COLORS.text)
+        .text(block.text, textX, sy, { width: textW });
+      doc.y += 2;
+      break;
+    }
+
+    case "paragraph": {
+      const h = doc.fontSize(9.5).font("Helvetica").heightOfString(block.text, { width: CONTENT_WIDTH });
+      checkSpace(doc, h + 3);
+      doc.fontSize(9.5).font("Helvetica").fillColor(COLORS.text)
+        .text(block.text, MARGIN, doc.y, { width: CONTENT_WIDTH, lineGap: 1.5 });
+      doc.y += 2;
+      break;
+    }
+  }
+}
+
+// ---- Main Generator ----
 
 export async function generateReportPDF(
   user: Pick<User, "name" | "email">,
@@ -165,10 +265,14 @@ export async function generateReportPDF(
 ): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     try {
+      // Reset state
+      pageNum = 0;
+      generatedDate = `Generated ${format(new Date(), "MMMM d, yyyy 'at' h:mm a")}`;
+
       const doc = new PDFDocument({
         size: "LETTER",
         margins: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN },
-        bufferPages: true,
+        autoFirstPage: false,
       });
 
       const chunks: Buffer[] = [];
@@ -176,184 +280,161 @@ export async function generateReportPDF(
       doc.on("end", () => resolve(Buffer.concat(chunks)));
       doc.on("error", reject);
 
-      // ---- COVER PAGE ----
-      doc.moveDown(8);
+      // ============ COVER PAGE ============
+      doc.addPage();
+      pageNum++;
+
+      // Top accent bar
+      doc.rect(0, 0, PAGE_WIDTH, 6).fill(COLORS.primary);
+
+      // Title block
+      doc.y = MARGIN + 160;
+      doc.fontSize(32).font("Helvetica-Bold").fillColor(COLORS.primary)
+        .text("Supply Chain", MARGIN, doc.y, { width: CONTENT_WIDTH, align: "center" });
+      doc.fontSize(32).font("Helvetica-Bold").fillColor(COLORS.primary)
+        .text("Risk Analysis", MARGIN, doc.y, { width: CONTENT_WIDTH, align: "center" });
+
+      doc.y += 16;
+
+      // Decorative line
+      const lineCenter = PAGE_WIDTH / 2;
       doc
-        .fontSize(28)
-        .font("Helvetica-Bold")
-        .fillColor(COLORS.primary)
-        .text("Supply Chain Risk Analysis", MARGIN, undefined, {
-          width: CONTENT_WIDTH,
-          align: "center",
+        .moveTo(lineCenter - 40, doc.y)
+        .lineTo(lineCenter + 40, doc.y)
+        .strokeColor(COLORS.primaryLight)
+        .lineWidth(2)
+        .stroke();
+      doc.y += 20;
+
+      doc.fontSize(14).font("Helvetica").fillColor(COLORS.textLight)
+        .text(user.name || user.email, MARGIN, doc.y, { width: CONTENT_WIDTH, align: "center" });
+      doc.y += 8;
+      doc.fontSize(13).font("Helvetica").fillColor(COLORS.text)
+        .text(`Week of ${format(weekOf, "MMMM d, yyyy")}`, MARGIN, doc.y, {
+          width: CONTENT_WIDTH, align: "center",
         });
-
-      doc.moveDown(0.5);
-      doc
-        .fontSize(16)
-        .font("Helvetica")
-        .fillColor(COLORS.muted)
-        .text(user.name || user.email, MARGIN, undefined, {
-          width: CONTENT_WIDTH,
-          align: "center",
-        });
-
-      doc.moveDown(0.5);
-      doc
-        .fontSize(14)
-        .fillColor(COLORS.text)
-        .text(
-          `Week of ${format(weekOf, "MMMM d, yyyy")}`,
-          MARGIN,
-          undefined,
-          { width: CONTENT_WIDTH, align: "center" }
-        );
-
-      doc.moveDown(1);
-      doc
-        .fontSize(12)
-        .fillColor(COLORS.muted)
+      doc.y += 20;
+      doc.fontSize(11).font("Helvetica").fillColor(COLORS.muted)
         .text(
           `${supplierReports.length} supplier${supplierReports.length !== 1 ? "s" : ""} analyzed`,
-          MARGIN,
-          undefined,
+          MARGIN, doc.y,
           { width: CONTENT_WIDTH, align: "center" }
         );
 
-      doc.moveDown(8);
-      doc
-        .fontSize(10)
-        .fillColor(COLORS.muted)
-        .text("Powered by Perplexity AI Deep Research", MARGIN, undefined, {
-          width: CONTENT_WIDTH,
-          align: "center",
+      // Bottom branding
+      doc.fontSize(9).font("Helvetica").fillColor(COLORS.muted)
+        .text("Powered by Supply Pulse AI", MARGIN, PAGE_HEIGHT - 80, {
+          width: CONTENT_WIDTH, align: "center",
         });
 
-      // ---- TABLE OF CONTENTS ----
-      doc.addPage();
-      doc
-        .fontSize(20)
-        .font("Helvetica-Bold")
-        .fillColor(COLORS.text)
-        .text("Table of Contents", MARGIN, MARGIN);
+      stampFooter(doc);
 
-      doc.moveDown(1);
+      // ============ TABLE OF CONTENTS ============
+      newPage(doc);
+
+      doc.fontSize(20).font("Helvetica-Bold").fillColor(COLORS.accent)
+        .text("Table of Contents", MARGIN, doc.y, { width: CONTENT_WIDTH });
+      doc.y += 4;
+      doc.moveTo(MARGIN, doc.y).lineTo(MARGIN + 50, doc.y)
+        .strokeColor(COLORS.primaryLight).lineWidth(1.5).stroke();
+      doc.y += 16;
 
       supplierReports.forEach((sr, index) => {
-        doc
-          .fontSize(12)
-          .font("Helvetica")
-          .fillColor(COLORS.primary)
-          .text(`${index + 1}. ${sr.supplier.name}`, MARGIN + 20, undefined, {
-            width: CONTENT_WIDTH - 20,
-          });
-        doc.moveDown(0.3);
+        const numText = `${index + 1}`;
+        doc.fontSize(11).font("Helvetica-Bold").fillColor(COLORS.primaryLight)
+          .text(numText, MARGIN + 8, doc.y, { width: 16, lineBreak: false });
+        doc.fontSize(11).font("Helvetica").fillColor(COLORS.text)
+          .text(sr.supplier.name, MARGIN + 26, doc.y, { width: CONTENT_WIDTH - 26 });
+        doc.y += 4;
       });
 
-      // ---- SUPPLIER SECTIONS ----
+      // ============ SUPPLIER SECTIONS ============
       supplierReports.forEach((sr, index) => {
-        doc.addPage();
+        newPage(doc);
 
-        // Section header
-        doc
-          .fontSize(20)
-          .font("Helvetica-Bold")
-          .fillColor(COLORS.primary)
-          .text(`${index + 1}. ${sr.supplier.name}`, MARGIN, MARGIN);
+        // Section header with accent
+        doc.rect(MARGIN, doc.y, 4, 22).fill(COLORS.primary);
+        doc.fontSize(18).font("Helvetica-Bold").fillColor(COLORS.accent)
+          .text(`${index + 1}. ${sr.supplier.name}`, MARGIN + 14, doc.y + 1, { width: CONTENT_WIDTH - 14 });
+        doc.y += 30;
 
-        doc.moveDown(0.5);
-
-        // Profile box
-        const boxY = doc.y;
-        doc
-          .roundedRect(MARGIN, boxY, CONTENT_WIDTH, 110, 5)
-          .fillAndStroke("#f8fafc", COLORS.border);
-
-        const profileItems = [
+        // ---- Profile card ----
+        const profileItems: [string, string][] = [
           ["Country", sr.supplier.country],
           ["Category", sr.supplier.category],
           ["Lead Time", `${sr.supplier.leadTimeDays} days`],
           ["COGS", `${sr.supplier.cogsPercentage}%`],
         ];
-
         if (sr.supplier.shippingRoute) {
           profileItems.push(["Shipping Route", sr.supplier.shippingRoute]);
         }
+        if (sr.supplier.dependencies) {
+          profileItems.push(["Dependencies", sr.supplier.dependencies]);
+        }
 
-        let profileY = boxY + 12;
-        const colWidth = CONTENT_WIDTH / 2 - 20;
+        const rows = Math.ceil(profileItems.length / 2);
+        const boxHeight = rows * 30 + 14;
+        const boxY = doc.y;
+
+        // Card background
+        doc.roundedRect(MARGIN, boxY, CONTENT_WIDTH, boxHeight, 4)
+          .fillAndStroke(COLORS.bgLight, COLORS.border);
+
+        // Left accent bar on card
+        doc.rect(MARGIN, boxY, 3, boxHeight).fill(COLORS.primaryLight);
+
+        let py = boxY + 8;
+        const colWidth = (CONTENT_WIDTH - 30) / 2;
 
         profileItems.forEach((item, i) => {
           const col = i % 2;
-          const xPos = MARGIN + 15 + col * (colWidth + 20);
+          const xPos = MARGIN + 14 + col * (colWidth + 10);
 
-          doc
-            .fontSize(9)
-            .font("Helvetica-Bold")
-            .fillColor(COLORS.muted)
-            .text(item[0], xPos, profileY);
-
-          doc
-            .fontSize(10)
-            .font("Helvetica")
-            .fillColor(COLORS.text)
-            .text(item[1], xPos, profileY + 11, { width: colWidth });
+          doc.fontSize(7.5).font("Helvetica-Bold").fillColor(COLORS.muted)
+            .text(item[0].toUpperCase(), xPos, py, { width: colWidth, lineBreak: false });
+          doc.fontSize(9.5).font("Helvetica").fillColor(COLORS.text)
+            .text(item[1], xPos, py + 9, { width: colWidth, lineBreak: false });
 
           if (col === 1 || i === profileItems.length - 1) {
-            profileY += 28;
+            py += 30;
           }
         });
 
-        doc.y = boxY + 120;
+        doc.y = boxY + boxHeight + 14;
 
-        // Report content
-        const lines = sr.report.content.split("\n");
-        for (const line of lines) {
-          // Check if we need a new page
-          if (doc.y > PAGE_HEIGHT - MARGIN - 60) {
-            doc.addPage();
-          }
-          parseMarkdownLine(doc, line, MARGIN, CONTENT_WIDTH);
+        // ---- Report content ----
+        const blocks = parseContentToBlocks(sr.report.content);
+        for (const block of blocks) {
+          renderBlock(doc, block);
         }
 
-        // Citations
+        // ---- Citations ----
         if (sr.report.citations && sr.report.citations.length > 0) {
-          doc.moveDown(1);
-          if (doc.y > PAGE_HEIGHT - MARGIN - 100) {
-            doc.addPage();
-          }
+          doc.y += 10;
+          checkSpace(doc, 30);
 
-          doc
-            .fontSize(14)
-            .font("Helvetica-Bold")
-            .fillColor(COLORS.text)
-            .text("Sources", MARGIN);
-
-          doc.moveDown(0.3);
+          doc.fontSize(12).font("Helvetica-Bold").fillColor(COLORS.accent)
+            .text("Sources", MARGIN, doc.y, { width: CONTENT_WIDTH });
+          doc.y += 2;
+          doc.moveTo(MARGIN, doc.y).lineTo(MARGIN + 35, doc.y)
+            .strokeColor(COLORS.primaryLight).lineWidth(1).stroke();
+          doc.y += 6;
 
           sr.report.citations.forEach((citation, citIndex) => {
-            if (doc.y > PAGE_HEIGHT - MARGIN - 30) {
-              doc.addPage();
-            }
-            doc
-              .fontSize(9)
-              .font("Helvetica")
-              .fillColor(COLORS.link)
-              .text(`${citIndex + 1}. ${citation}`, MARGIN + 10, undefined, {
-                width: CONTENT_WIDTH - 10,
+            checkSpace(doc, 12);
+            doc.fontSize(7.5).font("Helvetica").fillColor(COLORS.link)
+              .text(`[${citIndex + 1}] ${citation}`, MARGIN + 6, doc.y, {
+                width: CONTENT_WIDTH - 6,
                 link: citation,
                 underline: true,
               });
-            doc.moveDown(0.1);
+            doc.y += 1;
           });
         }
       });
 
-      // Add page numbers to all pages
-      const totalPages = doc.bufferedPageRange().count;
-      for (let i = 0; i < totalPages; i++) {
-        doc.switchToPage(i);
-        addPageFooter(doc, i + 1, totalPages);
-      }
+      // Stamp footer on the final page
+      stampFooter(doc);
 
       doc.end();
     } catch (error) {

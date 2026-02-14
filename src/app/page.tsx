@@ -60,8 +60,8 @@ export default function LandingPage() {
               <span className="text-primary">before they hit</span>
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-              Automatically generated weekly risk reports powered by Perplexity
-              AI Deep Research. Monitor suppliers, identify disruptions, and
+              Automatically generated weekly risk reports powered by advanced
+              AI research. Monitor suppliers, identify disruptions, and
               receive actionable intelligence every Monday morning.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -189,7 +189,7 @@ export default function LandingPage() {
                 icon: Zap,
                 title: "Deep Research AI",
                 description:
-                  "Powered by Perplexity's Deep Research model with real-time web search and source citations.",
+                  "Premium plans unlock Deep Research — 10x more detailed analysis with in-depth financial and geopolitical intelligence.",
               },
             ].map((feature) => (
               <Card key={feature.title}>
@@ -223,6 +223,8 @@ export default function LandingPage() {
                 name: "Free",
                 price: "$0",
                 description: "1 supplier",
+                badge: null,
+                highlight: null,
                 features: [
                   "Weekly AI risk report",
                   "Email delivery",
@@ -231,8 +233,10 @@ export default function LandingPage() {
               },
               {
                 name: "Standard",
-                price: "$49",
+                price: "$29",
                 description: "Up to 5 suppliers",
+                badge: null,
+                highlight: null,
                 features: [
                   "Everything in Free",
                   "Full citations",
@@ -243,10 +247,14 @@ export default function LandingPage() {
               },
               {
                 name: "Premium",
-                price: "$99",
-                description: "Up to 20 suppliers",
+                price: "$199",
+                description: "Up to 15 suppliers",
+                badge: "Deep Research",
+                highlight: "10x more detailed AI analysis per supplier",
                 features: [
                   "Everything in Standard",
+                  "Deep Research AI reports",
+                  "Financial & geopolitical intelligence",
                   "12-week archive",
                   "Excel/CSV export",
                 ],
@@ -254,7 +262,13 @@ export default function LandingPage() {
             ].map((plan) => (
               <Card
                 key={plan.name}
-                className={plan.popular ? "border-primary shadow-md" : ""}
+                className={
+                  plan.popular
+                    ? "border-primary shadow-md"
+                    : plan.badge
+                    ? "border-amber-400 shadow-md shadow-amber-50"
+                    : ""
+                }
               >
                 <CardContent className="pt-6">
                   {plan.popular && (
@@ -262,19 +276,35 @@ export default function LandingPage() {
                       Most Popular
                     </Badge>
                   )}
+                  {plan.badge && !plan.popular && (
+                    <Badge className="mb-3 bg-amber-500 text-white">
+                      {plan.badge}
+                    </Badge>
+                  )}
                   <h3 className="font-semibold text-lg">{plan.name}</h3>
                   <div className="mt-2 mb-1">
                     <span className="text-3xl font-bold">{plan.price}</span>
                     <span className="text-muted-foreground">/mo</span>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <p className="text-sm text-muted-foreground mb-2">
                     {plan.description}
                   </p>
+                  {plan.highlight && (
+                    <p className="text-xs font-medium text-amber-700 mb-3">
+                      {plan.highlight}
+                    </p>
+                  )}
                   <ul className="space-y-2">
                     {plan.features.map((f) => (
                       <li key={f} className="flex items-center gap-2 text-sm">
-                        <Check className="h-4 w-4 text-primary" />
-                        {f}
+                        <Check className={`h-4 w-4 ${
+                          f.includes("Deep Research") || f.includes("intelligence")
+                            ? "text-amber-500"
+                            : "text-primary"
+                        }`} />
+                        <span className={
+                          f.includes("Deep Research") ? "font-medium" : ""
+                        }>{f}</span>
                       </li>
                     ))}
                   </ul>

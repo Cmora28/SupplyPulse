@@ -5,6 +5,8 @@ import { startOfWeek, format } from "date-fns";
 import { generateSupplierReport } from "./lib/perplexity";
 import { generateReportPDF } from "./lib/pdf-generator";
 import { sendWeeklyReport } from "./lib/email";
+import { TIER_MODEL } from "./lib/tier-limits";
+import type { SubscriptionTier } from "@prisma/client";
 
 // ---- Redis Connection ----
 const connection = {
@@ -98,7 +100,9 @@ const reportWorker = new Worker(
       where: { id: reportRunItemId },
       include: {
         supplier: true,
-        reportRun: true,
+        reportRun: {
+          include: { user: true },
+        },
       },
     });
 
@@ -117,7 +121,12 @@ const reportWorker = new Worker(
     });
 
     try {
-      const { content, citations } = await generateSupplierReport(item.supplier);
+      // Select AI model based on user's subscription tier
+      const userTier = item.reportRun.user.subscriptionTier as SubscriptionTier;
+      const model = TIER_MODEL[userTier] || "sonar-pro";
+      console.log(`[ReportWorker] User tier: ${userTier}, model: ${model}`);
+
+      const { content, citations } = await generateSupplierReport(item.supplier, model);
       const weekOf = item.reportRun.weekOf;
 
       await prisma.supplierReport.upsert({
@@ -199,7 +208,7 @@ const finalizerWorker = new Worker(
   "report-finalizer",
   async (job) => {
     const { reportRunId } = job.data as { reportRunId: string };
-    console.log(`[Finalizer] Processing run ${reportRunId}`);
+    console.log(`[Finalizer] Processing run ${reportRunId} (job ${job.id})`);
 
     const reportRun = await prisma.reportRun.findUnique({
       where: { id: reportRunId },
@@ -264,19 +273,28 @@ const finalizerWorker = new Worker(
       reportRun.weekOf
     );
 
+    let emailSent = false;
     if (reportRun.user.emailNotifications) {
-      console.log(`[Finalizer] Sending email to ${reportRun.user.email}...`);
-      await sendWeeklyReport(
-        reportRun.user,
-        pdfBuffer,
-        reportRun.weekOf,
-        supplierReports.length
-      );
+      try {
+        console.log(`[Finalizer] Sending email to ${reportRun.user.email}...`);
+        await sendWeeklyReport(
+          reportRun.user,
+          pdfBuffer,
+          reportRun.weekOf,
+          supplierReports.length
+        );
+        emailSent = true;
+        console.log(`[Finalizer] Email sent successfully to ${reportRun.user.email}`);
+      } catch (emailError) {
+        const msg = emailError instanceof Error ? emailError.message : String(emailError);
+        console.warn(`[Finalizer] Email failed (non-blocking): ${msg}`);
+        console.warn("[Finalizer] Report will still be marked as READY for download.");
+      }
     }
 
     await prisma.reportRun.update({
       where: { id: reportRunId },
-      data: { status: reportRun.user.emailNotifications ? "EMAILED" : "READY" },
+      data: { status: emailSent ? "EMAILED" : "READY" },
     });
 
     await prisma.reportRunItem.updateMany({
@@ -342,7 +360,69 @@ finalizerWorker.on("failed", (job, err) => {
   console.error(`[Finalizer] Job ${job?.id} failed:`, err.message);
 });
 
+// ---- Worker ready events ----
+finalizerWorker.on("ready", () => {
+  console.log("[Finalizer] Worker is READY and listening for jobs");
+});
+
+finalizerWorker.on("error", (err) => {
+  console.error("[Finalizer] Worker ERROR:", err.message);
+});
+
+reportWorker.on("ready", () => {
+  console.log("[ReportWorker] Worker is READY and listening for jobs");
+});
+
+// ---- Recovery: process stuck runs on startup ----
+async function recoverStuckRuns() {
+  // Find runs that are PROCESSING or FAILED but have successful items that weren't finalized
+  const stuckRuns = await prisma.reportRun.findMany({
+    where: {
+      status: { in: ["PROCESSING", "FAILED"] },
+      items: {
+        some: { status: "SUCCESS" },
+        none: { status: { in: ["PENDING", "PROCESSING"] } },
+      },
+    },
+    include: {
+      items: { select: { status: true, includedInPdf: true } },
+    },
+  });
+
+  // Filter to only runs where successful items weren't included in PDF yet
+  const needsFinalization = stuckRuns.filter((run) =>
+    run.items.some((i) => i.status === "SUCCESS" && !i.includedInPdf)
+  );
+
+  if (needsFinalization.length > 0) {
+    console.log(`[Recovery] Found ${needsFinalization.length} run(s) needing finalization...`);
+    for (const run of needsFinalization) {
+      // Reset status to PROCESSING so the finalizer can work on it
+      await prisma.reportRun.update({
+        where: { id: run.id },
+        data: { status: "PROCESSING" },
+      });
+
+      await finalizerQueue.add(
+        "finalize-report",
+        { reportRunId: run.id },
+        { attempts: 3, backoff: { type: "fixed", delay: 10000 } }
+      );
+      console.log(`[Recovery] Re-enqueued finalizer for run ${run.id}`);
+    }
+  } else {
+    console.log("[Recovery] No stuck runs found");
+  }
+}
+
 // ---- Start ----
 console.log("=== Supply Pulse Worker Process ===");
 console.log("Workers started: scheduler, supplier-report, report-finalizer");
 setupScheduler().catch(console.error);
+
+// Give workers time to connect, then recover stuck runs
+setTimeout(() => {
+  recoverStuckRuns().catch((err) =>
+    console.error("[Recovery] Error:", err.message)
+  );
+}, 5000);
