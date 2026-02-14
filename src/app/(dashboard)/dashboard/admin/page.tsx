@@ -106,7 +106,7 @@ export default function AdminPage() {
     } finally {
       setLoading(false);
     }
-  }, [router, toast]);
+  }, [router, toast, t]);
 
   useEffect(() => {
     if (sessionStatus === "loading") return;
@@ -129,7 +129,7 @@ export default function AdminPage() {
     });
   };
 
-  const handleTriggerReport = async (userId: string, userName: string) => {
+  const handleTriggerReport = async (userId: string, _userName: string) => {
     setTriggeringReport(userId);
     try {
       const res = await fetch("/api/admin/reports/trigger", {
@@ -168,7 +168,7 @@ export default function AdminPage() {
 
   const handleResendEmail = async (
     reportRunId: string,
-    userEmail: string
+    _userEmail: string
   ) => {
     setResendingEmail(reportRunId);
     try {
