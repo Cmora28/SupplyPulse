@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Queue } from "bullmq";
 import { startOfWeek } from "date-fns";
+import { rateLimit } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,15 @@ export async function POST() {
     // Only allow the admin user
     if (session.user.email !== ADMIN_EMAIL) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    // A04: Rate limit report triggers — 3 per 10 minutes
+    const rl = rateLimit(`report-trigger:${session.user.id}`, 3, 10 * 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many report triggers. Please wait before trying again." },
+        { status: 429 }
+      );
     }
 
     const userId = session.user.id;

@@ -25,11 +25,21 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { User, Lock, Bell, AlertTriangle } from "lucide-react";
+import { User, Lock, Bell, AlertTriangle, Globe } from "lucide-react";
+import { useTranslation } from "@/i18n/client";
+import { locales, localeNames, localeFlags, type Locale } from "@/i18n";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function SettingsPage() {
   const { data: session, update: updateSession } = useSession();
   const { toast } = useToast();
+  const { t, locale, setLocale } = useTranslation();
 
   const [name, setName] = useState(session?.user?.name || "");
   const [savingName, setSavingName] = useState(false);
@@ -74,19 +84,19 @@ export default function SettingsPage() {
 
       if (!res.ok) {
         toast({
-          title: "Error",
+          title: t("common.error"),
           description: data.error,
           variant: "destructive",
         });
         return;
       }
 
-      toast({ title: "Profile updated", description: "Your name has been updated." });
+      toast({ title: t("settings.profileUpdated"), description: t("settings.profileUpdatedDesc") });
       updateSession();
     } catch {
       toast({
-        title: "Error",
-        description: "Failed to update profile",
+        title: t("common.error"),
+        description: t("settings.failedToUpdateProfile"),
         variant: "destructive",
       });
     } finally {
@@ -97,8 +107,8 @@ export default function SettingsPage() {
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
       toast({
-        title: "Error",
-        description: "Passwords do not match",
+        title: t("common.error"),
+        description: t("settings.passwordsDoNotMatch"),
         variant: "destructive",
       });
       return;
@@ -116,7 +126,7 @@ export default function SettingsPage() {
 
       if (!res.ok) {
         toast({
-          title: "Error",
+          title: t("common.error"),
           description: data.error,
           variant: "destructive",
         });
@@ -124,16 +134,16 @@ export default function SettingsPage() {
       }
 
       toast({
-        title: "Password changed",
-        description: "Your password has been updated successfully.",
+        title: t("settings.passwordChanged"),
+        description: t("settings.passwordChangedDesc"),
       });
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch {
       toast({
-        title: "Error",
-        description: "Failed to change password",
+        title: t("common.error"),
+        description: t("settings.failedToChangePassword"),
         variant: "destructive",
       });
     } finally {
@@ -155,18 +165,18 @@ export default function SettingsPage() {
       if (!res.ok) {
         setEmailNotifications(!checked);
         toast({
-          title: "Error",
-          description: "Failed to update notification preferences",
+          title: t("common.error"),
+          description: t("settings.failedToUpdateNotifications"),
           variant: "destructive",
         });
         return;
       }
 
       toast({
-        title: "Notifications updated",
+        title: t("settings.notificationsUpdated"),
         description: checked
-          ? "You will receive weekly report emails."
-          : "Email notifications have been disabled.",
+          ? t("settings.notificationsEnabledDesc")
+          : t("settings.notificationsDisabledDesc"),
       });
     } catch {
       setEmailNotifications(!checked);
@@ -182,8 +192,8 @@ export default function SettingsPage() {
 
       if (!res.ok) {
         toast({
-          title: "Error",
-          description: "Failed to delete account",
+          title: t("common.error"),
+          description: t("settings.failedToDeleteAccount"),
           variant: "destructive",
         });
         return;
@@ -192,8 +202,8 @@ export default function SettingsPage() {
       signOut({ callbackUrl: "/" });
     } catch {
       toast({
-        title: "Error",
-        description: "Something went wrong",
+        title: t("common.error"),
+        description: t("common.somethingWentWrong"),
         variant: "destructive",
       });
     } finally {
@@ -204,8 +214,8 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">Manage your account settings.</p>
+        <h1 className="text-2xl font-bold tracking-tight">{t("settings.title")}</h1>
+        <p className="text-muted-foreground">{t("settings.subtitle")}</p>
       </div>
 
       {/* Account Information */}
@@ -213,13 +223,13 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
-            Account Information
+            {t("settings.accountInfo")}
           </CardTitle>
-          <CardDescription>Update your personal details.</CardDescription>
+          <CardDescription>{t("settings.accountInfoDesc")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{t("settings.nameLabel")}</Label>
             <Input
               id="name"
               value={name}
@@ -227,7 +237,7 @@ export default function SettingsPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("settings.emailLabel")}</Label>
             <Input
               id="email"
               value={session?.user?.email || ""}
@@ -235,12 +245,54 @@ export default function SettingsPage() {
               className="bg-muted"
             />
             <p className="text-xs text-muted-foreground">
-              Email cannot be changed.
+              {t("settings.emailCannotChange")}
             </p>
           </div>
           <Button onClick={handleSaveName} disabled={savingName}>
-            {savingName ? "Saving..." : "Save Changes"}
+            {savingName ? t("settings.saving") : t("settings.saveChanges")}
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* Language */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Globe className="h-5 w-5" />
+            {t("settings.languageLabel")}
+          </CardTitle>
+          <CardDescription>{t("settings.languageDesc")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Select
+            value={locale}
+            onValueChange={(value) => {
+              setLocale(value as Locale, true);
+              toast({
+                title: t("settings.languageUpdated"),
+                description: t("settings.languageUpdatedDesc"),
+              });
+            }}
+          >
+            <SelectTrigger className="w-full max-w-xs">
+              <SelectValue>
+                <span className="flex items-center gap-1.5">
+                  <span>{localeFlags[locale]}</span>
+                  <span>{localeNames[locale]}</span>
+                </span>
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {locales.map((loc) => (
+                <SelectItem key={loc} value={loc}>
+                  <span className="flex items-center gap-1.5">
+                    <span>{localeFlags[loc]}</span>
+                    <span>{localeNames[loc]}</span>
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </CardContent>
       </Card>
 
@@ -249,15 +301,15 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Lock className="h-5 w-5" />
-            Change Password
+            {t("settings.changePassword")}
           </CardTitle>
           <CardDescription>
-            Update your password to keep your account secure.
+            {t("settings.changePasswordDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="currentPassword">Current Password</Label>
+            <Label htmlFor="currentPassword">{t("settings.currentPassword")}</Label>
             <Input
               id="currentPassword"
               type="password"
@@ -266,17 +318,17 @@ export default function SettingsPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="newPassword">New Password</Label>
+            <Label htmlFor="newPassword">{t("settings.newPassword")}</Label>
             <Input
               id="newPassword"
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Min. 8 characters"
+              placeholder={t("settings.minChars")}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm New Password</Label>
+            <Label htmlFor="confirmPassword">{t("settings.confirmNewPassword")}</Label>
             <Input
               id="confirmPassword"
               type="password"
@@ -288,7 +340,7 @@ export default function SettingsPage() {
             onClick={handleChangePassword}
             disabled={savingPassword || !currentPassword || !newPassword}
           >
-            {savingPassword ? "Updating..." : "Update Password"}
+            {savingPassword ? t("settings.updating") : t("settings.updatePassword")}
           </Button>
         </CardContent>
       </Card>
@@ -298,18 +350,18 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Bell className="h-5 w-5" />
-            Notifications
+            {t("settings.notifications")}
           </CardTitle>
           <CardDescription>
-            Control how you receive updates from Supply Pulse.
+            {t("settings.notificationsDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium text-sm">Email Notifications</p>
+              <p className="font-medium text-sm">{t("settings.emailNotifications")}</p>
               <p className="text-sm text-muted-foreground">
-                Receive weekly supply chain risk reports via email.
+                {t("settings.emailNotificationsDesc")}
               </p>
             </div>
             <Switch
@@ -326,33 +378,32 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-destructive">
             <AlertTriangle className="h-5 w-5" />
-            Danger Zone
+            {t("settings.dangerZone")}
           </CardTitle>
           <CardDescription>
-            Irreversible actions that affect your account.
+            {t("settings.dangerZoneDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive">Delete Account</Button>
+              <Button variant="destructive">{t("settings.deleteAccount")}</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogTitle>{t("settings.deleteConfirmTitle")}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will permanently delete your account, all suppliers,
-                  reports, and data. This action cannot be undone.
+                  {t("settings.deleteConfirmDesc")}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={handleDeleteAccount}
                   disabled={deleting}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 >
-                  {deleting ? "Deleting..." : "Delete my account"}
+                  {deleting ? t("settings.deleting") : t("settings.deleteMyAccount")}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

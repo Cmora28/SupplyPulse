@@ -7,8 +7,21 @@ export default withAuth(
     const isAuthenticated = !!req.nextauth.token;
 
     // Redirect authenticated users away from auth pages
-    if (isAuthenticated && (pathname === "/login" || pathname === "/register")) {
+    if (
+      isAuthenticated &&
+      (pathname === "/login" ||
+        pathname === "/register" ||
+        pathname === "/forgot-password")
+    ) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+
+    // A01: Protect admin routes at the middleware level
+    if (pathname.startsWith("/dashboard/admin") || pathname.startsWith("/api/admin")) {
+      const email = req.nextauth.token?.email;
+      if (email !== "lopezhk@gmail.com") {
+        return NextResponse.redirect(new URL("/dashboard", req.url));
+      }
     }
 
     return NextResponse.next();
@@ -23,6 +36,9 @@ export default withAuth(
           pathname === "/" ||
           pathname === "/login" ||
           pathname === "/register" ||
+          pathname === "/forgot-password" ||
+          pathname === "/reset-password" ||
+          pathname.startsWith("/reset-password/") ||
           pathname === "/pricing" ||
           pathname.startsWith("/api/auth") ||
           pathname.startsWith("/api/polar/webhook")
@@ -30,8 +46,11 @@ export default withAuth(
           return true;
         }
 
-        // Dashboard routes require authentication
-        if (pathname.startsWith("/dashboard") || pathname.startsWith("/api/")) {
+        // Dashboard and API routes require authentication
+        if (
+          pathname.startsWith("/dashboard") ||
+          pathname.startsWith("/api/")
+        ) {
           return !!token;
         }
 
@@ -50,5 +69,7 @@ export const config = {
     "/api/reports/:path*",
     "/api/user/:path*",
     "/api/polar/create-checkout",
+    "/api/polar/customer-portal",
+    "/api/admin/:path*",
   ],
 };

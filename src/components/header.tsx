@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
+import { useTranslation } from "@/i18n/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +32,7 @@ function getTierColor(tier: string) {
 
 export function Header() {
   const { data: session } = useSession();
+  const { t } = useTranslation();
 
   const initials = session?.user?.name
     ? session.user.name
@@ -50,7 +52,7 @@ export function Header() {
             <div className="h-7 w-7 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-xs">S</span>
             </div>
-            <span className="font-bold">Supply Pulse</span>
+            <span className="font-bold">{t("common.appName")}</span>
           </Link>
         </div>
         <div className="hidden md:block" />
@@ -84,13 +86,13 @@ export function Header() {
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/settings" className="flex items-center">
                   <Settings className="mr-2 h-4 w-4" />
-                  Settings
+                  {t("common.settings")}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/billing" className="flex items-center">
                   <User className="mr-2 h-4 w-4" />
-                  Billing
+                  {t("common.billing")}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -99,7 +101,7 @@ export function Header() {
                 onClick={() => signOut({ callbackUrl: "/login" })}
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                Sign out
+                {t("common.signOut")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

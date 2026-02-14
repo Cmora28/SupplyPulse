@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { useTranslation } from "@/i18n/client";
 import { Trash2, Loader2 } from "lucide-react";
 
 export function DeleteReportButton({ reportRunId }: { reportRunId: string }) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslation();
   const router = useRouter();
 
   const handleDelete = async () => {
@@ -21,23 +23,23 @@ export function DeleteReportButton({ reportRunId }: { reportRunId: string }) {
       if (!res.ok) {
         const data = await res.json();
         toast({
-          title: "Error",
-          description: data.error || "Failed to delete report",
+          title: t("common.error"),
+          description: data.error || t("reports.failedToDeleteReport"),
           variant: "destructive",
         });
         return;
       }
 
       toast({
-        title: "Report removed",
-        description: "The failed report has been deleted.",
+        title: t("reports.reportRemoved"),
+        description: t("reports.reportRemovedDesc"),
       });
 
       router.refresh();
     } catch {
       toast({
-        title: "Error",
-        description: "Something went wrong",
+        title: t("common.error"),
+        description: t("common.somethingWentWrong"),
         variant: "destructive",
       });
     } finally {
@@ -58,7 +60,7 @@ export function DeleteReportButton({ reportRunId }: { reportRunId: string }) {
       ) : (
         <Trash2 className="mr-1 h-3 w-3" />
       )}
-      Remove
+      {t("common.remove")}
     </Button>
   );
 }

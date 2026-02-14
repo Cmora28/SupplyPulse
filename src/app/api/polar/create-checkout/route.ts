@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { Polar } from "@polar-sh/sdk";
+import { z } from "zod";
+import { rateLimit, getClientIp } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
 
@@ -14,19 +16,41 @@ const PRODUCT_IDS: Record<string, string | undefined> = {
   PREMIUM: process.env.POLAR_PREMIUM_PRICE_ID,
 };
 
+// A03: Strict schema for checkout input
+const checkoutSchema = z.object({
+  tier: z.enum(["STANDARD", "PREMIUM"]),
+});
+
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 export async function POST(request: Request) {
   try {
+    // A04: Rate limit checkout creation — 5 per 10 minutes
+    const ip = getClientIp(request);
+    const rl = rateLimit(`checkout:${ip}`, 5, 10 * 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
-    const { tier } = body;
+    const parsed = checkoutSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid tier selected" },
+        { status: 400 }
+      );
+    }
+    const { tier } = parsed.data;
 
-    if (!tier || !PRODUCT_IDS[tier]) {
+    if (!PRODUCT_IDS[tier]) {
       return NextResponse.json(
         { error: "Invalid tier selected" },
         { status: 400 }

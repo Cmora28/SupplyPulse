@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { useTranslation } from "@/i18n/client";
 import { Play, Loader2 } from "lucide-react";
 
 export function RunReportButton() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslation();
   const router = useRouter();
 
   const handleRunReport = async () => {
@@ -22,15 +24,15 @@ export function RunReportButton() {
 
       if (!res.ok) {
         toast({
-          title: "Error",
-          description: data.error || "Failed to trigger report",
+          title: t("common.error"),
+          description: data.error || t("reports.failedToTrigger"),
           variant: "destructive",
         });
         return;
       }
 
       toast({
-        title: "Report started",
+        title: t("reports.reportStarted"),
         description: data.message,
       });
 
@@ -38,8 +40,8 @@ export function RunReportButton() {
       setTimeout(() => router.refresh(), 2000);
     } catch {
       toast({
-        title: "Error",
-        description: "Something went wrong",
+        title: t("common.error"),
+        description: t("common.somethingWentWrong"),
         variant: "destructive",
       });
     } finally {
@@ -54,7 +56,7 @@ export function RunReportButton() {
       ) : (
         <Play className="mr-2 h-4 w-4" />
       )}
-      {loading ? "Running..." : "Run Report"}
+      {loading ? t("reports.running") : t("reports.runReport")}
     </Button>
   );
 }

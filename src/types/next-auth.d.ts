@@ -7,12 +7,14 @@ declare module "next-auth" {
       name: string;
       email: string;
       subscriptionTier: SubscriptionTier;
+      locale: string;
     };
   }
 
   interface User {
     id: string;
     subscriptionTier: SubscriptionTier;
+    locale: string;
   }
 }
 
@@ -20,5 +22,6 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     subscriptionTier: SubscriptionTier;
+    locale: string;
   }
 }

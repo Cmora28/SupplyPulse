@@ -9,7 +9,21 @@ interface PerplexityResponse {
   citations?: string[];
 }
 
-function buildPrompt(supplier: Supplier): string {
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: "English",
+  es: "Spanish",
+  pt: "Portuguese",
+  fr: "French",
+  de: "German",
+};
+
+function buildPrompt(supplier: Supplier, locale: string = "en"): string {
+  const lang = LANGUAGE_NAMES[locale] || "English";
+  const langInstruction =
+    locale !== "en"
+      ? `\n\n**IMPORTANT: Write the ENTIRE report in ${lang}. All section headers, analysis, and recommendations must be in ${lang}.**`
+      : "";
+
   let prompt = `Provide a comprehensive weekly supply chain risk analysis report for the following supplier:
 
 ## Supplier Profile
@@ -55,7 +69,7 @@ Please analyze and report on the following areas:
 - Alternative suppliers to consider
 - Recommended inventory buffer adjustments
 
-Please provide specific dates, concrete percentages where possible, and actionable intelligence for supply chain managers. Format your response with clear markdown headers and bullet points.`;
+Please provide specific dates, concrete percentages where possible, and actionable intelligence for supply chain managers. Format your response with clear markdown headers and bullet points.${langInstruction}`;
 
   return prompt;
 }
@@ -122,15 +136,22 @@ async function fetchWithRetry(
 
 export async function generateSupplierReport(
   supplier: Supplier,
-  model: string = "sonar-pro"
+  model: string = "sonar-pro",
+  locale: string = "en"
 ): Promise<{ content: string; citations: string[] }> {
   const apiKey = process.env.PERPLEXITY_API_KEY;
   if (!apiKey) {
     throw new Error("PERPLEXITY_API_KEY environment variable is not set");
   }
 
-  console.log(`[Perplexity] Using model: ${model}`);
-  const prompt = buildPrompt(supplier);
+  const lang = LANGUAGE_NAMES[locale] || "English";
+  console.log(`[Perplexity] Using model: ${model}, language: ${lang}`);
+  const prompt = buildPrompt(supplier, locale);
+
+  const systemPrompt =
+    locale !== "en"
+      ? `You are an expert supply chain risk analyst providing detailed, actionable reports with cited sources. Always include specific dates, numbers, and percentages when available. You MUST write your entire response in ${lang}.`
+      : "You are an expert supply chain risk analyst providing detailed, actionable reports with cited sources. Always include specific dates, numbers, and percentages when available.";
 
   const response = await fetchWithRetry(
     "https://api.perplexity.ai/chat/completions",
@@ -145,8 +166,7 @@ export async function generateSupplierReport(
         messages: [
           {
             role: "system",
-            content:
-              "You are an expert supply chain risk analyst providing detailed, actionable reports with cited sources. Always include specific dates, numbers, and percentages when available.",
+            content: systemPrompt,
           },
           {
             role: "user",

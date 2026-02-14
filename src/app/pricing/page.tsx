@@ -14,95 +14,97 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
 import Link from "next/link";
-
-const plans = [
-  {
-    name: "Free",
-    tier: "FREE",
-    price: "$0",
-    period: "/month",
-    description: "Get started with basic supply chain monitoring.",
-    badge: null,
-    highlight: null,
-    features: [
-      "Monitor 1 supplier",
-      "Weekly AI risk report",
-      "Email delivery every Monday",
-      "PDF download",
-      "Basic email support",
-    ],
-    cta: "Get Started",
-    popular: false,
-  },
-  {
-    name: "Standard",
-    tier: "STANDARD",
-    price: "$29",
-    period: "/month",
-    description: "For teams monitoring multiple critical suppliers.",
-    badge: null,
-    highlight: null,
-    features: [
-      "Monitor up to 5 suppliers",
-      "Weekly AI risk reports",
-      "Email delivery every Monday",
-      "PDF downloads with full citations",
-      "Priority email support",
-      "Consolidated multi-supplier PDF",
-    ],
-    cta: "Upgrade to Standard",
-    popular: true,
-  },
-  {
-    name: "Premium",
-    tier: "PREMIUM",
-    price: "$199",
-    period: "/month",
-    description: "Deep Research intelligence for serious supply chain teams.",
-    badge: "Deep Research",
-    highlight: "10x more detailed AI analysis with deep web research, financial data, and geopolitical intelligence per supplier.",
-    features: [
-      "Monitor up to 15 suppliers",
-      "Deep Research AI — 10x more detailed reports",
-      "In-depth geopolitical & financial risk analysis",
-      "Multi-source intelligence with cited evidence",
-      "Email delivery every Monday",
-      "PDF downloads with full citations",
-      "Priority email support",
-      "Consolidated multi-supplier PDF",
-      "Report history archive (last 12 weeks)",
-      "Export to Excel/CSV",
-    ],
-    cta: "Upgrade to Premium",
-    popular: false,
-  },
-  {
-    name: "Enterprise",
-    tier: "ENTERPRISE",
-    price: "Custom",
-    period: "",
-    description: "Tailored solutions for large organizations.",
-    badge: "Deep Research",
-    highlight: null,
-    features: [
-      "Unlimited suppliers",
-      "Deep Research AI reports",
-      "Custom report scheduling",
-      "Dedicated account manager",
-      "API access for integration",
-      "Custom branding on reports",
-      "SSO integration",
-      "Slack/Teams notifications",
-      "Custom data retention policies",
-    ],
-    cta: "Contact Sales",
-    popular: false,
-  },
-];
+import { useTranslation } from "@/i18n/client";
 
 export default function PricingPage() {
   const { data: session } = useSession();
   const router = useRouter();
+  const { t } = useTranslation();
+
+  const plans = [
+    {
+      name: t("common.free"),
+      tier: "FREE",
+      price: "$0",
+      period: t("common.perMonth"),
+      description: t("pricing.freeDesc"),
+      badge: null,
+      highlight: null,
+      features: [
+        t("pricing.freeFeature1"),
+        t("pricing.freeFeature2"),
+        t("pricing.freeFeature3"),
+        t("pricing.freeFeature4"),
+        t("pricing.freeFeature5"),
+      ],
+      cta: t("common.getStarted"),
+      popular: false,
+    },
+    {
+      name: t("common.standard"),
+      tier: "STANDARD",
+      price: "$29",
+      period: t("common.perMonth"),
+      description: t("pricing.standardDesc"),
+      badge: null,
+      highlight: null,
+      features: [
+        t("pricing.standardFeature1"),
+        t("pricing.standardFeature2"),
+        t("pricing.standardFeature3"),
+        t("pricing.standardFeature4"),
+        t("pricing.standardFeature5"),
+        t("pricing.standardFeature6"),
+      ],
+      cta: t("pricing.upgradeTo", { tier: t("common.standard") }),
+      popular: true,
+    },
+    {
+      name: t("common.premium"),
+      tier: "PREMIUM",
+      price: "$199",
+      period: t("common.perMonth"),
+      description: t("pricing.premiumDesc"),
+      badge: t("common.deepResearch"),
+      highlight: "10x more detailed AI analysis with deep web research, financial data, and geopolitical intelligence per supplier.",
+      features: [
+        t("pricing.premiumFeature1"),
+        t("pricing.premiumFeature2"),
+        t("pricing.premiumFeature3"),
+        t("pricing.premiumFeature4"),
+        t("pricing.premiumFeature5"),
+        t("pricing.premiumFeature6"),
+        t("pricing.premiumFeature7"),
+        t("pricing.premiumFeature8"),
+        t("pricing.premiumFeature9"),
+        t("pricing.premiumFeature10"),
+      ],
+      cta: t("pricing.upgradeTo", { tier: t("common.premium") }),
+      popular: false,
+    },
+    {
+      name: t("common.enterprise"),
+      tier: "ENTERPRISE",
+      price: "Custom",
+      period: "",
+      description: t("pricing.enterpriseDesc"),
+      badge: t("common.deepResearch"),
+      highlight: null,
+      features: [
+        t("pricing.enterpriseFeature1"),
+        t("pricing.enterpriseFeature2"),
+        t("pricing.enterpriseFeature3"),
+        t("pricing.enterpriseFeature4"),
+        t("pricing.enterpriseFeature5"),
+        t("pricing.enterpriseFeature6"),
+        t("pricing.enterpriseFeature7"),
+        t("pricing.enterpriseFeature8"),
+        t("pricing.enterpriseFeature9"),
+      ],
+      cta: t("common.contactSales"),
+      popular: false,
+    },
+  ];
 
   const handleUpgrade = async (tier: string) => {
     if (!session) {
@@ -148,20 +150,20 @@ export default function PricingPage() {
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">S</span>
             </div>
-            <span className="text-lg font-bold">Supply Pulse</span>
+            <span className="text-lg font-bold">{t("common.appName")}</span>
           </Link>
           <div className="flex items-center gap-3">
             {session ? (
               <Link href="/dashboard">
-                <Button variant="outline">Dashboard</Button>
+                <Button variant="outline">{t("common.dashboard")}</Button>
               </Link>
             ) : (
               <>
                 <Link href="/login">
-                  <Button variant="ghost">Sign in</Button>
+                  <Button variant="ghost">{t("common.signIn")}</Button>
                 </Link>
                 <Link href="/register">
-                  <Button>Get Started</Button>
+                  <Button>{t("common.getStarted")}</Button>
                 </Link>
               </>
             )}
@@ -173,11 +175,10 @@ export default function PricingPage() {
       <div className="max-w-7xl mx-auto px-4 py-16">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold tracking-tight mb-4">
-            Simple, transparent pricing
+            {t("pricing.title")}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Choose the plan that fits your supply chain monitoring needs.
-            No credit card required for the Free plan.
+            {t("pricing.subtitle")}
           </p>
         </div>
 
@@ -198,7 +199,7 @@ export default function PricingPage() {
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <Badge className="bg-primary text-primary-foreground">
-                      Most Popular
+                      {t("common.mostPopular")}
                     </Badge>
                   </div>
                 )}
@@ -217,6 +218,11 @@ export default function PricingPage() {
                   <div className="mb-4">
                     <span className="text-4xl font-bold">{plan.price}</span>
                     <span className="text-muted-foreground">{plan.period}</span>
+                    {plan.price !== "$0" && plan.price !== "Custom" && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {t("common.applicableTaxes")}
+                      </p>
+                    )}
                   </div>
                   {plan.highlight && (
                     <div className="mb-4 rounded-md bg-amber-50 border border-amber-200 p-3">
@@ -253,13 +259,16 @@ export default function PricingPage() {
                     disabled={isCurrent}
                     onClick={() => handleUpgrade(plan.tier)}
                   >
-                    {isCurrent ? "Current Plan" : plan.cta}
+                    {isCurrent ? t("common.currentPlan") : plan.cta}
                   </Button>
                 </CardFooter>
               </Card>
             );
           })}
         </div>
+        <p className="text-center text-xs text-muted-foreground mt-8">
+          {t("pricing.taxNote")}
+        </p>
       </div>
     </div>
   );
