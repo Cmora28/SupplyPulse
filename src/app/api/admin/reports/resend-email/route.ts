@@ -80,13 +80,15 @@ export async function POST(request: Request) {
     }
 
     // Generate PDF
+    const userLocale = reportRun.user.locale || "en";
     console.log(
-      `[Admin] Generating PDF for report run ${reportRunId} (${validReports.length} suppliers)`
+      `[Admin] Generating PDF for report run ${reportRunId} (${validReports.length} suppliers, locale: ${userLocale})`
     );
     const pdfBuffer = await generateReportPDF(
       reportRun.user,
       validReports,
-      reportRun.weekOf
+      reportRun.weekOf,
+      userLocale
     );
 
     // Send email
@@ -97,7 +99,8 @@ export async function POST(request: Request) {
       reportRun.user,
       pdfBuffer,
       reportRun.weekOf,
-      validReports.length
+      validReports.length,
+      userLocale
     );
 
     // Update status to EMAILED

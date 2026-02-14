@@ -1,6 +1,7 @@
 import PDFDocument from "pdfkit";
 import type { Supplier, SupplierReport, User } from "@prisma/client";
 import { format } from "date-fns";
+import { createTranslator } from "@/i18n";
 
 interface SupplierWithReport {
   supplier: Supplier;
@@ -30,6 +31,7 @@ const COLORS = {
 // ---- State ----
 let pageNum = 0;
 let generatedDate = "";
+let tFunc: (key: string, params?: Record<string, string | number>) => string;
 
 // ---- Text Preprocessing ----
 
@@ -104,12 +106,9 @@ function parseContentToBlocks(content: string): Block[] {
 
 function stampFooter(doc: PDFKit.PDFDocument) {
   const savedY = doc.y;
-  // Temporarily remove bottom margin so PDFKit doesn't auto-paginate
-  // when writing text below the normal content area
   const savedBottom = doc.page.margins.bottom;
   doc.page.margins.bottom = 0;
 
-  // Thin line above footer
   doc
     .moveTo(MARGIN, FOOTER_Y - 4)
     .lineTo(MARGIN + CONTENT_WIDTH, FOOTER_Y - 4)
@@ -122,19 +121,17 @@ function stampFooter(doc: PDFKit.PDFDocument) {
     width: CONTENT_WIDTH / 2,
     lineBreak: false,
   });
-  doc.text(`Page ${pageNum}`, MARGIN + CONTENT_WIDTH / 2, FOOTER_Y, {
+  doc.text(tFunc("pdf.page", { num: pageNum }), MARGIN + CONTENT_WIDTH / 2, FOOTER_Y, {
     width: CONTENT_WIDTH / 2,
     align: "right",
     lineBreak: false,
   });
 
-  // Restore margins and Y position
   doc.page.margins.bottom = savedBottom;
   doc.y = savedY;
 }
 
 function newPage(doc: PDFKit.PDFDocument) {
-  // Stamp footer on current page before moving to next
   if (pageNum > 0) {
     stampFooter(doc);
   }
@@ -175,7 +172,6 @@ function renderBlock(doc: PDFKit.PDFDocument, block: Block) {
       doc.fontSize(16).font("Helvetica-Bold").fillColor(COLORS.primary)
         .text(block.text, MARGIN, doc.y, { width: CONTENT_WIDTH });
       doc.y += 2;
-      // Accent underline
       doc
         .moveTo(MARGIN, doc.y)
         .lineTo(MARGIN + 60, doc.y)
@@ -219,7 +215,6 @@ function renderBlock(doc: PDFKit.PDFDocument, block: Block) {
       checkSpace(doc, h + 5);
 
       const sy = doc.y;
-      // Small filled circle as bullet
       doc.circle(MARGIN + indent + 2.5, sy + 5, 1.8).fill(COLORS.textLight);
       doc.fontSize(9.5).font("Helvetica").fillColor(COLORS.text)
         .text(block.text, textX, sy, { width: textW });
@@ -261,13 +256,17 @@ function renderBlock(doc: PDFKit.PDFDocument, block: Block) {
 export async function generateReportPDF(
   user: Pick<User, "name" | "email">,
   supplierReports: SupplierWithReport[],
-  weekOf: Date
+  weekOf: Date,
+  locale: string = "en"
 ): Promise<Buffer> {
+  const t = createTranslator(locale);
+
   return new Promise((resolve, reject) => {
     try {
       // Reset state
       pageNum = 0;
-      generatedDate = `Generated ${format(new Date(), "MMMM d, yyyy 'at' h:mm a")}`;
+      tFunc = t;
+      generatedDate = t("pdf.generated", { date: format(new Date(), "MMMM d, yyyy 'at' h:mm a") });
 
       const doc = new PDFDocument({
         size: "LETTER",
@@ -290,9 +289,9 @@ export async function generateReportPDF(
       // Title block
       doc.y = MARGIN + 160;
       doc.fontSize(32).font("Helvetica-Bold").fillColor(COLORS.primary)
-        .text("Supply Chain", MARGIN, doc.y, { width: CONTENT_WIDTH, align: "center" });
+        .text(t("pdf.coverTitle1"), MARGIN, doc.y, { width: CONTENT_WIDTH, align: "center" });
       doc.fontSize(32).font("Helvetica-Bold").fillColor(COLORS.primary)
-        .text("Risk Analysis", MARGIN, doc.y, { width: CONTENT_WIDTH, align: "center" });
+        .text(t("pdf.coverTitle2"), MARGIN, doc.y, { width: CONTENT_WIDTH, align: "center" });
 
       doc.y += 16;
 
@@ -310,20 +309,22 @@ export async function generateReportPDF(
         .text(user.name || user.email, MARGIN, doc.y, { width: CONTENT_WIDTH, align: "center" });
       doc.y += 8;
       doc.fontSize(13).font("Helvetica").fillColor(COLORS.text)
-        .text(`Week of ${format(weekOf, "MMMM d, yyyy")}`, MARGIN, doc.y, {
+        .text(t("pdf.weekOf", { date: format(weekOf, "MMMM d, yyyy") }), MARGIN, doc.y, {
           width: CONTENT_WIDTH, align: "center",
         });
       doc.y += 20;
+
+      const plural = supplierReports.length !== 1 ? "s" : "";
       doc.fontSize(11).font("Helvetica").fillColor(COLORS.muted)
         .text(
-          `${supplierReports.length} supplier${supplierReports.length !== 1 ? "s" : ""} analyzed`,
+          t("pdf.suppliersAnalyzed", { count: String(supplierReports.length), plural, plural2: plural }),
           MARGIN, doc.y,
           { width: CONTENT_WIDTH, align: "center" }
         );
 
       // Bottom branding
       doc.fontSize(9).font("Helvetica").fillColor(COLORS.muted)
-        .text("Powered by Supply Pulse AI", MARGIN, PAGE_HEIGHT - 80, {
+        .text(t("pdf.poweredBy"), MARGIN, PAGE_HEIGHT - 80, {
           width: CONTENT_WIDTH, align: "center",
         });
 
@@ -333,7 +334,7 @@ export async function generateReportPDF(
       newPage(doc);
 
       doc.fontSize(20).font("Helvetica-Bold").fillColor(COLORS.accent)
-        .text("Table of Contents", MARGIN, doc.y, { width: CONTENT_WIDTH });
+        .text(t("pdf.tableOfContents"), MARGIN, doc.y, { width: CONTENT_WIDTH });
       doc.y += 4;
       doc.moveTo(MARGIN, doc.y).lineTo(MARGIN + 50, doc.y)
         .strokeColor(COLORS.primaryLight).lineWidth(1.5).stroke();
@@ -360,16 +361,16 @@ export async function generateReportPDF(
 
         // ---- Profile card ----
         const profileItems: [string, string][] = [
-          ["Country", sr.supplier.country],
-          ["Category", sr.supplier.category],
-          ["Lead Time", `${sr.supplier.leadTimeDays} days`],
-          ["COGS", `${sr.supplier.cogsPercentage}%`],
+          [t("pdf.country"), sr.supplier.country],
+          [t("pdf.category"), sr.supplier.category],
+          [t("pdf.leadTime"), t("pdf.leadTimeDays", { days: String(sr.supplier.leadTimeDays) })],
+          [t("pdf.cogs"), `${sr.supplier.cogsPercentage}%`],
         ];
         if (sr.supplier.shippingRoute) {
-          profileItems.push(["Shipping Route", sr.supplier.shippingRoute]);
+          profileItems.push([t("pdf.shippingRoute"), sr.supplier.shippingRoute]);
         }
         if (sr.supplier.dependencies) {
-          profileItems.push(["Dependencies", sr.supplier.dependencies]);
+          profileItems.push([t("pdf.dependencies"), sr.supplier.dependencies]);
         }
 
         const rows = Math.ceil(profileItems.length / 2);
@@ -414,7 +415,7 @@ export async function generateReportPDF(
           checkSpace(doc, 30);
 
           doc.fontSize(12).font("Helvetica-Bold").fillColor(COLORS.accent)
-            .text("Sources", MARGIN, doc.y, { width: CONTENT_WIDTH });
+            .text(t("pdf.sources"), MARGIN, doc.y, { width: CONTENT_WIDTH });
           doc.y += 2;
           doc.moveTo(MARGIN, doc.y).lineTo(MARGIN + 35, doc.y)
             .strokeColor(COLORS.primaryLight).lineWidth(1).stroke();
