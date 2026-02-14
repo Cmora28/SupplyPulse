@@ -185,7 +185,7 @@ const fr: TranslationType = {
     emailLabel: "E-mail",
     emailCannotChange: "L'adresse e-mail ne peut pas être modifiée.",
     languageLabel: "Langue",
-    languageDesc: "Choisissez la langue de l'interface de l'application.",
+    languageDesc: "Choisissez la langue de l'interface de l'application. Les rapports seront également générés dans cette langue.",
     languageUpdated: "Langue mise à jour",
     languageUpdatedDesc: "La langue de l'application a été modifiée.",
     saving: "Enregistrement...",
@@ -243,7 +243,7 @@ const fr: TranslationType = {
     registerSubtitle: "Commencez à surveiller votre chaîne d'approvisionnement gratuitement",
     preferredLanguage: "Langue préférée",
     preferredLanguageTooltip:
-      "Choisissez la langue de l'interface de l'application. Vous pourrez la modifier ultérieurement dans les Paramètres.",
+      "Choisissez la langue de l'interface et des rapports générés. Vous pourrez la modifier ultérieurement dans les Paramètres.",
     fullName: "Nom complet",
     fullNamePlaceholder: "Jean Dupont",
     minChars: "Min. 8 caractères",

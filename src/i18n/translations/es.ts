@@ -185,7 +185,7 @@ const es: TranslationType = {
     emailLabel: "Correo electrónico",
     emailCannotChange: "El correo electrónico no se puede cambiar.",
     languageLabel: "Idioma",
-    languageDesc: "Elige el idioma de la interfaz de la aplicación.",
+    languageDesc: "Elige el idioma de la interfaz de la aplicación. Los informes también se generarán en este idioma.",
     languageUpdated: "Idioma actualizado",
     languageUpdatedDesc: "El idioma de la aplicación ha sido cambiado.",
     saving: "Guardando...",
@@ -243,7 +243,7 @@ const es: TranslationType = {
     registerSubtitle: "Comienza a monitorear tu cadena de suministro gratis",
     preferredLanguage: "Idioma preferido",
     preferredLanguageTooltip:
-      "Elige el idioma de la interfaz de la aplicación. Puedes cambiarlo más tarde en Configuración.",
+      "Elige el idioma de la interfaz y de los informes generados. Puedes cambiarlo más tarde en Configuración.",
     fullName: "Nombre completo",
     fullNamePlaceholder: "Juan García",
     minChars: "Mín. 8 caracteres",
