@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { supplierSchema } from "@/lib/validations";
 import { canAddSupplier } from "@/lib/tier-limits";
+import { rateLimit, getClientIp } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,16 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    // A04: Rate limit supplier creation — 20 per hour per user
+    const ip = getClientIp(request);
+    const rl = rateLimit(`supplier:${ip}`, 20, 60 * 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -46,15 +57,20 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check tier limits
-    const currentCount = await prisma.supplier.count({
-      where: { userId: session.user.id },
-    });
+    // Check tier limits — always read tier from DB for accuracy
+    const [currentCount, dbUser] = await Promise.all([
+      prisma.supplier.count({ where: { userId: session.user.id } }),
+      prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { subscriptionTier: true },
+      }),
+    ]);
+    const tier = dbUser?.subscriptionTier || session.user.subscriptionTier;
 
-    if (!canAddSupplier(session.user.subscriptionTier, currentCount)) {
+    if (!canAddSupplier(tier, currentCount)) {
       return NextResponse.json(
         {
-          error: `You've reached the supplier limit for your ${session.user.subscriptionTier} plan. Please upgrade to add more suppliers.`,
+          error: `You've reached the supplier limit for your ${tier} plan. Please upgrade to add more suppliers.`,
         },
         { status: 403 }
       );

@@ -2,6 +2,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { cookies, headers } from "next/headers";
+import { createTranslator, getServerLocale } from "@/i18n";
 import { TIER_LIMITS } from "@/lib/tier-limits";
 import { nextMonday, format } from "date-fns";
 import {
@@ -16,6 +18,8 @@ import { Button } from "@/components/ui/button";
 import { Factory, FileText, CalendarClock, Crown, Plus, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { RunReportButton } from "@/components/run-report-button";
+import { UpgradeSuccess } from "@/components/upgrade-success";
+import { Suspense } from "react";
 
 const ADMIN_EMAIL = "admin@example.com";
 
@@ -25,8 +29,16 @@ export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
 
+  const locale = getServerLocale(cookies(), headers());
+  const t = createTranslator(locale);
+
   const userId = session.user.id;
-  const tier = session.user.subscriptionTier;
+
+  const dbUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { subscriptionTier: true },
+  });
+  const tier = dbUser?.subscriptionTier || session.user.subscriptionTier;
 
   const [supplierCount, reportRunsThisMonth, latestRun] = await Promise.all([
     prisma.supplier.count({ where: { userId } }),
@@ -62,28 +74,29 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      <Suspense fallback={null}>
+        <UpgradeSuccess />
+      </Suspense>
       <div>
         <h1 className="text-2xl font-bold tracking-tight">
-          Welcome back, {session.user.name?.split(" ")[0]}
+          {t("dashboard.welcomeBack", { name: session.user.name?.split(" ")[0] || "" })}
         </h1>
         <p className="text-muted-foreground">
-          Here&apos;s an overview of your supply chain monitoring.
+          {t("dashboard.subtitle")}
         </p>
       </div>
 
-      {/* KPI Cards */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Suppliers</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("dashboard.totalSuppliers")}</CardTitle>
             <Factory className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {supplierCount}
               <span className="text-sm font-normal text-muted-foreground">
-                {" "}
-                / {supplierLimit === Infinity ? "∞" : supplierLimit}
+                {" "}/ {supplierLimit === Infinity ? "∞" : supplierLimit}
               </span>
             </div>
           </CardContent>
@@ -91,7 +104,7 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Reports This Month</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("dashboard.reportsThisMonth")}</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -101,20 +114,20 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Next Report</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("dashboard.nextReport")}</CardTitle>
             <CalendarClock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {format(nextReportDate, "MMM d")}
             </div>
-            <p className="text-xs text-muted-foreground">Monday 8:00 AM UTC</p>
+            <p className="text-xs text-muted-foreground">{t("dashboard.nextReportTime")}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Current Plan</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("dashboard.currentPlan")}</CardTitle>
             <Crown className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -122,7 +135,7 @@ export default async function DashboardPage() {
             {tier !== "ENTERPRISE" && (
               <Link href="/dashboard/billing">
                 <Button variant="link" className="p-0 h-auto text-xs">
-                  Upgrade
+                  {t("common.upgrade")}
                 </Button>
               </Link>
             )}
@@ -130,24 +143,23 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Get started with your supply chain monitoring</CardDescription>
+          <CardTitle>{t("dashboard.quickActions")}</CardTitle>
+          <CardDescription>{t("dashboard.quickActionsSubtitle")}</CardDescription>
         </CardHeader>
         <CardContent>
           {supplierCount === 0 ? (
             <div className="text-center py-6">
               <Factory className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-              <h3 className="font-semibold text-lg mb-1">Add Your First Supplier</h3>
+              <h3 className="font-semibold text-lg mb-1">{t("dashboard.addFirstSupplier")}</h3>
               <p className="text-muted-foreground text-sm mb-4">
-                Start monitoring your supply chain by adding a supplier.
+                {t("dashboard.addFirstSupplierDesc")}
               </p>
               <Link href="/dashboard/suppliers">
                 <Button>
                   <Plus className="mr-2 h-4 w-4" />
-                  Add Supplier
+                  {t("dashboard.addSupplier")}
                 </Button>
               </Link>
             </div>
@@ -156,20 +168,20 @@ export default async function DashboardPage() {
               <Link href="/dashboard/suppliers">
                 <Button variant="outline">
                   <Factory className="mr-2 h-4 w-4" />
-                  Manage Suppliers
+                  {t("dashboard.manageSuppliers")}
                 </Button>
               </Link>
               <Link href="/dashboard/reports">
                 <Button variant="outline">
                   <FileText className="mr-2 h-4 w-4" />
-                  View Reports
+                  {t("dashboard.viewReports")}
                 </Button>
               </Link>
               {tier !== "ENTERPRISE" && (
                 <Link href="/dashboard/billing">
                   <Button variant="outline">
                     <Crown className="mr-2 h-4 w-4" />
-                    Upgrade Plan
+                    {t("dashboard.upgradePlan")}
                   </Button>
                 </Link>
               )}
@@ -179,15 +191,14 @@ export default async function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Latest Report Run */}
       {latestRun && (
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Latest Report Run</CardTitle>
+                <CardTitle>{t("dashboard.latestReportRun")}</CardTitle>
                 <CardDescription>
-                  Week of {format(latestRun.weekOf, "MMMM d, yyyy")}
+                  {t("dashboard.weekOf", { date: format(latestRun.weekOf, "MMMM d, yyyy") })}
                 </CardDescription>
               </div>
               <Badge
@@ -219,7 +230,7 @@ export default async function DashboardPage() {
             </div>
             <Link href="/dashboard/reports" className="mt-4 inline-block">
               <Button variant="link" className="p-0">
-                View all reports <ArrowRight className="ml-1 h-4 w-4" />
+                {t("dashboard.viewAllReports")} <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>
           </CardContent>

@@ -124,9 +124,10 @@ const reportWorker = new Worker(
       // Select AI model based on user's subscription tier
       const userTier = item.reportRun.user.subscriptionTier as SubscriptionTier;
       const model = TIER_MODEL[userTier] || "sonar-pro";
-      console.log(`[ReportWorker] User tier: ${userTier}, model: ${model}`);
+      const userLocale = (item.reportRun.user as unknown as { locale?: string }).locale || "en";
+      console.log(`[ReportWorker] User tier: ${userTier}, model: ${model}, locale: ${userLocale}`);
 
-      const { content, citations } = await generateSupplierReport(item.supplier, model);
+      const { content, citations } = await generateSupplierReport(item.supplier, model, userLocale);
       const weekOf = item.reportRun.weekOf;
 
       await prisma.supplierReport.upsert({

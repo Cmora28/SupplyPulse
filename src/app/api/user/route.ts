@@ -19,6 +19,7 @@ export async function GET() {
         name: true,
         email: true,
         subscriptionTier: true,
+        locale: true,
         emailNotifications: true,
         createdAt: true,
       },

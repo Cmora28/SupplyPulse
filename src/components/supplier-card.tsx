@@ -23,6 +23,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
+import { useTranslation } from "@/i18n/client";
 import { AddSupplierDialog } from "@/components/add-supplier-dialog";
 import { MapPin, Package, Clock, Percent, Pencil, Trash2 } from "lucide-react";
 
@@ -33,6 +34,7 @@ interface SupplierCardProps {
 export function SupplierCard({ supplier }: SupplierCardProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [deleting, setDeleting] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
 
@@ -46,22 +48,22 @@ export function SupplierCard({ supplier }: SupplierCardProps) {
       if (!res.ok) {
         const data = await res.json();
         toast({
-          title: "Error",
-          description: data.error || "Failed to delete supplier",
+          title: t("common.error"),
+          description: data.error || t("suppliers.failedToDelete"),
           variant: "destructive",
         });
         return;
       }
 
       toast({
-        title: "Supplier deleted",
-        description: `${supplier.name} has been removed.`,
+        title: t("suppliers.supplierDeleted"),
+        description: t("suppliers.supplierDeletedDesc", { name: supplier.name }),
       });
       router.refresh();
     } catch {
       toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
+        title: t("common.error"),
+        description: t("common.tryAgain"),
         variant: "destructive",
       });
     } finally {
@@ -98,20 +100,19 @@ export function SupplierCard({ supplier }: SupplierCardProps) {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Delete supplier?</AlertDialogTitle>
+                    <AlertDialogTitle>{t("suppliers.deleteConfirmTitle")}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will permanently delete {supplier.name} and all
-                      associated reports. This action cannot be undone.
+                      {t("suppliers.deleteConfirmDesc", { name: supplier.name })}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleDelete}
                       disabled={deleting}
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                      {deleting ? "Deleting..." : "Delete"}
+                      {deleting ? t("suppliers.deleting") : t("common.delete")}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -131,11 +132,11 @@ export function SupplierCard({ supplier }: SupplierCardProps) {
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-1 text-muted-foreground">
               <Clock className="h-3.5 w-3.5" />
-              <span>{supplier.leadTimeDays}d</span>
+              <span>{t("suppliers.leadTimeDisplay", { value: supplier.leadTimeDays })}</span>
             </div>
             <div className="flex items-center gap-1 text-muted-foreground">
               <Percent className="h-3.5 w-3.5" />
-              <span>{supplier.cogsPercentage}% COGS</span>
+              <span>{t("suppliers.cogsDisplay", { value: supplier.cogsPercentage })}</span>
             </div>
           </div>
           {supplier.shippingRoute && (

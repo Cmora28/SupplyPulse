@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -10,17 +11,53 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, ExternalLink, Crown } from "lucide-react";
+import { Check, ExternalLink, Crown, Loader2 } from "lucide-react";
 import { TIER_FEATURES, TIER_PRICES, TIER_LIMITS } from "@/lib/tier-limits";
 import type { SubscriptionTier } from "@prisma/client";
+import { useTranslation } from "@/i18n/client";
 
 export default function BillingPage() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
+  const { t } = useTranslation();
+  const [dbTier, setDbTier] = useState<SubscriptionTier | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
 
-  const tier = (session?.user?.subscriptionTier || "FREE") as SubscriptionTier;
+  // Fetch fresh tier from database on mount
+  useEffect(() => {
+    update(); // Force session refresh
+    fetch("/api/user")
+      .then((r) => r.json())
+      .then((u) => {
+        if (u?.subscriptionTier) {
+          setDbTier(u.subscriptionTier);
+        }
+      })
+      .catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const tier = (dbTier || session?.user?.subscriptionTier || "FREE") as SubscriptionTier;
   const features = TIER_FEATURES[tier];
   const price = TIER_PRICES[tier];
   const limit = TIER_LIMITS[tier];
+
+  const handleManageSubscription = async () => {
+    setPortalLoading(true);
+    try {
+      const res = await fetch("/api/polar/customer-portal", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.open(data.url, "_blank");
+      } else {
+        console.error("No portal URL returned:", data.error);
+      }
+    } catch (error) {
+      console.error("Customer portal error:", error);
+    } finally {
+      setPortalLoading(false);
+    }
+  };
 
   const handleUpgrade = async (targetTier: string) => {
     if (targetTier === "ENTERPRISE") {
@@ -56,9 +93,9 @@ export default function BillingPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Billing</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t("billing.title")}</h1>
         <p className="text-muted-foreground">
-          Manage your subscription and billing details.
+          {t("billing.subtitle")}
         </p>
       </div>
 
@@ -69,9 +106,9 @@ export default function BillingPage() {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Crown className="h-5 w-5" />
-                Current Plan
+                {t("billing.currentPlan")}
               </CardTitle>
-              <CardDescription>Your active subscription details</CardDescription>
+              <CardDescription>{t("billing.currentPlanDesc")}</CardDescription>
             </div>
             <Badge
               variant="outline"
@@ -87,15 +124,22 @@ export default function BillingPage() {
               <p className="text-3xl font-bold">
                 {price}
                 <span className="text-base font-normal text-muted-foreground">
-                  /month
+                  {t("common.perMonth")}
                 </span>
               </p>
+              {price !== "$0" && price !== "Custom" && (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {t("common.applicableTaxes")}
+                </p>
+              )}
               <p className="text-sm text-muted-foreground mt-1">
-                Up to {limit === Infinity ? "unlimited" : limit} suppliers
+                {limit === Infinity
+                  ? t("billing.unlimitedSuppliers")
+                  : t("billing.upToSuppliers", { limit: String(limit) })}
               </p>
             </div>
             <div>
-              <p className="text-sm font-medium mb-2">Included features:</p>
+              <p className="text-sm font-medium mb-2">{t("billing.includedFeatures")}</p>
               <ul className="space-y-1.5">
                 {features.map((feature) => (
                   <li
@@ -112,61 +156,90 @@ export default function BillingPage() {
         </CardContent>
       </Card>
 
+      {/* Manage Subscription */}
+      {tier !== "FREE" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("billing.manageSubscription")}</CardTitle>
+            <CardDescription>
+              {t("billing.manageSubscriptionDesc")}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant="outline"
+              onClick={handleManageSubscription}
+              disabled={portalLoading}
+            >
+              {portalLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <ExternalLink className="mr-2 h-4 w-4" />
+              )}
+              {t("billing.openCustomerPortal")}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Upgrade Options */}
       {tier !== "ENTERPRISE" && (
         <Card>
           <CardHeader>
-            <CardTitle>Upgrade Your Plan</CardTitle>
+            <CardTitle>{t("billing.upgradeTitle")}</CardTitle>
             <CardDescription>
-              Get more suppliers and features with a higher tier.
+              {t("billing.upgradeDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-3">
               {tierOrder
                 .filter((_, i) => i > currentIndex)
-                .map((t) => {
-                  const isDeepResearch = t === "PREMIUM" || t === "ENTERPRISE";
+                .map((upgradeTier) => {
+                  const isDeepResearch = upgradeTier === "PREMIUM" || upgradeTier === "ENTERPRISE";
                   return (
-                    <Card key={t} className={`border ${isDeepResearch ? "border-amber-300" : ""}`}>
+                    <Card key={upgradeTier} className={`border ${isDeepResearch ? "border-amber-300" : ""}`}>
                       <CardHeader className="pb-2">
                         <div className="flex items-center gap-2">
-                          <CardTitle className="text-base">{t}</CardTitle>
+                          <CardTitle className="text-base">{upgradeTier}</CardTitle>
                           {isDeepResearch && (
                             <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-300 text-xs">
-                              Deep Research
+                              {t("common.deepResearch")}
                             </Badge>
                           )}
                         </div>
                         <p className="text-2xl font-bold">
-                          {TIER_PRICES[t]}
-                          {t !== "ENTERPRISE" && (
+                          {TIER_PRICES[upgradeTier]}
+                          {upgradeTier !== "ENTERPRISE" && (
                             <span className="text-sm font-normal text-muted-foreground">
-                              /mo
+                              {t("common.perMo")}
                             </span>
                           )}
                         </p>
+                        {TIER_PRICES[upgradeTier] !== "$0" && upgradeTier !== "ENTERPRISE" && (
+                          <p className="text-xs text-muted-foreground">
+                            {t("common.applicableTaxes")}
+                          </p>
+                        )}
                       </CardHeader>
                       <CardContent className="pb-2 space-y-1">
                         <p className="text-sm text-muted-foreground">
-                          Up to{" "}
-                          {TIER_LIMITS[t] === Infinity
-                            ? "unlimited"
-                            : TIER_LIMITS[t]}{" "}
-                          suppliers
+                          {TIER_LIMITS[upgradeTier] === Infinity
+                            ? t("billing.unlimitedSuppliers")
+                            : t("billing.upToSuppliers", { limit: String(TIER_LIMITS[upgradeTier]) })}
                         </p>
                         {isDeepResearch && (
                           <p className="text-xs text-amber-700 font-medium">
-                            10x more detailed AI analysis per supplier
+                            {t("billing.deepResearchBadge")}
                           </p>
                         )}
                       </CardContent>
                       <div className="px-6 pb-4">
                         <Button
                           className={`w-full ${isDeepResearch ? "bg-amber-500 hover:bg-amber-600 text-white" : ""}`}
-                          onClick={() => handleUpgrade(t)}
+                          onClick={() => handleUpgrade(upgradeTier)}
                         >
-                          {t === "ENTERPRISE" ? "Contact Sales" : `Upgrade to ${t}`}
+                          {upgradeTier === "ENTERPRISE" ? t("common.contactSales") : t("billing.upgradeTo", { tier: upgradeTier })}
                         </Button>
                       </div>
                     </Card>
@@ -177,29 +250,6 @@ export default function BillingPage() {
         </Card>
       )}
 
-      {/* Manage Subscription */}
-      {tier !== "FREE" && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Manage Subscription</CardTitle>
-            <CardDescription>
-              Update payment methods, view invoices, or cancel your subscription.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" asChild>
-              <a
-                href="https://polar.sh/settings/subscriptions"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Open Customer Portal
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
-            </Button>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

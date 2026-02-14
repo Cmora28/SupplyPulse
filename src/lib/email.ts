@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { format } from "date-fns";
+import { escapeHtml } from "@/lib/security";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -38,7 +39,7 @@ function buildEmailHtml(
     <tr>
       <td style="padding:32px 24px;">
         <p style="font-size:16px;color:#111827;margin:0 0 16px;">
-          Hi ${userName || "there"},
+          Hi ${escapeHtml(userName || "there")},
         </p>
         <p style="font-size:14px;color:#374151;line-height:1.6;margin:0 0 24px;">
           Your weekly supply chain risk report for the week of
@@ -133,6 +134,84 @@ function buildEmailHtml(
   </table>
 </body>
 </html>`;
+}
+
+export async function sendPasswordResetEmail(
+  email: string,
+  name: string,
+  resetUrl: string
+): Promise<void> {
+  const safeName = escapeHtml(name || "there");
+
+  const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background-color:#f4f4f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;background-color:#ffffff;">
+    <tr>
+      <td style="background-color:#2563eb;padding:32px 24px;text-align:center;">
+        <h1 style="color:#ffffff;font-size:24px;margin:0;font-weight:700;">
+          Supply Pulse
+        </h1>
+        <p style="color:#bfdbfe;font-size:14px;margin:8px 0 0;">
+          Password Reset
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:32px 24px;">
+        <p style="font-size:16px;color:#111827;margin:0 0 16px;">
+          Hi ${safeName},
+        </p>
+        <p style="font-size:14px;color:#374151;line-height:1.6;margin:0 0 24px;">
+          We received a request to reset your password. Click the button below
+          to choose a new password. This link will expire in <strong>1 hour</strong>.
+        </p>
+        <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
+          <tr>
+            <td style="background-color:#2563eb;border-radius:6px;">
+              <a href="${resetUrl}"
+                 style="display:inline-block;padding:14px 32px;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;">
+                Reset Password
+              </a>
+            </td>
+          </tr>
+        </table>
+        <p style="font-size:13px;color:#6b7280;line-height:1.6;margin:24px 0 0;">
+          If you didn&rsquo;t request this, you can safely ignore this email.
+          Your password will not be changed.
+        </p>
+        <p style="font-size:12px;color:#9ca3af;line-height:1.6;margin:16px 0 0;word-break:break-all;">
+          Or copy this link: ${resetUrl}
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:24px;border-top:1px solid #e5e7eb;">
+        <p style="font-size:12px;color:#9ca3af;margin:0;text-align:center;">
+          This is an automated message from Supply Pulse.
+        </p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  const { error } = await resend.emails.send({
+    from: FROM_EMAIL,
+    to: email,
+    subject: "Reset your Supply Pulse password",
+    html,
+  });
+
+  if (error) {
+    console.error("Password reset email error:", error);
+    throw new Error(`Failed to send reset email: ${error.message}`);
+  }
 }
 
 export async function sendWeeklyReport(

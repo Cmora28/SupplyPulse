@@ -2,11 +2,25 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validations";
+import { rateLimit, getClientIp } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
+    // A04: Rate limit registration — 5 attempts per 15 minutes per IP
+    const ip = getClientIp(request);
+    const rl = rateLimit(`register:${ip}`, 5, 15 * 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many registration attempts. Please try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(Math.ceil((rl.retryAfterMs || 60000) / 1000)) },
+        }
+      );
+    }
+
     const body = await request.json();
     const validated = registerSchema.safeParse(body);
 
@@ -17,7 +31,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { name, email, password } = validated.data;
+    const { name, email, password, locale } = validated.data;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -30,13 +44,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // A02: bcrypt with 12 rounds for strong hashing
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
+        locale: locale || "en",
       },
     });
 
