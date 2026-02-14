@@ -188,7 +188,7 @@ const de: TranslationType = {
     emailLabel: "E-Mail",
     emailCannotChange: "Die E-Mail-Adresse kann nicht geändert werden.",
     languageLabel: "Sprache",
-    languageDesc: "Wählen Sie die Sprache für die App-Oberfläche.",
+    languageDesc: "Wählen Sie die Sprache für die App-Oberfläche. Berichte werden ebenfalls in dieser Sprache erstellt.",
     languageUpdated: "Sprache aktualisiert",
     languageUpdatedDesc: "Die App-Sprache wurde geändert.",
     saving: "Wird gespeichert...",
@@ -249,7 +249,7 @@ const de: TranslationType = {
       "Beginnen Sie kostenlos mit der Überwachung Ihrer Lieferkette",
     preferredLanguage: "Bevorzugte Sprache",
     preferredLanguageTooltip:
-      "Wählen Sie die Sprache für die App-Oberfläche. Sie können dies später in den Einstellungen ändern.",
+      "Wählen Sie die Sprache für die Oberfläche und die erstellten Berichte. Sie können dies später in den Einstellungen ändern.",
     fullName: "Vollständiger Name",
     fullNamePlaceholder: "Max Mustermann",
     minChars: "Mind. 8 Zeichen",
