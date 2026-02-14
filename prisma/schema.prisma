@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SubscriptionTier {
+  FREE
+  STANDARD
+  PREMIUM
+  ENTERPRISE
+}
+
+enum ReportRunStatus {
+  PENDING
+  PROCESSING
+  READY
+  EMAILED
+  FAILED
+}
+
+enum RunItemStatus {
+  PENDING
+  PROCESSING
+  SUCCESS
+  FAILED
+}
+
+model User {
+  id                  String           @id @default(cuid())
+  email               String           @unique
+  password            String
+  name                String
+  subscriptionTier    SubscriptionTier @default(FREE)
+  polarCustomerId     String?
+  polarSubscriptionId String?
+  emailNotifications  Boolean          @default(true)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  suppliers           Supplier[]
+  reportRuns          ReportRun[]
+}
+
+model Supplier {
+  id             String           @id @default(cuid())
+  userId         String
+  name           String
+  country        String
+  category       String
+  leadTimeDays   Int
+  cogsPercentage Float
+  shippingRoute  String?
+  dependencies   String?          @db.Text
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reports        SupplierReport[]
+  reportRunItems ReportRunItem[]
+
+  @@index([userId])
+}
+
+model SupplierReport {
+  id          String   @id @default(cuid())
+  supplierId  String
+  content     String   @db.Text
+  citations   String[]
+  weekOf      DateTime
+  generatedAt DateTime @default(now())
+  supplier    Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@unique([supplierId, weekOf])
+  @@index([supplierId])
+}
+
+model ReportRun {
+  id        String          @id @default(cuid())
+  userId    String
+  weekOf    DateTime
+  status    ReportRunStatus @default(PENDING)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     ReportRunItem[]
+
+  @@index([userId])
+}
+
+model ReportRunItem {
+  id            String        @id @default(cuid())
+  reportRunId   String
+  supplierId    String
+  status        RunItemStatus @default(PENDING)
+  startedAt     DateTime?
+  finishedAt    DateTime?
+  error         String?       @db.Text
+  includedInPdf Boolean       @default(false)
+  reportRun     ReportRun     @relation(fields: [reportRunId], references: [id], onDelete: Cascade)
+  supplier      Supplier      @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@index([reportRunId])
+  @@index([supplierId])
+}
