@@ -15,6 +15,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Factory, FileText, CalendarClock, Crown, Plus, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { RunReportButton } from "@/components/run-report-button";
+
+const ADMIN_EMAIL = "lopezhk@gmail.com";
 
 export const dynamic = "force-dynamic";
 
@@ -170,6 +173,7 @@ export default async function DashboardPage() {
                   </Button>
                 </Link>
               )}
+              {session.user.email === ADMIN_EMAIL && <RunReportButton />}
             </div>
           )}
         </CardContent>

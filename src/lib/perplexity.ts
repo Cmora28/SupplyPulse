@@ -70,7 +70,10 @@ async function fetchWithRetry(
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 90000);
+      // 5 minute timeout - sonar-pro can take a while for detailed prompts
+      const timeoutId = setTimeout(() => controller.abort(), 300000);
+
+      console.log(`[Perplexity] Attempt ${attempt + 1}/${maxRetries} - sending request...`);
 
       const response = await fetch(url, {
         ...options,
@@ -79,12 +82,20 @@ async function fetchWithRetry(
 
       clearTimeout(timeoutId);
 
+      console.log(`[Perplexity] Response status: ${response.status}`);
+
       if (response.ok) return response;
+
+      // Log the actual error body for debugging
+      const errorBody = await response.text().catch(() => "");
+      console.error(
+        `[Perplexity] API error ${response.status}: ${errorBody}`
+      );
 
       // Don't retry on client errors (except rate limit)
       if (response.status < 500 && response.status !== 429) {
         throw new Error(
-          `Perplexity API error: ${response.status} ${response.statusText}`
+          `Perplexity API error: ${response.status} ${response.statusText} - ${errorBody}`
         );
       }
 
@@ -93,13 +104,14 @@ async function fetchWithRetry(
       );
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
+      console.error(`[Perplexity] Attempt ${attempt + 1} error: ${lastError.message}`);
     }
 
-    // Exponential backoff: 30s, 60s, 120s
+    // Backoff: 10s, 20s, 40s
     if (attempt < maxRetries - 1) {
-      const delay = 30000 * Math.pow(2, attempt);
+      const delay = 10000 * Math.pow(2, attempt);
       console.log(
-        `Perplexity API retry ${attempt + 1}/${maxRetries} in ${delay / 1000}s`
+        `[Perplexity] Retry ${attempt + 1}/${maxRetries} in ${delay / 1000}s`
       );
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
@@ -109,13 +121,15 @@ async function fetchWithRetry(
 }
 
 export async function generateSupplierReport(
-  supplier: Supplier
+  supplier: Supplier,
+  model: string = "sonar-pro"
 ): Promise<{ content: string; citations: string[] }> {
   const apiKey = process.env.PERPLEXITY_API_KEY;
   if (!apiKey) {
     throw new Error("PERPLEXITY_API_KEY environment variable is not set");
   }
 
+  console.log(`[Perplexity] Using model: ${model}`);
   const prompt = buildPrompt(supplier);
 
   const response = await fetchWithRetry(
@@ -127,7 +141,7 @@ export async function generateSupplierReport(
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "sonar-deep-research",
+        model,
         messages: [
           {
             role: "system",

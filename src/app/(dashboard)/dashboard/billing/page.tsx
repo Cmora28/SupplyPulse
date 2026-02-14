@@ -125,38 +125,53 @@ export default function BillingPage() {
             <div className="grid gap-4 md:grid-cols-3">
               {tierOrder
                 .filter((_, i) => i > currentIndex)
-                .map((t) => (
-                  <Card key={t} className="border">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-base">{t}</CardTitle>
-                      <p className="text-2xl font-bold">
-                        {TIER_PRICES[t]}
-                        {t !== "ENTERPRISE" && (
-                          <span className="text-sm font-normal text-muted-foreground">
-                            /mo
-                          </span>
+                .map((t) => {
+                  const isDeepResearch = t === "PREMIUM" || t === "ENTERPRISE";
+                  return (
+                    <Card key={t} className={`border ${isDeepResearch ? "border-amber-300" : ""}`}>
+                      <CardHeader className="pb-2">
+                        <div className="flex items-center gap-2">
+                          <CardTitle className="text-base">{t}</CardTitle>
+                          {isDeepResearch && (
+                            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-300 text-xs">
+                              Deep Research
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-2xl font-bold">
+                          {TIER_PRICES[t]}
+                          {t !== "ENTERPRISE" && (
+                            <span className="text-sm font-normal text-muted-foreground">
+                              /mo
+                            </span>
+                          )}
+                        </p>
+                      </CardHeader>
+                      <CardContent className="pb-2 space-y-1">
+                        <p className="text-sm text-muted-foreground">
+                          Up to{" "}
+                          {TIER_LIMITS[t] === Infinity
+                            ? "unlimited"
+                            : TIER_LIMITS[t]}{" "}
+                          suppliers
+                        </p>
+                        {isDeepResearch && (
+                          <p className="text-xs text-amber-700 font-medium">
+                            10x more detailed AI analysis per supplier
+                          </p>
                         )}
-                      </p>
-                    </CardHeader>
-                    <CardContent className="pb-2">
-                      <p className="text-sm text-muted-foreground">
-                        Up to{" "}
-                        {TIER_LIMITS[t] === Infinity
-                          ? "unlimited"
-                          : TIER_LIMITS[t]}{" "}
-                        suppliers
-                      </p>
-                    </CardContent>
-                    <div className="px-6 pb-4">
-                      <Button
-                        className="w-full"
-                        onClick={() => handleUpgrade(t)}
-                      >
-                        {t === "ENTERPRISE" ? "Contact Sales" : `Upgrade to ${t}`}
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
+                      </CardContent>
+                      <div className="px-6 pb-4">
+                        <Button
+                          className={`w-full ${isDeepResearch ? "bg-amber-500 hover:bg-amber-600 text-white" : ""}`}
+                          onClick={() => handleUpgrade(t)}
+                        >
+                          {t === "ENTERPRISE" ? "Contact Sales" : `Upgrade to ${t}`}
+                        </Button>
+                      </div>
+                    </Card>
+                  );
+                })}
             </div>
           </CardContent>
         </Card>
