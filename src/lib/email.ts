@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { format } from "date-fns";
 import { escapeHtml } from "@/lib/security";
+import { createTranslator } from "@/i18n";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -10,13 +11,16 @@ const FROM_EMAIL = process.env.EMAIL_FROM || "onboarding@resend.dev";
 function buildEmailHtml(
   userName: string,
   weekOf: Date,
-  supplierCount: number
+  supplierCount: number,
+  locale: string = "en"
 ): string {
+  const t = createTranslator(locale);
   const weekLabel = format(weekOf, "MMMM d, yyyy");
+  const plural = supplierCount !== 1 ? "s" : "";
 
   return `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${locale}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,7 +34,7 @@ function buildEmailHtml(
           Supply Pulse
         </h1>
         <p style="color:#bfdbfe;font-size:14px;margin:8px 0 0;">
-          Weekly Supply Chain Risk Report
+          ${t("email.weeklyReport.subtitle")}
         </p>
       </td>
     </tr>
@@ -39,13 +43,10 @@ function buildEmailHtml(
     <tr>
       <td style="padding:32px 24px;">
         <p style="font-size:16px;color:#111827;margin:0 0 16px;">
-          Hi ${escapeHtml(userName || "there")},
+          ${t("email.weeklyReport.greeting", { name: escapeHtml(userName || "there") })}
         </p>
         <p style="font-size:14px;color:#374151;line-height:1.6;margin:0 0 24px;">
-          Your weekly supply chain risk report for the week of
-          <strong>${weekLabel}</strong> is ready.
-          We analyzed <strong>${supplierCount} supplier${supplierCount !== 1 ? "s" : ""}</strong>
-          and prepared a comprehensive risk assessment.
+          ${t("email.weeklyReport.intro", { weekLabel, count: String(supplierCount), plural })}
         </p>
 
         <!-- Highlights -->
@@ -53,7 +54,7 @@ function buildEmailHtml(
           <tr>
             <td style="padding:20px;">
               <p style="font-size:13px;font-weight:600;color:#1e40af;margin:0 0 12px;text-transform:uppercase;letter-spacing:0.5px;">
-                Report Highlights
+                ${t("email.weeklyReport.highlightsTitle")}
               </p>
               <table cellpadding="0" cellspacing="0">
                 <tr>
@@ -61,7 +62,7 @@ function buildEmailHtml(
                     <span style="color:#2563eb;font-size:14px;">&#8226;</span>
                   </td>
                   <td style="padding:4px 0 4px 8px;font-size:13px;color:#374151;">
-                    Comprehensive risk assessment for each supplier
+                    ${t("email.weeklyReport.highlight1")}
                   </td>
                 </tr>
                 <tr>
@@ -69,7 +70,7 @@ function buildEmailHtml(
                     <span style="color:#2563eb;font-size:14px;">&#8226;</span>
                   </td>
                   <td style="padding:4px 0 4px 8px;font-size:13px;color:#374151;">
-                    Current disruptions identified in past 7 days
+                    ${t("email.weeklyReport.highlight2")}
                   </td>
                 </tr>
                 <tr>
@@ -77,7 +78,7 @@ function buildEmailHtml(
                     <span style="color:#2563eb;font-size:14px;">&#8226;</span>
                   </td>
                   <td style="padding:4px 0 4px 8px;font-size:13px;color:#374151;">
-                    Predicted risks for next 30 days
+                    ${t("email.weeklyReport.highlight3")}
                   </td>
                 </tr>
                 <tr>
@@ -85,7 +86,7 @@ function buildEmailHtml(
                     <span style="color:#2563eb;font-size:14px;">&#8226;</span>
                   </td>
                   <td style="padding:4px 0 4px 8px;font-size:13px;color:#374151;">
-                    Actionable recommendations from AI analysis
+                    ${t("email.weeklyReport.highlight4")}
                   </td>
                 </tr>
                 <tr>
@@ -93,7 +94,7 @@ function buildEmailHtml(
                     <span style="color:#2563eb;font-size:14px;">&#8226;</span>
                   </td>
                   <td style="padding:4px 0 4px 8px;font-size:13px;color:#374151;">
-                    All findings backed by cited sources
+                    ${t("email.weeklyReport.highlight5")}
                   </td>
                 </tr>
               </table>
@@ -102,7 +103,7 @@ function buildEmailHtml(
         </table>
 
         <p style="font-size:14px;color:#374151;margin:0 0 24px;">
-          The full PDF report is attached to this email. You can also view your reports on the dashboard.
+          ${t("email.weeklyReport.pdfNote")}
         </p>
 
         <!-- CTA Button -->
@@ -111,7 +112,7 @@ function buildEmailHtml(
             <td style="background-color:#2563eb;border-radius:6px;">
               <a href="${APP_URL}/dashboard/reports"
                  style="display:inline-block;padding:12px 24px;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;">
-                View in Dashboard
+                ${t("email.weeklyReport.viewDashboard")}
               </a>
             </td>
           </tr>
@@ -123,11 +124,11 @@ function buildEmailHtml(
     <tr>
       <td style="padding:24px;border-top:1px solid #e5e7eb;">
         <p style="font-size:12px;color:#9ca3af;margin:0;text-align:center;">
-          Generated automatically every Monday at 8 AM UTC
+          ${t("email.weeklyReport.footerGenerated")}
         </p>
         <p style="font-size:12px;color:#9ca3af;margin:8px 0 0;text-align:center;">
-          Questions? Reply to this email or visit your
-          <a href="${APP_URL}/dashboard" style="color:#2563eb;">dashboard</a>.
+          ${t("email.weeklyReport.footerQuestions")}
+          <a href="${APP_URL}/dashboard" style="color:#2563eb;">${t("email.weeklyReport.footerDashboard")}</a>.
         </p>
       </td>
     </tr>
@@ -139,13 +140,15 @@ function buildEmailHtml(
 export async function sendPasswordResetEmail(
   email: string,
   name: string,
-  resetUrl: string
+  resetUrl: string,
+  locale: string = "en"
 ): Promise<void> {
+  const t = createTranslator(locale);
   const safeName = escapeHtml(name || "there");
 
   const html = `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${locale}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -158,42 +161,40 @@ export async function sendPasswordResetEmail(
           Supply Pulse
         </h1>
         <p style="color:#bfdbfe;font-size:14px;margin:8px 0 0;">
-          Password Reset
+          ${t("email.passwordReset.subtitle")}
         </p>
       </td>
     </tr>
     <tr>
       <td style="padding:32px 24px;">
         <p style="font-size:16px;color:#111827;margin:0 0 16px;">
-          Hi ${safeName},
+          ${t("email.passwordReset.greeting", { name: safeName })}
         </p>
         <p style="font-size:14px;color:#374151;line-height:1.6;margin:0 0 24px;">
-          We received a request to reset your password. Click the button below
-          to choose a new password. This link will expire in <strong>1 hour</strong>.
+          ${t("email.passwordReset.intro")}
         </p>
         <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
           <tr>
             <td style="background-color:#2563eb;border-radius:6px;">
               <a href="${resetUrl}"
                  style="display:inline-block;padding:14px 32px;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;">
-                Reset Password
+                ${t("email.passwordReset.button")}
               </a>
             </td>
           </tr>
         </table>
         <p style="font-size:13px;color:#6b7280;line-height:1.6;margin:24px 0 0;">
-          If you didn&rsquo;t request this, you can safely ignore this email.
-          Your password will not be changed.
+          ${t("email.passwordReset.ignore")}
         </p>
         <p style="font-size:12px;color:#9ca3af;line-height:1.6;margin:16px 0 0;word-break:break-all;">
-          Or copy this link: ${resetUrl}
+          ${t("email.passwordReset.copyLink")} ${resetUrl}
         </p>
       </td>
     </tr>
     <tr>
       <td style="padding:24px;border-top:1px solid #e5e7eb;">
         <p style="font-size:12px;color:#9ca3af;margin:0;text-align:center;">
-          This is an automated message from Supply Pulse.
+          ${t("email.passwordReset.footer")}
         </p>
       </td>
     </tr>
@@ -204,7 +205,7 @@ export async function sendPasswordResetEmail(
   const { error } = await resend.emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: "Reset your Supply Pulse password",
+    subject: t("email.passwordReset.subject"),
     html,
   });
 
@@ -218,16 +219,18 @@ export async function sendWeeklyReport(
   user: { name: string; email: string },
   pdfBuffer: Buffer,
   weekOf: Date,
-  supplierCount: number
+  supplierCount: number,
+  locale: string = "en"
 ): Promise<void> {
+  const t = createTranslator(locale);
   const weekLabel = format(weekOf, "MMMM d, yyyy");
   const filename = `supply-chain-report-${format(weekOf, "yyyy-MM-dd")}.pdf`;
 
   const { error } = await resend.emails.send({
     from: FROM_EMAIL,
     to: user.email,
-    subject: `Weekly Supply Chain Report - ${weekLabel}`,
-    html: buildEmailHtml(user.name, weekOf, supplierCount),
+    subject: t("email.weeklyReport.subject", { weekLabel }),
+    html: buildEmailHtml(user.name, weekOf, supplierCount, locale),
     attachments: [
       {
         filename,

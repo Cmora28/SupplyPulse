@@ -84,10 +84,12 @@ export async function GET(
       );
     }
 
+    const userLocale = (reportRun.user as unknown as { locale?: string }).locale || "en";
     const pdfBuffer = await generateReportPDF(
       reportRun.user,
       validReports,
-      reportRun.weekOf
+      reportRun.weekOf,
+      userLocale
     );
 
     const filename = `supply-chain-report-${format(reportRun.weekOf, "yyyy-MM-dd")}.pdf`;

@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     const resetUrl = `${APP_URL}/reset-password/${resetToken}`;
 
     try {
-      await sendPasswordResetEmail(user.email, user.name, resetUrl);
+      await sendPasswordResetEmail(user.email, user.name, resetUrl, user.locale || "en");
     } catch (emailError) {
       console.error("[ForgotPassword] Email send error:", emailError);
       // Don't expose email failures — still return success

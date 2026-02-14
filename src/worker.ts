@@ -267,11 +267,13 @@ const finalizerWorker = new Worker(
       })
     );
 
-    console.log(`[Finalizer] Generating PDF with ${supplierReports.length} reports...`);
+    const userLocale = (reportRun.user as unknown as { locale?: string }).locale || "en";
+    console.log(`[Finalizer] Generating PDF with ${supplierReports.length} reports (locale: ${userLocale})...`);
     const pdfBuffer = await generateReportPDF(
       reportRun.user,
       supplierReports,
-      reportRun.weekOf
+      reportRun.weekOf,
+      userLocale
     );
 
     let emailSent = false;
@@ -282,7 +284,8 @@ const finalizerWorker = new Worker(
           reportRun.user,
           pdfBuffer,
           reportRun.weekOf,
-          supplierReports.length
+          supplierReports.length,
+          userLocale
         );
         emailSent = true;
         console.log(`[Finalizer] Email sent successfully to ${reportRun.user.email}`);
