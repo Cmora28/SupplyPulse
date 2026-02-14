@@ -129,7 +129,7 @@ export default function AdminPage() {
     });
   };
 
-  const handleTriggerReport = async (userId: string, _userName: string) => {
+  const handleTriggerReport = async (userId: string) => {
     setTriggeringReport(userId);
     try {
       const res = await fetch("/api/admin/reports/trigger", {
@@ -166,10 +166,7 @@ export default function AdminPage() {
     }
   };
 
-  const handleResendEmail = async (
-    reportRunId: string,
-    _userEmail: string
-  ) => {
+  const handleResendEmail = async (reportRunId: string) => {
     setResendingEmail(reportRunId);
     try {
       const res = await fetch("/api/admin/reports/resend-email", {
@@ -317,9 +314,7 @@ export default function AdminPage() {
                   </div>
                   <Button
                     size="sm"
-                    onClick={() =>
-                      handleTriggerReport(user.id, user.name)
-                    }
+                    onClick={() => handleTriggerReport(user.id)}
                     disabled={
                       triggeringReport === user.id ||
                       user._count.suppliers === 0
@@ -386,10 +381,7 @@ export default function AdminPage() {
                                     size="sm"
                                     variant="outline"
                                     onClick={() =>
-                                      handleResendEmail(
-                                        run.id,
-                                        user.email
-                                      )
+                                      handleResendEmail(run.id)
                                     }
                                     disabled={resendingEmail === run.id}
                                     className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
