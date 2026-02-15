@@ -44,6 +44,7 @@ const en = {
     billing: "Billing",
     settings: "Settings",
     admin: "Admin",
+    support: "Support",
     toggleMenu: "Toggle navigation menu",
   },
 
@@ -352,6 +353,7 @@ const en = {
     ctaTitle: "Start monitoring your supply chain today",
     ctaSubtitle:
       "Join manufacturing companies using AI-powered intelligence to stay ahead of supply chain disruptions.",
+    footerSupport: "support@supplypulse.net",
     footerCopyright: "© {year} Supply Pulse. All rights reserved.",
 
     // Stats section
@@ -542,6 +544,22 @@ const en = {
       "5": "Friday",
       "6": "Saturday",
     },
+  },
+
+  support: {
+    title: "Support",
+    subtitle: "Have a question or need help? Send us a message and we'll get back to you.",
+    formTitle: "Contact Support",
+    formDesc: "Describe your issue or feedback below. We typically respond within 24 hours.",
+    subjectLabel: "Subject",
+    subjectPlaceholder: "e.g., Issue with report generation",
+    messageLabel: "Message",
+    messagePlaceholder: "Describe your issue, question, or feedback in detail...",
+    send: "Send Message",
+    sending: "Sending...",
+    success: "Message sent",
+    successDesc: "Your support request has been submitted. We'll get back to you soon.",
+    failed: "Failed to send message",
   },
 
   upgradeSuccess: {

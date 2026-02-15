@@ -32,30 +32,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useTranslation } from "@/i18n/client";
 import { Plus, Info } from "lucide-react";
 import type { Supplier } from "@prisma/client";
-
-const COUNTRIES = [
-  "China",
-  "India",
-  "United States",
-  "Germany",
-  "Japan",
-  "South Korea",
-  "Taiwan",
-  "Vietnam",
-  "Thailand",
-  "Mexico",
-  "Brazil",
-  "Indonesia",
-  "Malaysia",
-  "Turkey",
-  "Italy",
-  "United Kingdom",
-  "France",
-  "Canada",
-  "Netherlands",
-  "Bangladesh",
-  "Other",
-];
+import { COUNTRIES } from "@/lib/countries";
 
 function FieldInfo({ tooltip }: { tooltip: string }) {
   return (
