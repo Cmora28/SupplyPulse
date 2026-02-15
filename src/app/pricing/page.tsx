@@ -118,7 +118,7 @@ export default function PricingPage() {
     }
 
     if (tier === "ENTERPRISE") {
-      window.location.href = "mailto:sales@supplypulse.com?subject=Enterprise%20Inquiry";
+      window.location.href = "mailto:sales@supplypulse.net?subject=Enterprise%20Inquiry";
       return;
     }
 

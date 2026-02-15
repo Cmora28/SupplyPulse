@@ -30,7 +30,7 @@ export function UpgradeSuccess() {
         router.replace("/dashboard");
       });
     }
-  }, [searchParams, update, toast, router, handled]);
+  }, [searchParams, update, toast, router, handled, t]);
 
   // Show a brief inline success banner while the toast fires
   if (searchParams.get("upgraded") === "true" && !handled) {

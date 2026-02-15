@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { Worker, Queue } from "bullmq";
 import { PrismaClient } from "@prisma/client";
-import { startOfWeek, format } from "date-fns";
+import { startOfWeek } from "date-fns";
 import { generateSupplierReport } from "./lib/perplexity";
 import { generateReportPDF } from "./lib/pdf-generator";
 import { sendWeeklyReport } from "./lib/email";

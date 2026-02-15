@@ -62,7 +62,7 @@ export default function BillingPage() {
   const handleUpgrade = async (targetTier: string) => {
     if (targetTier === "ENTERPRISE") {
       window.location.href =
-        "mailto:sales@supplypulse.com?subject=Enterprise%20Inquiry";
+        "mailto:sales@supplypulse.net?subject=Enterprise%20Inquiry";
       return;
     }
 

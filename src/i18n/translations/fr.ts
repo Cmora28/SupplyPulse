@@ -356,6 +356,46 @@ const fr: TranslationType = {
     ctaSubtitle:
       "Rejoignez les entreprises manufacturières qui utilisent l'intelligence propulsée par l'IA pour anticiper les perturbations de la chaîne d'approvisionnement.",
     footerCopyright: "© {year} Supply Pulse. Tous droits réservés.",
+
+    statsTitle: "Pourquoi la surveillance des risques de la chaîne d'approvisionnement est importante",
+    statsSubtitle:
+      "Les perturbations de la chaîne d'approvisionnement coûtent des milliards aux entreprises chaque année. La surveillance proactive transforme les réactions d'urgence en préparation stratégique.",
+    stat1Value: "2 500 Md$",
+    stat1Label: "Pertes mondiales annuelles dues aux perturbations de la chaîne d'approvisionnement",
+    stat2Value: "90%",
+    stat2Label: "Des organisations manquent de visibilité sur les fournisseurs de sous-niveau",
+    stat3Value: "48h+",
+    stat3Label: "Délai moyen avant la détection des perturbations sans surveillance",
+    stat4Value: "37 M$",
+    stat4Label: "Économies annuelles moyennes grâce à la gestion proactive des risques",
+
+    faqTitle: "Questions fréquentes sur les risques de la chaîne d'approvisionnement",
+    faqSubtitle:
+      "Tout ce que vous devez savoir sur la surveillance des risques de la chaîne d'approvisionnement par IA et la détection des perturbations.",
+    faq1Q: "Qu'est-ce que la surveillance des risques de la chaîne d'approvisionnement ?",
+    faq1A:
+      "La surveillance des risques de la chaîne d'approvisionnement est le processus continu d'identification, d'évaluation et de suivi des menaces potentielles pour votre chaîne d'approvisionnement. Cela inclut la surveillance des fournisseurs pour l'instabilité financière, les risques géopolitiques, les catastrophes naturelles, les changements réglementaires et les perturbations opérationnelles. Supply Pulse automatise ce processus en utilisant l'IA pour rechercher et analyser les risques dans l'ensemble de votre réseau de fournisseurs chaque semaine.",
+    faq2Q: "Comment l'IA détecte-t-elle les perturbations de la chaîne d'approvisionnement ?",
+    faq2A:
+      "Supply Pulse utilise des modèles de recherche IA avancés pour analyser des milliers de sources, y compris les médias, les bases de données gouvernementales, les publications commerciales, les rapports financiers et les flux de renseignements géopolitiques. L'IA identifie les perturbations actuelles affectant vos fournisseurs spécifiques et prédit les risques émergents pour les 30 prochains jours. Chaque constatation est étayée par des sources citées.",
+    faq3Q: "Quels types de risques Supply Pulse surveille-t-il ?",
+    faq3A:
+      "Supply Pulse surveille un large éventail de risques : instabilité géopolitique et guerres commerciales, catastrophes naturelles et événements climatiques, santé financière des fournisseurs et risque de faillite, congestion portuaire et retards d'expédition, changements tarifaires et réglementaires, pénuries de matières premières, conflits sociaux et grèves, menaces de cybersécurité pour les fournisseurs et contraintes de capacité.",
+    faq4Q: "À quelle fréquence les rapports sont-ils générés ?",
+    faq4A:
+      "Les rapports sont générés selon un calendrier hebdomadaire que vous choisissez lors de l'inscription. Vous sélectionnez le jour de la semaine et l'heure (UTC) qui conviennent le mieux à votre équipe. Chaque rapport couvre les perturbations des 7 derniers jours et les risques prévus pour les 30 prochains jours, livré sous forme de PDF professionnel par e-mail.",
+    faq5Q: "Que contient un rapport de risque de la chaîne d'approvisionnement ?",
+    faq5A:
+      "Chaque rapport hebdomadaire comprend : une évaluation des risques pour chaque fournisseur surveillé, les perturbations actuelles identifiées au cours des 7 derniers jours, les risques prévus pour les 30 prochains jours, des recommandations concrètes incluant des ajustements de stock de sécurité et des suggestions de fournisseurs alternatifs, des sources citées pour chaque constatation et un PDF consolidé avec profils de fournisseurs et analyse des risques par pays.",
+    faq6Q: "Comment les perturbations peuvent-elles impacter mon entreprise ?",
+    faq6A:
+      "Les perturbations de la chaîne d'approvisionnement peuvent entraîner des arrêts de production, des retards de livraison, une augmentation des coûts, des pertes de revenus et des dommages aux relations clients. La perturbation moyenne coûte aux entreprises 43 à 47 millions de dollars par an. L'alerte précoce grâce à la surveillance par IA aide à réduire le temps de réponse de jours à heures.",
+    faq7Q: "Qu'est-ce que l'IA de Recherche Approfondie et en quoi est-elle différente ?",
+    faq7A:
+      "L'IA de Recherche Approfondie est disponible dans les plans Premium et Enterprise. Alors que l'analyse IA standard fournit des rapports hebdomadaires complets, la Recherche Approfondie effectue une investigation 10 fois plus détaillée par fournisseur — incluant une analyse financière approfondie, des renseignements géopolitiques étendus et une cartographie des risques des fournisseurs de sous-niveau.",
+    faq8Q: "Puis-je essayer Supply Pulse gratuitement ?",
+    faq8A:
+      "Oui. Le plan Gratuit vous permet de surveiller 1 fournisseur avec des rapports complets de risque par IA hebdomadaires, une livraison par e-mail et des téléchargements PDF — sans carte de crédit requise. Vous pouvez passer au plan Standard (29$/mois pour jusqu'à 5 fournisseurs) ou Premium (199$/mois pour jusqu'à 15 fournisseurs avec IA de Recherche Approfondie) à tout moment.",
   },
 
   pricing: {
