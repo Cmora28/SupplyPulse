@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "worker": "npx tsx watch src/worker.ts",
+    "worker:start": "npx tsx src/worker.ts",
     "db:push": "npx prisma db push",
     "db:studio": "npx prisma studio"
   },
@@ -44,6 +45,7 @@
     "svix": "^1.85.0",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.21.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -56,7 +58,6 @@
     "eslint-config-next": "14.2.35",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
