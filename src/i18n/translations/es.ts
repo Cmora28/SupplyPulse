@@ -356,6 +356,46 @@ const es: TranslationType = {
     ctaSubtitle:
       "Únete a las empresas manufactureras que utilizan inteligencia impulsada por IA para adelantarse a las interrupciones de la cadena de suministro.",
     footerCopyright: "© {year} Supply Pulse. Todos los derechos reservados.",
+
+    statsTitle: "Por qué importa el monitoreo de riesgos en la cadena de suministro",
+    statsSubtitle:
+      "Las interrupciones en la cadena de suministro cuestan miles de millones a las empresas anualmente. El monitoreo proactivo convierte las reacciones de emergencia en preparación estratégica.",
+    stat1Value: "$2,5B",
+    stat1Label: "Pérdidas globales anuales por interrupciones en la cadena de suministro",
+    stat2Value: "90%",
+    stat2Label: "De las organizaciones carecen de visibilidad de proveedores sub-tier",
+    stat3Value: "48h+",
+    stat3Label: "Retraso promedio antes de la detección de interrupciones sin monitoreo",
+    stat4Value: "$37M",
+    stat4Label: "Ahorro anual promedio con gestión proactiva de riesgos en la cadena de suministro",
+
+    faqTitle: "Preguntas frecuentes sobre riesgos en la cadena de suministro",
+    faqSubtitle:
+      "Todo lo que necesitas saber sobre el monitoreo de riesgos en la cadena de suministro impulsado por IA y la detección de interrupciones.",
+    faq1Q: "¿Qué es el monitoreo de riesgos en la cadena de suministro?",
+    faq1A:
+      "El monitoreo de riesgos en la cadena de suministro es el proceso continuo de identificar, evaluar y rastrear amenazas potenciales a su cadena de suministro. Esto incluye monitorear proveedores en busca de inestabilidad financiera, riesgos geopolíticos, desastres naturales, cambios regulatorios e interrupciones operativas. Supply Pulse automatiza este proceso usando IA para investigar y analizar riesgos en toda su red de proveedores semanalmente.",
+    faq2Q: "¿Cómo detecta la IA las interrupciones en la cadena de suministro?",
+    faq2A:
+      "Supply Pulse utiliza modelos avanzados de investigación con IA para analizar miles de fuentes, incluyendo medios de noticias, bases de datos gubernamentales, publicaciones comerciales, informes financieros y feeds de inteligencia geopolítica. La IA identifica interrupciones actuales que afectan a sus proveedores específicos y predice riesgos emergentes para los próximos 30 días. Cada hallazgo está respaldado por fuentes citadas.",
+    faq3Q: "¿Qué tipos de riesgos en la cadena de suministro monitorea Supply Pulse?",
+    faq3A:
+      "Supply Pulse monitorea una amplia gama de riesgos: inestabilidad geopolítica y guerras comerciales, desastres naturales y eventos climáticos, salud financiera del proveedor y riesgo de quiebra, congestión portuaria y retrasos en envíos, cambios arancelarios y regulatorios, escasez de materias primas, disputas laborales y huelgas, amenazas de ciberseguridad a proveedores y restricciones de capacidad.",
+    faq4Q: "¿Con qué frecuencia se generan los informes de la cadena de suministro?",
+    faq4A:
+      "Los informes se generan en un horario semanal que usted elige durante el registro. Selecciona el día de la semana y la hora (UTC) que mejor funcione para su equipo. Cada informe cubre las interrupciones de los últimos 7 días y los riesgos previstos para los próximos 30 días, entregado como un PDF profesional por correo electrónico.",
+    faq5Q: "¿Qué incluye un informe de riesgo de la cadena de suministro?",
+    faq5A:
+      "Cada informe semanal incluye: evaluación de riesgo para cada proveedor monitoreado, interrupciones actuales identificadas en los últimos 7 días, riesgos previstos para los próximos 30 días, recomendaciones accionables incluyendo ajustes de stock de seguridad y sugerencias de proveedores alternativos, fuentes citadas para cada hallazgo y un PDF consolidado con perfiles de proveedores y análisis de riesgo por país.",
+    faq6Q: "¿Cómo pueden las interrupciones en la cadena de suministro impactar mi negocio?",
+    faq6A:
+      "Las interrupciones en la cadena de suministro pueden provocar paradas de producción, entregas retrasadas, aumento de costos, pérdida de ingresos y daño a las relaciones con los clientes. La interrupción promedio cuesta a las empresas $43-47 millones anuales. La alerta temprana a través del monitoreo con IA ayuda a reducir el tiempo de respuesta de días a horas.",
+    faq7Q: "¿Qué es la IA de Investigación Profunda y en qué se diferencia?",
+    faq7A:
+      "La IA de Investigación Profunda está disponible en los planes Premium y Enterprise. Mientras que el análisis de IA estándar proporciona informes semanales completos, la Investigación Profunda realiza una investigación 10 veces más detallada por proveedor, incluyendo análisis financiero profundo, inteligencia geopolítica extendida y mapeo de riesgos de proveedores sub-tier.",
+    faq8Q: "¿Puedo probar Supply Pulse gratis?",
+    faq8A:
+      "Sí. El plan Gratuito le permite monitorear 1 proveedor con informes completos de riesgo por IA semanales, entrega por correo electrónico y descargas en PDF, sin necesidad de tarjeta de crédito. Puede actualizar a Standard ($29/mes para hasta 5 proveedores) o Premium ($199/mes para hasta 15 proveedores con IA de Investigación Profunda) en cualquier momento.",
   },
 
   pricing: {

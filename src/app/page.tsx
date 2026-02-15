@@ -14,7 +14,135 @@ import {
   Check,
   ArrowRight,
   Factory,
+  HelpCircle,
+  TrendingUp,
 } from "lucide-react";
+import type { Metadata } from "next";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://supplypulse.net";
+
+export const metadata: Metadata = {
+  title: "Supply Pulse - AI-Powered Supply Chain Risk Monitoring & Disruption Detection",
+  description:
+    "Supply Pulse monitors your supply chain for disruptions using AI-powered research. Get weekly risk reports with cited sources, actionable recommendations, and supplier risk scores. Free plan available.",
+  alternates: {
+    canonical: "/",
+  },
+};
+
+// FAQ data for JSON-LD (English only for structured data, UI uses i18n)
+const FAQ_ITEMS = [
+  {
+    question: "What is supply chain risk monitoring?",
+    answer:
+      "Supply chain risk monitoring is the continuous process of identifying, assessing, and tracking potential threats to your supply chain. This includes monitoring suppliers for financial instability, geopolitical risks, natural disasters, regulatory changes, and operational disruptions. Supply Pulse automates this process using AI to research and analyze risks across your entire supplier network every week.",
+  },
+  {
+    question: "How does AI detect supply chain disruptions?",
+    answer:
+      "Supply Pulse uses advanced AI research models to scan thousands of sources including news outlets, government databases, trade publications, financial reports, and geopolitical intelligence feeds. The AI identifies current disruptions affecting your specific suppliers and predicts emerging risks for the next 30 days. Every finding is backed by cited sources so you can verify the intelligence.",
+  },
+  {
+    question: "What types of supply chain risks does Supply Pulse monitor?",
+    answer:
+      "Supply Pulse monitors a comprehensive range of supply chain risks: geopolitical instability and trade wars, natural disasters and climate events, supplier financial health and bankruptcy risk, port congestion and shipping delays, tariff and regulatory changes, raw material shortages, labor disputes and strikes, cybersecurity threats to suppliers, and capacity constraints.",
+  },
+  {
+    question: "How often are supply chain reports generated?",
+    answer:
+      "Reports are generated on a weekly schedule that you choose during registration. You select the day of the week and time (UTC) that works best for your team. Each report covers disruptions from the past 7 days and predicted risks for the next 30 days, delivered as a professional PDF via email.",
+  },
+  {
+    question: "What is included in a supply chain risk report?",
+    answer:
+      "Each weekly report includes: a risk assessment for every monitored supplier, current disruptions identified in the past 7 days, predicted risks for the next 30 days, actionable recommendations including buffer stock adjustments and alternative supplier suggestions, cited sources for every finding, and a consolidated PDF with supplier profiles, country risk analysis, and shipping route assessments.",
+  },
+  {
+    question: "How can supply chain disruptions impact my business?",
+    answer:
+      "Supply chain disruptions can lead to production stoppages, delayed deliveries, increased costs, lost revenue, and damaged customer relationships. The average disruption costs enterprises $43-47 million annually. Industries with complex global supply chains — manufacturing, automotive, electronics, pharmaceuticals — are particularly vulnerable. Early warning through AI-powered monitoring helps reduce response time from days to hours.",
+  },
+  {
+    question: "What is Deep Research AI and how is it different?",
+    answer:
+      "Deep Research AI is available on Premium and Enterprise plans. While standard AI analysis provides comprehensive weekly reports, Deep Research performs 10x more detailed investigation per supplier — including in-depth financial analysis, extended geopolitical intelligence, sub-tier supplier risk mapping, and cross-referencing across specialized industry databases.",
+  },
+  {
+    question: "Can I try Supply Pulse for free?",
+    answer:
+      "Yes. The Free plan lets you monitor 1 supplier with full weekly AI risk reports, email delivery, and PDF downloads — no credit card required. You can upgrade to Standard ($29/month for up to 5 suppliers) or Premium ($199/month for up to 15 suppliers with Deep Research AI) at any time.",
+  },
+];
+
+// JSON-LD structured data
+const softwareAppJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Supply Pulse",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  url: APP_URL,
+  description:
+    "AI-powered supply chain risk monitoring platform that generates weekly risk reports with cited sources and actionable intelligence for every supplier in your network.",
+  offers: [
+    {
+      "@type": "Offer",
+      name: "Free",
+      price: "0",
+      priceCurrency: "USD",
+      description: "Monitor 1 supplier with weekly AI risk reports",
+    },
+    {
+      "@type": "Offer",
+      name: "Standard",
+      price: "29",
+      priceCurrency: "USD",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: "29",
+        priceCurrency: "USD",
+        billingDuration: "P1M",
+      },
+      description: "Monitor up to 5 suppliers with full citations",
+    },
+    {
+      "@type": "Offer",
+      name: "Premium",
+      price: "199",
+      priceCurrency: "USD",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: "199",
+        priceCurrency: "USD",
+        billingDuration: "P1M",
+      },
+      description: "Monitor up to 15 suppliers with Deep Research AI analysis",
+    },
+  ],
+  featureList: [
+    "AI-powered supply chain risk assessment",
+    "Weekly PDF risk reports with cited sources",
+    "Automated email delivery",
+    "Geopolitical and financial risk analysis",
+    "Global disruption monitoring",
+    "Actionable recommendations",
+    "Multi-language support",
+    "Deep Research AI for premium plans",
+  ],
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ_ITEMS.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  })),
+};
 
 export default function LandingPage() {
   const locale = getServerLocale(cookies(), headers());
@@ -80,8 +208,36 @@ export default function LandingPage() {
     },
   ];
 
+  const stats = [
+    { valueKey: "landing.stat1Value", labelKey: "landing.stat1Label" },
+    { valueKey: "landing.stat2Value", labelKey: "landing.stat2Label" },
+    { valueKey: "landing.stat3Value", labelKey: "landing.stat3Label" },
+    { valueKey: "landing.stat4Value", labelKey: "landing.stat4Label" },
+  ];
+
+  const faqs = [
+    { qKey: "landing.faq1Q", aKey: "landing.faq1A" },
+    { qKey: "landing.faq2Q", aKey: "landing.faq2A" },
+    { qKey: "landing.faq3Q", aKey: "landing.faq3A" },
+    { qKey: "landing.faq4Q", aKey: "landing.faq4A" },
+    { qKey: "landing.faq5Q", aKey: "landing.faq5A" },
+    { qKey: "landing.faq6Q", aKey: "landing.faq6A" },
+    { qKey: "landing.faq7Q", aKey: "landing.faq7A" },
+    { qKey: "landing.faq8Q", aKey: "landing.faq8A" },
+  ];
+
   return (
     <div className="min-h-screen">
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+
       {/* Navigation */}
       <nav className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -121,8 +277,7 @@ export default function LandingPage() {
               {t("landing.heroTitle")}
             </Badge>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-tight">
-              {t("landing.heroSubtitle").split("{highlight}")[0]}
-              <span className="text-primary">{t("landing.heroSubtitle").includes("{highlight}") ? "" : ""}</span>
+              {t("landing.heroSubtitle")}
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
               {t("landing.heroDesc")}
@@ -146,6 +301,35 @@ export default function LandingPage() {
             <p className="text-sm text-muted-foreground mt-4">
               {t("landing.noCreditCard")}
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section - Supply Chain Disruption Impact */}
+      <section className="py-16 border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <TrendingUp className="h-6 w-6 text-primary" />
+              <h2 className="text-3xl font-bold tracking-tight">
+                {t("landing.statsTitle")}
+              </h2>
+            </div>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              {t("landing.statsSubtitle")}
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {stats.map((stat, i) => (
+              <div key={i} className="text-center p-4">
+                <p className="text-3xl sm:text-4xl font-bold text-primary mb-2">
+                  {t(stat.valueKey)}
+                </p>
+                <p className="text-sm text-muted-foreground leading-snug">
+                  {t(stat.labelKey)}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -286,8 +470,43 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* FAQ Section */}
       <section className="py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <HelpCircle className="h-6 w-6 text-primary" />
+              <h2 className="text-3xl font-bold tracking-tight">
+                {t("landing.faqTitle")}
+              </h2>
+            </div>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              {t("landing.faqSubtitle")}
+            </p>
+          </div>
+          <div className="space-y-4">
+            {faqs.map((faq, i) => (
+              <details
+                key={i}
+                className="group border rounded-lg bg-card"
+              >
+                <summary className="flex items-center justify-between cursor-pointer p-5 text-left font-medium hover:bg-muted/50 rounded-lg transition-colors">
+                  <span className="pr-4">{t(faq.qKey)}</span>
+                  <span className="text-muted-foreground text-xl flex-shrink-0 group-open:rotate-45 transition-transform">
+                    +
+                  </span>
+                </summary>
+                <div className="px-5 pb-5 pt-0 text-muted-foreground leading-relaxed text-sm">
+                  {t(faq.aKey)}
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-muted/30">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold tracking-tight mb-4">
             {t("landing.ctaTitle")}

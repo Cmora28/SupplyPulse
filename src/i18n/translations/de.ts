@@ -364,6 +364,46 @@ const de: TranslationType = {
     ctaSubtitle:
       "Schließen Sie sich Fertigungsunternehmen an, die KI-gestützte Intelligenz nutzen, um Lieferkettenstörungen einen Schritt voraus zu sein.",
     footerCopyright: "© {year} Supply Pulse. Alle Rechte vorbehalten.",
+
+    statsTitle: "Warum die Überwachung von Lieferkettenrisiken wichtig ist",
+    statsSubtitle:
+      "Lieferkettenstörungen kosten Unternehmen jährlich Milliarden. Proaktive Überwachung verwandelt reaktives Krisenmanagement in strategische Vorbereitung.",
+    stat1Value: "2,5 Bio. $",
+    stat1Label: "Jährliche globale Verluste durch Lieferkettenstörungen",
+    stat2Value: "90%",
+    stat2Label: "Der Organisationen fehlt Transparenz bei Sub-Tier-Lieferanten",
+    stat3Value: "48h+",
+    stat3Label: "Durchschnittliche Verzögerung bei der Störungserkennung ohne Monitoring",
+    stat4Value: "37 Mio. $",
+    stat4Label: "Durchschnittliche jährliche Einsparungen durch proaktives Risikomanagement",
+
+    faqTitle: "Häufig gestellte Fragen zu Lieferkettenrisiken",
+    faqSubtitle:
+      "Alles, was Sie über KI-gestütztes Lieferkettenrisiko-Monitoring und Störungserkennung wissen müssen.",
+    faq1Q: "Was ist Lieferkettenrisiko-Monitoring?",
+    faq1A:
+      "Lieferkettenrisiko-Monitoring ist der kontinuierliche Prozess der Identifizierung, Bewertung und Verfolgung potenzieller Bedrohungen für Ihre Lieferkette. Dies umfasst die Überwachung von Lieferanten auf finanzielle Instabilität, geopolitische Risiken, Naturkatastrophen, regulatorische Änderungen und betriebliche Störungen. Supply Pulse automatisiert diesen Prozess mithilfe von KI, die wöchentlich Risiken in Ihrem gesamten Lieferantennetzwerk recherchiert und analysiert.",
+    faq2Q: "Wie erkennt KI Lieferkettenstörungen?",
+    faq2A:
+      "Supply Pulse verwendet fortschrittliche KI-Forschungsmodelle, um Tausende von Quellen zu analysieren, darunter Nachrichtenmedien, Regierungsdatenbanken, Fachpublikationen, Finanzberichte und geopolitische Nachrichtendienste. Die KI identifiziert aktuelle Störungen, die Ihre spezifischen Lieferanten betreffen, und prognostiziert aufkommende Risiken für die nächsten 30 Tage. Jede Erkenntnis wird durch zitierte Quellen belegt.",
+    faq3Q: "Welche Arten von Lieferkettenrisiken überwacht Supply Pulse?",
+    faq3A:
+      "Supply Pulse überwacht ein breites Spektrum an Risiken: geopolitische Instabilität und Handelskriege, Naturkatastrophen und Klimaereignisse, finanzielle Gesundheit von Lieferanten und Insolvenzrisiken, Hafenstaus und Versandverzögerungen, Zoll- und Regulierungsänderungen, Rohstoffengpässe, Arbeitskonflikte und Streiks, Cybersicherheitsbedrohungen für Lieferanten und Kapazitätsengpässe.",
+    faq4Q: "Wie oft werden die Lieferkettenberichte erstellt?",
+    faq4A:
+      "Berichte werden nach einem wöchentlichen Zeitplan erstellt, den Sie bei der Registrierung wählen. Sie wählen den Wochentag und die Uhrzeit (UTC), die am besten zu Ihrem Team passt. Jeder Bericht deckt Störungen der letzten 7 Tage und prognostizierte Risiken für die nächsten 30 Tage ab und wird als professionelles PDF per E-Mail zugestellt.",
+    faq5Q: "Was ist in einem Lieferkettenrisiko-Bericht enthalten?",
+    faq5A:
+      "Jeder wöchentliche Bericht enthält: eine Risikobewertung für jeden überwachten Lieferanten, aktuelle Störungen der letzten 7 Tage, prognostizierte Risiken für die nächsten 30 Tage, umsetzbare Empfehlungen einschließlich Sicherheitsbestandsanpassungen und alternativer Lieferantenvorschläge, zitierte Quellen für jede Erkenntnis und ein konsolidiertes PDF mit Lieferantenprofilen und Länderrisikoanalysen.",
+    faq6Q: "Wie können Lieferkettenstörungen mein Unternehmen beeinflussen?",
+    faq6A:
+      "Lieferkettenstörungen können zu Produktionsstopps, verspäteten Lieferungen, erhöhten Kosten, Umsatzverlusten und beschädigten Kundenbeziehungen führen. Die durchschnittliche Störung kostet Unternehmen jährlich 43-47 Millionen Dollar. Frühwarnung durch KI-gestütztes Monitoring hilft, die Reaktionszeit von Tagen auf Stunden zu reduzieren.",
+    faq7Q: "Was ist Deep Research KI und wie unterscheidet sie sich?",
+    faq7A:
+      "Deep Research KI ist in den Premium- und Enterprise-Plänen verfügbar. Während die Standard-KI-Analyse umfassende wöchentliche Berichte liefert, führt Deep Research eine 10-mal detailliertere Untersuchung pro Lieferant durch — einschließlich tiefgehender Finanzanalyse, erweiterter geopolitischer Intelligence und Risikokartierung von Sub-Tier-Lieferanten.",
+    faq8Q: "Kann ich Supply Pulse kostenlos testen?",
+    faq8A:
+      "Ja. Der kostenlose Plan ermöglicht die Überwachung von 1 Lieferanten mit vollständigen wöchentlichen KI-Risikoberichten, E-Mail-Zustellung und PDF-Downloads — keine Kreditkarte erforderlich. Sie können jederzeit auf Standard (29$/Monat für bis zu 5 Lieferanten) oder Premium (199$/Monat für bis zu 15 Lieferanten mit Deep Research KI) upgraden.",
   },
 
   pricing: {

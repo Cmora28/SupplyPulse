@@ -1,0 +1,26 @@
+# Supply Pulse
+
+> Supply Pulse is an AI-powered supply chain risk monitoring platform that generates weekly risk reports for your suppliers using advanced AI research. It monitors geopolitical risks, natural disasters, financial instability, trade disruptions, and operational threats across your entire supplier network.
+
+## Product Overview
+- [Supply Pulse Homepage](https://supplypulse.net): AI-powered supply chain risk monitoring with weekly PDF reports, email delivery, disruption detection, and actionable intelligence with cited sources. Supports multi-language reports in English, Spanish, French, German, and Portuguese.
+- [Pricing Plans](https://supplypulse.net/pricing): Free (1 supplier), Standard ($29/mo, up to 5 suppliers), Premium ($199/mo, up to 15 suppliers with Deep Research AI), and Enterprise (custom) plans. No credit card required for free plan.
+
+## How It Works
+- [Getting Started](https://supplypulse.net/register): Add your suppliers (name, country, product category, lead time, COGS percentage), and Supply Pulse AI researches current disruptions, assesses risks, and generates comprehensive PDF reports delivered to your inbox on your chosen weekly schedule.
+
+## Key Features
+- [AI Risk Assessment](https://supplypulse.net): Automated analysis of financial health, capacity constraints, and market volatility for each supplier using AI research models.
+- [Global Disruption Monitoring](https://supplypulse.net): Tracks natural disasters, political instability, tariff changes, port congestion, and shipping delays across countries and regions.
+- [Deep Research AI](https://supplypulse.net/pricing): Premium feature providing 10x more detailed analysis with in-depth financial and geopolitical intelligence, sub-tier supplier risk mapping, and specialized industry database cross-referencing.
+- [Weekly PDF Reports](https://supplypulse.net): Professional consolidated PDF reports with markdown formatting, supplier profiles, country risk analysis, shipping route assessments, and cited sources.
+
+## Use Cases
+- Manufacturing companies monitoring supplier stability across global supply chains
+- Procurement teams assessing supplier risk before contract renewals
+- Supply chain managers tracking geopolitical and climate risks affecting suppliers
+- Operations teams maintaining continuity through proactive disruption awareness
+
+## Optional
+- [Create Free Account](https://supplypulse.net/register): Start monitoring 1 supplier for free with weekly AI risk reports
+- [Sign In](https://supplypulse.net/login): Access your Supply Pulse dashboard
