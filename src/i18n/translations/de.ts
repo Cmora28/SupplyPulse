@@ -46,6 +46,7 @@ const de: TranslationType = {
     billing: "Abrechnung",
     settings: "Einstellungen",
     admin: "Admin",
+    support: "Support",
     toggleMenu: "Navigationsmenü umschalten",
   },
 
@@ -363,6 +364,7 @@ const de: TranslationType = {
     ctaTitle: "Starten Sie noch heute mit der Überwachung Ihrer Lieferkette",
     ctaSubtitle:
       "Schließen Sie sich Fertigungsunternehmen an, die KI-gestützte Intelligenz nutzen, um Lieferkettenstörungen einen Schritt voraus zu sein.",
+    footerSupport: "support@supplypulse.net",
     footerCopyright: "© {year} Supply Pulse. Alle Rechte vorbehalten.",
 
     statsTitle: "Warum die Überwachung von Lieferkettenrisiken wichtig ist",
@@ -551,6 +553,22 @@ const de: TranslationType = {
       "5": "Freitag",
       "6": "Samstag",
     },
+  },
+
+  support: {
+    title: "Support",
+    subtitle: "Haben Sie eine Frage oder brauchen Hilfe? Senden Sie uns eine Nachricht und wir melden uns bei Ihnen.",
+    formTitle: "Support kontaktieren",
+    formDesc: "Beschreiben Sie Ihr Problem oder Feedback unten. Wir antworten normalerweise innerhalb von 24 Stunden.",
+    subjectLabel: "Betreff",
+    subjectPlaceholder: "z.B., Problem mit der Berichtserstellung",
+    messageLabel: "Nachricht",
+    messagePlaceholder: "Beschreiben Sie Ihr Problem, Ihre Frage oder Ihr Feedback im Detail...",
+    send: "Nachricht senden",
+    sending: "Wird gesendet...",
+    success: "Nachricht gesendet",
+    successDesc: "Ihre Supportanfrage wurde übermittelt. Wir melden uns bald bei Ihnen.",
+    failed: "Nachricht konnte nicht gesendet werden",
   },
 
   upgradeSuccess: {

@@ -46,6 +46,7 @@ const es: TranslationType = {
     billing: "Facturación",
     settings: "Configuración",
     admin: "Administración",
+    support: "Soporte",
     toggleMenu: "Alternar menú de navegación",
   },
 
@@ -355,6 +356,7 @@ const es: TranslationType = {
     ctaTitle: "Comienza a monitorear tu cadena de suministro hoy",
     ctaSubtitle:
       "Únete a las empresas manufactureras que utilizan inteligencia impulsada por IA para adelantarse a las interrupciones de la cadena de suministro.",
+    footerSupport: "support@supplypulse.net",
     footerCopyright: "© {year} Supply Pulse. Todos los derechos reservados.",
 
     statsTitle: "Por qué importa el monitoreo de riesgos en la cadena de suministro",
@@ -543,6 +545,22 @@ const es: TranslationType = {
       "5": "Viernes",
       "6": "Sábado",
     },
+  },
+
+  support: {
+    title: "Soporte",
+    subtitle: "¿Tienes una pregunta o necesitas ayuda? Envíanos un mensaje y te responderemos.",
+    formTitle: "Contactar Soporte",
+    formDesc: "Describe tu problema o comentario a continuación. Normalmente respondemos en 24 horas.",
+    subjectLabel: "Asunto",
+    subjectPlaceholder: "ej., Problema con la generación de informes",
+    messageLabel: "Mensaje",
+    messagePlaceholder: "Describe tu problema, pregunta o comentario en detalle...",
+    send: "Enviar Mensaje",
+    sending: "Enviando...",
+    success: "Mensaje enviado",
+    successDesc: "Tu solicitud de soporte ha sido enviada. Te responderemos pronto.",
+    failed: "Error al enviar el mensaje",
   },
 
   upgradeSuccess: {
