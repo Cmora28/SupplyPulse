@@ -28,9 +28,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Info, ArrowLeft } from "lucide-react";
+import { Info, ArrowLeft, Clock } from "lucide-react";
 import { useTranslation } from "@/i18n/client";
 import { locales, localeNames, localeFlags, type Locale } from "@/i18n";
+import { Separator } from "@/components/ui/separator";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -40,6 +41,8 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [selectedLocale, setSelectedLocale] = useState<Locale>(currentLocale);
+  const [reportDay, setReportDay] = useState(1); // Monday default
+  const [reportHour, setReportHour] = useState(8); // 8 AM UTC default
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -75,7 +78,7 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, locale: selectedLocale }),
+        body: JSON.stringify({ name, email, password, locale: selectedLocale, reportDay, reportHour }),
       });
 
       const data = await res.json();
@@ -226,6 +229,77 @@ export default function RegisterPage() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              <Separator />
+
+              {/* Report Schedule */}
+              <div className="space-y-3">
+                <TooltipProvider delayDuration={200}>
+                  <div className="flex items-center gap-1.5">
+                    <Label className="flex items-center gap-1.5">
+                      <Clock className="h-3.5 w-3.5" />
+                      {t("schedule.reportSchedule")}
+                    </Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          className="inline-flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground transition-colors focus:outline-none"
+                          tabIndex={-1}
+                        >
+                          <Info className="h-3.5 w-3.5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[280px] text-xs leading-relaxed">
+                        {t("schedule.scheduleTooltip")}
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </TooltipProvider>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="reportDay" className="text-xs text-muted-foreground">{t("schedule.dayOfWeek")}</Label>
+                    <Select
+                      value={String(reportDay)}
+                      onValueChange={(v) => setReportDay(Number(v))}
+                      disabled={loading}
+                    >
+                      <SelectTrigger id="reportDay">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[1, 2, 3, 4, 5, 6, 0].map((day) => (
+                          <SelectItem key={day} value={String(day)}>
+                            {t(`schedule.days.${day}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="reportHour" className="text-xs text-muted-foreground">{t("schedule.timeUTC")}</Label>
+                    <Select
+                      value={String(reportHour)}
+                      onValueChange={(v) => setReportHour(Number(v))}
+                      disabled={loading}
+                    >
+                      <SelectTrigger id="reportHour">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 24 }, (_, i) => (
+                          <SelectItem key={i} value={String(i)}>
+                            {String(i).padStart(2, "0")}:00 UTC
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {t("schedule.cannotChangeLater")}
+                </p>
               </div>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">

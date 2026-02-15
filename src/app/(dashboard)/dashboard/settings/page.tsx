@@ -25,7 +25,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { User, Lock, Bell, AlertTriangle, Globe } from "lucide-react";
+import { User, Lock, Bell, AlertTriangle, Globe, Clock } from "lucide-react";
 import { useTranslation } from "@/i18n/client";
 import { locales, localeNames, localeFlags, type Locale } from "@/i18n";
 import {
@@ -54,6 +54,9 @@ export default function SettingsPage() {
 
   const [deleting, setDeleting] = useState(false);
 
+  const [reportDay, setReportDay] = useState<number>(1);
+  const [reportHour, setReportHour] = useState<number>(8);
+
   // Fetch user data
   useEffect(() => {
     async function fetchUser() {
@@ -63,6 +66,8 @@ export default function SettingsPage() {
           const data = await res.json();
           setName(data.name);
           setEmailNotifications(data.emailNotifications);
+          if (data.reportDay !== undefined) setReportDay(data.reportDay);
+          if (data.reportHour !== undefined) setReportHour(data.reportHour);
         }
       } catch {
         // Ignore fetch errors
@@ -293,6 +298,30 @@ export default function SettingsPage() {
               ))}
             </SelectContent>
           </Select>
+        </CardContent>
+      </Card>
+
+      {/* Report Schedule (read-only) */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="h-5 w-5" />
+            {t("schedule.settingsTitle")}
+          </CardTitle>
+          <CardDescription>{t("schedule.settingsDesc")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md bg-muted/50 border px-4 py-3">
+            <p className="text-sm font-medium">
+              {t("schedule.everyWeekOn", {
+                day: t(`schedule.days.${reportDay}`),
+                hour: `${String(reportHour).padStart(2, "0")}:00 UTC`,
+              })}
+            </p>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            {t("schedule.cannotChangeLater")}
+          </p>
         </CardContent>
       </Card>
 

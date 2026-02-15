@@ -26,6 +26,8 @@ export const registerSchema = z.object({
   email: z.string().trim().toLowerCase().email("Invalid email address"),
   password: passwordSchema,
   locale: z.enum(["en", "es", "pt", "fr", "de"]).optional().default("en"),
+  reportDay: z.number().int().min(0).max(6).optional().default(1),  // 0=Sun..6=Sat
+  reportHour: z.number().int().min(0).max(23).optional().default(8), // 0-23 UTC
 });
 
 export const loginSchema = z.object({

@@ -473,6 +473,26 @@ const en = {
     page: "Page {num}",
   },
 
+  schedule: {
+    reportSchedule: "Report Schedule",
+    scheduleTooltip: "Choose when your weekly report runs. This is set once during registration and cannot be changed later. Reports run every 7 days at the selected time.",
+    dayOfWeek: "Day of week",
+    timeUTC: "Time (UTC)",
+    cannotChangeLater: "This schedule is permanent and cannot be changed after registration.",
+    settingsTitle: "Report Schedule",
+    settingsDesc: "Your weekly report runs on the schedule below. This was set during registration.",
+    everyWeekOn: "Every {day} at {hour}",
+    days: {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday",
+    },
+  },
+
   upgradeSuccess: {
     processing: "Processing your upgrade...",
     title: "Plan upgraded successfully!",

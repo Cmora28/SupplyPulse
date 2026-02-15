@@ -476,6 +476,26 @@ const es: TranslationType = {
     page: "Página {num}",
   },
 
+  schedule: {
+    reportSchedule: "Horario del Informe",
+    scheduleTooltip: "Elige cuándo se ejecuta tu informe semanal. Esto se configura una sola vez durante el registro y no se puede cambiar después. Los informes se ejecutan cada 7 días a la hora seleccionada.",
+    dayOfWeek: "Día de la semana",
+    timeUTC: "Hora (UTC)",
+    cannotChangeLater: "Este horario es permanente y no se puede cambiar después del registro.",
+    settingsTitle: "Horario del Informe",
+    settingsDesc: "Tu informe semanal se ejecuta según el horario a continuación. Se configuró durante el registro.",
+    everyWeekOn: "Cada {day} a las {hour}",
+    days: {
+      "0": "Domingo",
+      "1": "Lunes",
+      "2": "Martes",
+      "3": "Miércoles",
+      "4": "Jueves",
+      "5": "Viernes",
+      "6": "Sábado",
+    },
+  },
+
   upgradeSuccess: {
     processing: "Procesando tu mejora de plan...",
     title: "¡Plan mejorado exitosamente!",

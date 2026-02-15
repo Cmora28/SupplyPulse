@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validations";
 import { rateLimit, getClientIp } from "@/lib/security";
+import { calculateNextReportAt } from "@/lib/schedule";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { name, email, password, locale } = validated.data;
+    const { name, email, password, locale, reportDay, reportHour } = validated.data;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -47,12 +48,19 @@ export async function POST(request: Request) {
     // A02: bcrypt with 12 rounds for strong hashing
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    const day = reportDay ?? 1;
+    const hour = reportHour ?? 8;
+    const nextReportAt = calculateNextReportAt(day, hour);
+
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
         locale: locale || "en",
+        reportDay: day,
+        reportHour: hour,
+        nextReportAt,
       },
     });
 

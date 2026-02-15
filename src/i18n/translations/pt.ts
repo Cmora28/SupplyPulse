@@ -476,6 +476,26 @@ const pt: TranslationType = {
     page: "Página {num}",
   },
 
+  schedule: {
+    reportSchedule: "Horário do Relatório",
+    scheduleTooltip: "Escolha quando o seu relatório semanal é executado. Isto é definido uma vez durante o registo e não pode ser alterado depois. Os relatórios são executados a cada 7 dias na hora selecionada.",
+    dayOfWeek: "Dia da semana",
+    timeUTC: "Hora (UTC)",
+    cannotChangeLater: "Este horário é permanente e não pode ser alterado após o registo.",
+    settingsTitle: "Horário do Relatório",
+    settingsDesc: "O seu relatório semanal é executado no horário abaixo. Foi definido durante o registo.",
+    everyWeekOn: "Toda {day} às {hour}",
+    days: {
+      "0": "Domingo",
+      "1": "Segunda-feira",
+      "2": "Terça-feira",
+      "3": "Quarta-feira",
+      "4": "Quinta-feira",
+      "5": "Sexta-feira",
+      "6": "Sábado",
+    },
+  },
+
   upgradeSuccess: {
     processing: "Processando seu upgrade...",
     title: "Upgrade do plano realizado com sucesso!",
