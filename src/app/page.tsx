@@ -18,6 +18,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import type { Metadata } from "next";
+import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://supplypulse.net";
 
@@ -248,7 +249,7 @@ export default function LandingPage() {
               </div>
               <span className="text-lg font-bold">{t("common.appName")}</span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <Link href="/pricing">
                 <Button variant="ghost" size="sm">
                   {t("common.pricing")}
@@ -259,6 +260,7 @@ export default function LandingPage() {
                   {t("common.signIn")}
                 </Button>
               </Link>
+              <PublicLanguageSwitcher />
               <Link href="/register">
                 <Button size="sm">
                   {t("common.getStartedFree")}
