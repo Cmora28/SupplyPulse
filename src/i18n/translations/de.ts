@@ -55,7 +55,7 @@ const de: TranslationType = {
     totalSuppliers: "Lieferanten gesamt",
     reportsThisMonth: "Berichte diesen Monat",
     nextReport: "Nächster Bericht",
-    nextReportTime: "Montag 8:00 Uhr UTC",
+    nextReportTime: "Wöchentlich, nach Ihrem gewählten Zeitplan",
     currentPlan: "Aktueller Plan",
     quickActions: "Schnellaktionen",
     quickActionsSubtitle: "Starten Sie mit Ihrer Lieferkettenüberwachung",
@@ -139,7 +139,7 @@ const de: TranslationType = {
     subtitle: "Ihre wöchentlichen KI-generierten Lieferketten-Risikoberichte.",
     noReports: "Noch keine Berichte",
     noReportsDesc:
-      "Berichte werden jeden Montag um 8:00 Uhr UTC automatisch erstellt. Stellen Sie sicher, dass mindestens ein Lieferant hinzugefügt wurde, um Berichte zu erhalten.",
+      "Berichte werden wöchentlich nach Ihrem gewählten Zeitplan automatisch erstellt. Stellen Sie sicher, dass mindestens ein Lieferant hinzugefügt wurde, um Berichte zu erhalten.",
     manageSuppliers: "Lieferanten verwalten",
     weekOf: "Woche vom {date}",
     statusPending: "Ausstehend",
@@ -298,7 +298,7 @@ const de: TranslationType = {
     heroSubtitle:
       "Erkennen Sie Lieferkettenrisiken, bevor sie zuschlagen",
     heroDesc:
-      "Automatisch generierte wöchentliche Risikoberichte, unterstützt durch fortschrittliche KI-Analyse. Überwachen Sie Lieferanten, erkennen Sie Störungen und erhalten Sie jeden Montagmorgen verwertbare Informationen.",
+      "Automatisch generierte wöchentliche Risikoberichte, unterstützt durch fortschrittliche KI-Analyse. Überwachen Sie Lieferanten, erkennen Sie Störungen und erhalten Sie verwertbare Informationen nach Ihrem gewählten Zeitplan.",
     startFree: "Kostenlos starten",
     viewPricing: "Preise ansehen",
     noCreditCard:
@@ -313,7 +313,7 @@ const de: TranslationType = {
     step2: "SCHRITT 2",
     step2Title: "KI analysiert Risiken",
     step2Desc:
-      "Jeden Montag recherchiert unsere KI aktuelle Störungen, bewertet Risiken und identifiziert bevorstehende Bedrohungen für jeden Lieferanten.",
+      "Jede Woche recherchiert unsere KI aktuelle Störungen, bewertet Risiken und identifiziert bevorstehende Bedrohungen für jeden Lieferanten.",
     step3: "SCHRITT 3",
     step3Title: "Bericht erhalten",
     step3Desc:
@@ -333,7 +333,7 @@ const de: TranslationType = {
       "Professionelle, konsolidierte PDF-Berichte mit Markdown-Formatierung, Lieferantenprofilen und zitierten Quellen.",
     featureEmailTitle: "E-Mail-Zustellung",
     featureEmailDesc:
-      "Berichte werden jeden Montagmorgen um 8:00 Uhr UTC in Ihren Posteingang geliefert. Kein manueller Aufwand nötig.",
+      "Berichte werden wöchentlich nach Ihrem Zeitplan in Ihren Posteingang geliefert. Kein manueller Aufwand nötig.",
     featureInsightsTitle: "Verwertbare Erkenntnisse",
     featureInsightsDesc:
       "Konkrete Empfehlungen: Pufferanpassungen, alternative Lieferanten und sofortige Handlungsmaßnahmen.",
@@ -373,13 +373,13 @@ const de: TranslationType = {
     freeDesc: "Starten Sie mit grundlegender Lieferkettenüberwachung.",
     freeFeature1: "1 Lieferant überwachen",
     freeFeature2: "Wöchentlicher KI-Risikobericht",
-    freeFeature3: "E-Mail-Zustellung jeden Montag",
+    freeFeature3: "Wöchentliche E-Mail-Zustellung",
     freeFeature4: "PDF-Download",
     freeFeature5: "Basis-E-Mail-Support",
     standardDesc: "Für Teams, die mehrere kritische Lieferanten überwachen.",
     standardFeature1: "Bis zu 5 Lieferanten überwachen",
     standardFeature2: "Wöchentliche KI-Risikoberichte",
-    standardFeature3: "E-Mail-Zustellung jeden Montag",
+    standardFeature3: "Wöchentliche E-Mail-Zustellung",
     standardFeature4: "PDF-Downloads mit vollständigen Quellenangaben",
     standardFeature5: "Prioritäts-E-Mail-Support",
     standardFeature6: "Konsolidiertes Multi-Lieferanten-PDF",
@@ -390,7 +390,7 @@ const de: TranslationType = {
     premiumFeature3:
       "Tiefgehende geopolitische und finanzielle Risikoanalyse",
     premiumFeature4: "Multi-Source-Intelligenz mit zitierten Belegen",
-    premiumFeature5: "E-Mail-Zustellung jeden Montag",
+    premiumFeature5: "Wöchentliche E-Mail-Zustellung",
     premiumFeature6: "PDF-Downloads mit vollständigen Quellenangaben",
     premiumFeature7: "Prioritäts-E-Mail-Support",
     premiumFeature8: "Konsolidiertes Multi-Lieferanten-PDF",
@@ -448,7 +448,7 @@ const de: TranslationType = {
       highlight5: "Alle Erkenntnisse durch zitierte Quellen belegt",
       pdfNote: "Der vollständige PDF-Bericht ist dieser E-Mail beigefügt. Sie können Ihre Berichte auch im Dashboard einsehen.",
       viewDashboard: "Im Dashboard anzeigen",
-      footerGenerated: "Automatisch jeden Montag um 8 Uhr UTC generiert",
+      footerGenerated: "Automatisch nach Ihrem wöchentlichen Zeitplan generiert",
       footerQuestions: "Fragen? Antworten Sie auf diese E-Mail oder besuchen Sie Ihr",
       footerDashboard: "Dashboard",
       subject: "Wöchentlicher Lieferkettenbericht - {weekLabel}",

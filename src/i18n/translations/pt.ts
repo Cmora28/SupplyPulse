@@ -55,7 +55,7 @@ const pt: TranslationType = {
     totalSuppliers: "Total de Fornecedores",
     reportsThisMonth: "Relatórios Este Mês",
     nextReport: "Próximo Relatório",
-    nextReportTime: "Segunda-feira 8:00 AM UTC",
+    nextReportTime: "Semanal, no horário escolhido",
     currentPlan: "Plano Atual",
     quickActions: "Ações Rápidas",
     quickActionsSubtitle: "Comece a monitorar sua cadeia de suprimentos",
@@ -137,7 +137,7 @@ const pt: TranslationType = {
     subtitle: "Seus relatórios semanais de risco na cadeia de suprimentos gerados por IA.",
     noReports: "Nenhum relatório ainda",
     noReportsDesc:
-      "Os relatórios são gerados automaticamente toda segunda-feira às 8:00 AM UTC. Certifique-se de ter pelo menos um fornecedor adicionado para receber relatórios.",
+      "Os relatórios são gerados automaticamente toda semana no horário escolhido. Certifique-se de ter pelo menos um fornecedor adicionado para receber relatórios.",
     manageSuppliers: "Gerenciar Fornecedores",
     weekOf: "Semana de {date}",
     statusPending: "Pendente",
@@ -291,7 +291,7 @@ const pt: TranslationType = {
     heroTitle: "Inteligência de Cadeia de Suprimentos com IA",
     heroSubtitle: "Conheça os riscos da sua cadeia de suprimentos antes que eles aconteçam",
     heroDesc:
-      "Relatórios semanais de risco gerados automaticamente com tecnologia de IA avançada. Monitore fornecedores, identifique interrupções e receba inteligência acionável toda segunda-feira de manhã.",
+      "Relatórios semanais de risco gerados automaticamente com tecnologia de IA avançada. Monitore fornecedores, identifique interrupções e receba inteligência acionável no horário escolhido.",
     startFree: "Começar Grátis",
     viewPricing: "Ver Preços",
     noCreditCard:
@@ -306,7 +306,7 @@ const pt: TranslationType = {
     step2: "PASSO 2",
     step2Title: "A IA analisa os riscos",
     step2Desc:
-      "Toda segunda-feira, nossa IA pesquisa interrupções atuais, avalia riscos e identifica ameaças futuras para cada fornecedor.",
+      "Toda semana, nossa IA pesquisa interrupções atuais, avalia riscos e identifica ameaças futuras para cada fornecedor.",
     step3: "PASSO 3",
     step3Title: "Receba seu relatório",
     step3Desc:
@@ -325,7 +325,7 @@ const pt: TranslationType = {
       "Relatórios PDF profissionais e consolidados com formatação markdown, perfis de fornecedores e fontes citadas.",
     featureEmailTitle: "Entrega por E-mail",
     featureEmailDesc:
-      "Relatórios entregues na sua caixa de entrada toda segunda-feira de manhã às 8 AM UTC. Sem esforço manual.",
+      "Relatórios entregues na sua caixa de entrada semanalmente no seu horário. Sem esforço manual.",
     featureInsightsTitle: "Insights Acionáveis",
     featureInsightsDesc:
       "Recomendações específicas: ajustes de estoque de segurança, fornecedores alternativos e itens de ação imediata.",
@@ -365,13 +365,13 @@ const pt: TranslationType = {
     freeDesc: "Comece com o monitoramento básico da cadeia de suprimentos.",
     freeFeature1: "Monitorar 1 fornecedor",
     freeFeature2: "Relatório semanal de risco com IA",
-    freeFeature3: "Entrega por e-mail toda segunda-feira",
+    freeFeature3: "Entrega semanal por e-mail",
     freeFeature4: "Download em PDF",
     freeFeature5: "Suporte básico por e-mail",
     standardDesc: "Para equipes que monitoram múltiplos fornecedores críticos.",
     standardFeature1: "Monitorar até 5 fornecedores",
     standardFeature2: "Relatórios semanais de risco com IA",
-    standardFeature3: "Entrega por e-mail toda segunda-feira",
+    standardFeature3: "Entrega semanal por e-mail",
     standardFeature4: "Downloads em PDF com citações completas",
     standardFeature5: "Suporte prioritário por e-mail",
     standardFeature6: "PDF consolidado multifornecedor",
@@ -382,7 +382,7 @@ const pt: TranslationType = {
     premiumFeature3:
       "Análise aprofundada de riscos geopolíticos e financeiros",
     premiumFeature4: "Inteligência de múltiplas fontes com evidências citadas",
-    premiumFeature5: "Entrega por e-mail toda segunda-feira",
+    premiumFeature5: "Entrega semanal por e-mail",
     premiumFeature6: "Downloads em PDF com citações completas",
     premiumFeature7: "Suporte prioritário por e-mail",
     premiumFeature8: "PDF consolidado multifornecedor",
@@ -440,7 +440,7 @@ const pt: TranslationType = {
       highlight5: "Todas as conclusões apoiadas por fontes citadas",
       pdfNote: "O relatório PDF completo está anexado a este e-mail. Também pode ver os seus relatórios no painel de controlo.",
       viewDashboard: "Ver no Painel",
-      footerGenerated: "Gerado automaticamente todas as segundas-feiras às 8h UTC",
+      footerGenerated: "Gerado automaticamente no seu horário semanal",
       footerQuestions: "Perguntas? Responda a este e-mail ou visite o seu",
       footerDashboard: "painel de controlo",
       subject: "Relatório Semanal da Cadeia de Suprimentos - {weekLabel}",

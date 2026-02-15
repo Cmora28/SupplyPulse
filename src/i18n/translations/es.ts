@@ -55,7 +55,7 @@ const es: TranslationType = {
     totalSuppliers: "Total de proveedores",
     reportsThisMonth: "Informes este mes",
     nextReport: "Próximo informe",
-    nextReportTime: "Lunes 8:00 AM UTC",
+    nextReportTime: "Semanal, según tu horario elegido",
     currentPlan: "Plan actual",
     quickActions: "Acciones rápidas",
     quickActionsSubtitle: "Comienza con el monitoreo de tu cadena de suministro",
@@ -137,7 +137,7 @@ const es: TranslationType = {
     subtitle: "Tus informes semanales de riesgo de cadena de suministro generados por IA.",
     noReports: "Aún no hay informes",
     noReportsDesc:
-      "Los informes se generan automáticamente cada lunes a las 8:00 AM UTC. Asegúrate de tener al menos un proveedor agregado para recibir informes.",
+      "Los informes se generan automáticamente cada semana según tu horario elegido. Asegúrate de tener al menos un proveedor agregado para recibir informes.",
     manageSuppliers: "Gestionar proveedores",
     weekOf: "Semana del {date}",
     statusPending: "Pendiente",
@@ -291,7 +291,7 @@ const es: TranslationType = {
     heroTitle: "Inteligencia de cadena de suministro impulsada por IA",
     heroSubtitle: "Conoce los riesgos de tu cadena de suministro antes de que te afecten",
     heroDesc:
-      "Informes de riesgo semanales generados automáticamente con tecnología de investigación avanzada de IA. Monitorea proveedores, identifica interrupciones y recibe inteligencia accionable cada lunes por la mañana.",
+      "Informes de riesgo semanales generados automáticamente con tecnología de investigación avanzada de IA. Monitorea proveedores, identifica interrupciones y recibe inteligencia accionable según tu horario elegido.",
     startFree: "Comenzar gratis",
     viewPricing: "Ver precios",
     noCreditCard:
@@ -306,7 +306,7 @@ const es: TranslationType = {
     step2: "PASO 2",
     step2Title: "La IA analiza los riesgos",
     step2Desc:
-      "Cada lunes, nuestra IA investiga las interrupciones actuales, evalúa los riesgos e identifica amenazas futuras para cada proveedor.",
+      "Cada semana, nuestra IA investiga las interrupciones actuales, evalúa los riesgos e identifica amenazas futuras para cada proveedor.",
     step3: "PASO 3",
     step3Title: "Recibe tu informe",
     step3Desc:
@@ -325,7 +325,7 @@ const es: TranslationType = {
       "Informes PDF profesionales y consolidados con formato markdown, perfiles de proveedores y fuentes citadas.",
     featureEmailTitle: "Entrega por correo electrónico",
     featureEmailDesc:
-      "Informes entregados en tu bandeja de entrada cada lunes a las 8 AM UTC. Sin esfuerzo manual.",
+      "Informes entregados en tu bandeja de entrada semanalmente según tu horario. Sin esfuerzo manual.",
     featureInsightsTitle: "Información accionable",
     featureInsightsDesc:
       "Recomendaciones específicas: ajustes de reserva, proveedores alternativos y acciones inmediatas.",
@@ -365,13 +365,13 @@ const es: TranslationType = {
     freeDesc: "Comienza con el monitoreo básico de cadena de suministro.",
     freeFeature1: "Monitorea 1 proveedor",
     freeFeature2: "Informe semanal de riesgo con IA",
-    freeFeature3: "Entrega por correo electrónico cada lunes",
+    freeFeature3: "Entrega semanal por correo electrónico",
     freeFeature4: "Descarga en PDF",
     freeFeature5: "Soporte básico por correo electrónico",
     standardDesc: "Para equipos que monitorean múltiples proveedores críticos.",
     standardFeature1: "Monitorea hasta 5 proveedores",
     standardFeature2: "Informes semanales de riesgo con IA",
-    standardFeature3: "Entrega por correo electrónico cada lunes",
+    standardFeature3: "Entrega semanal por correo electrónico",
     standardFeature4: "Descargas en PDF con citas completas",
     standardFeature5: "Soporte prioritario por correo electrónico",
     standardFeature6: "PDF consolidado multi-proveedor",
@@ -382,7 +382,7 @@ const es: TranslationType = {
     premiumFeature3:
       "Análisis en profundidad de riesgo geopolítico y financiero",
     premiumFeature4: "Inteligencia de múltiples fuentes con evidencia citada",
-    premiumFeature5: "Entrega por correo electrónico cada lunes",
+    premiumFeature5: "Entrega semanal por correo electrónico",
     premiumFeature6: "Descargas en PDF con citas completas",
     premiumFeature7: "Soporte prioritario por correo electrónico",
     premiumFeature8: "PDF consolidado multi-proveedor",
@@ -440,7 +440,7 @@ const es: TranslationType = {
       highlight5: "Todos los hallazgos respaldados por fuentes citadas",
       pdfNote: "El informe PDF completo está adjunto a este correo. También puedes ver tus informes en el panel de control.",
       viewDashboard: "Ver en el Panel",
-      footerGenerated: "Generado automáticamente todos los lunes a las 8 AM UTC",
+      footerGenerated: "Generado automáticamente según tu horario semanal",
       footerQuestions: "¿Preguntas? Responde a este correo o visita tu",
       footerDashboard: "panel de control",
       subject: "Informe Semanal de Cadena de Suministro - {weekLabel}",
