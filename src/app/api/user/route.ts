@@ -20,6 +20,8 @@ export async function GET() {
         email: true,
         subscriptionTier: true,
         locale: true,
+        reportDay: true,
+        reportHour: true,
         emailNotifications: true,
         createdAt: true,
       },

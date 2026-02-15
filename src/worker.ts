@@ -6,6 +6,7 @@ import { generateSupplierReport } from "./lib/perplexity";
 import { generateReportPDF } from "./lib/pdf-generator";
 import { sendWeeklyReport } from "./lib/email";
 import { TIER_MODEL } from "./lib/tier-limits";
+import { calculateNextReportAt } from "./lib/schedule";
 import type { SubscriptionTier } from "@prisma/client";
 
 // ---- Redis Connection ----
@@ -28,17 +29,17 @@ function getCurrentWeekMonday(): Date {
   return monday;
 }
 
-// ---- Worker 1: Weekly Scheduler ----
+// ---- Worker 1: Distributed Scheduler (runs every 15 min) ----
 const schedulerWorker = new Worker(
   "weekly-scheduler",
   async () => {
-    console.log("[Scheduler] Starting weekly report generation...");
+    const now = new Date();
+    console.log(`[Scheduler] Checking for due reports at ${now.toISOString()}...`);
 
-    const weekOf = getCurrentWeekMonday();
-    console.log(`[Scheduler] Week of: ${format(weekOf, "yyyy-MM-dd")}`);
-
-    const users = await prisma.user.findMany({
+    // Find all users whose nextReportAt has passed and who have at least one supplier
+    const dueUsers = await prisma.user.findMany({
       where: {
+        nextReportAt: { lte: now },
         suppliers: { some: {} },
       },
       include: {
@@ -46,9 +47,16 @@ const schedulerWorker = new Worker(
       },
     });
 
-    console.log(`[Scheduler] Found ${users.length} users with suppliers`);
+    if (dueUsers.length === 0) {
+      console.log("[Scheduler] No users due for reports");
+      return;
+    }
 
-    for (const user of users) {
+    console.log(`[Scheduler] Found ${dueUsers.length} user(s) due for reports`);
+
+    for (const user of dueUsers) {
+      const weekOf = getCurrentWeekMonday();
+
       const reportRun = await prisma.reportRun.create({
         data: {
           userId: user.id,
@@ -79,12 +87,23 @@ const schedulerWorker = new Worker(
         );
       }
 
+      // Advance nextReportAt by 7 days from the current scheduled time (not from now)
+      const currentNext = user.nextReportAt || now;
+      const reportDay = (user as unknown as { reportDay?: number }).reportDay ?? 1;
+      const reportHour = (user as unknown as { reportHour?: number }).reportHour ?? 8;
+      const newNextReportAt = calculateNextReportAt(reportDay, reportHour, currentNext);
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { nextReportAt: newNextReportAt },
+      });
+
       console.log(
-        `[Scheduler] Created run ${reportRun.id} with ${user.suppliers.length} items for user ${user.email}`
+        `[Scheduler] Created run ${reportRun.id} with ${user.suppliers.length} items for ${user.email}. Next run: ${newNextReportAt.toISOString()}`
       );
     }
 
-    console.log("[Scheduler] Weekly scheduling complete");
+    console.log(`[Scheduler] Processed ${dueUsers.length} user(s)`);
   },
   { connection, concurrency: 1 }
 );
@@ -315,7 +334,7 @@ const finalizerWorker = new Worker(
   { connection, concurrency: 2 }
 );
 
-// ---- Setup repeatable cron job ----
+// ---- Setup repeatable cron job (every 15 minutes) ----
 async function setupScheduler() {
   const existing = await schedulerQueue.getRepeatableJobs();
   for (const job of existing) {
@@ -323,16 +342,45 @@ async function setupScheduler() {
   }
 
   await schedulerQueue.add(
-    "weekly-schedule",
+    "distributed-schedule",
     {},
     {
       repeat: {
-        pattern: "0 8 * * 1",
+        pattern: "*/15 * * * *", // Every 15 minutes
       },
     }
   );
 
-  console.log("[Setup] Cron job scheduled: Monday 8 AM UTC");
+  console.log("[Setup] Distributed scheduler cron set: every 15 minutes");
+}
+
+// ---- Backfill: set nextReportAt for legacy users who don't have one ----
+async function backfillSchedules() {
+  const usersWithoutSchedule = await prisma.user.findMany({
+    where: { nextReportAt: null },
+  });
+
+  if (usersWithoutSchedule.length === 0) {
+    console.log("[Backfill] All users have nextReportAt set");
+    return;
+  }
+
+  console.log(`[Backfill] Setting nextReportAt for ${usersWithoutSchedule.length} user(s)...`);
+
+  for (const user of usersWithoutSchedule) {
+    const reportDay = (user as unknown as { reportDay?: number }).reportDay ?? 1;
+    const reportHour = (user as unknown as { reportHour?: number }).reportHour ?? 8;
+    const nextReportAt = calculateNextReportAt(reportDay, reportHour);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { nextReportAt },
+    });
+
+    console.log(`[Backfill] ${user.email}: next report at ${nextReportAt.toISOString()}`);
+  }
+
+  console.log("[Backfill] Complete");
 }
 
 // ---- Graceful Shutdown ----
@@ -421,12 +469,19 @@ async function recoverStuckRuns() {
 
 // ---- Start ----
 console.log("=== Supply Pulse Worker Process ===");
-console.log("Workers started: scheduler, supplier-report, report-finalizer");
+console.log("Workers started: scheduler (every 15 min), supplier-report, report-finalizer");
 setupScheduler().catch(console.error);
 
-// Give workers time to connect, then recover stuck runs
-setTimeout(() => {
-  recoverStuckRuns().catch((err) =>
-    console.error("[Recovery] Error:", err.message)
-  );
+// Give workers time to connect, then backfill schedules and recover stuck runs
+setTimeout(async () => {
+  try {
+    await backfillSchedules();
+  } catch (err) {
+    console.error("[Backfill] Error:", err instanceof Error ? err.message : err);
+  }
+  try {
+    await recoverStuckRuns();
+  } catch (err) {
+    console.error("[Recovery] Error:", err instanceof Error ? err.message : err);
+  }
 }, 5000);

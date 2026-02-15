@@ -484,6 +484,26 @@ const de: TranslationType = {
     page: "Seite {num}",
   },
 
+  schedule: {
+    reportSchedule: "Berichtsplan",
+    scheduleTooltip: "Wählen Sie, wann Ihr wöchentlicher Bericht ausgeführt wird. Dies wird einmalig bei der Registrierung festgelegt und kann danach nicht mehr geändert werden. Berichte werden alle 7 Tage zur gewählten Zeit ausgeführt.",
+    dayOfWeek: "Wochentag",
+    timeUTC: "Uhrzeit (UTC)",
+    cannotChangeLater: "Dieser Zeitplan ist dauerhaft und kann nach der Registrierung nicht mehr geändert werden.",
+    settingsTitle: "Berichtsplan",
+    settingsDesc: "Ihr wöchentlicher Bericht wird nach dem unten stehenden Zeitplan ausgeführt. Er wurde bei der Registrierung festgelegt.",
+    everyWeekOn: "Jeden {day} um {hour}",
+    days: {
+      "0": "Sonntag",
+      "1": "Montag",
+      "2": "Dienstag",
+      "3": "Mittwoch",
+      "4": "Donnerstag",
+      "5": "Freitag",
+      "6": "Samstag",
+    },
+  },
+
   upgradeSuccess: {
     processing: "Ihr Upgrade wird verarbeitet...",
     title: "Plan erfolgreich upgradet!",

@@ -476,6 +476,26 @@ const fr: TranslationType = {
     page: "Page {num}",
   },
 
+  schedule: {
+    reportSchedule: "Horaire du Rapport",
+    scheduleTooltip: "Choisissez quand votre rapport hebdomadaire est exécuté. Ceci est défini une seule fois lors de l'inscription et ne peut pas être modifié par la suite. Les rapports sont exécutés tous les 7 jours à l'heure sélectionnée.",
+    dayOfWeek: "Jour de la semaine",
+    timeUTC: "Heure (UTC)",
+    cannotChangeLater: "Cet horaire est permanent et ne peut pas être modifié après l'inscription.",
+    settingsTitle: "Horaire du Rapport",
+    settingsDesc: "Votre rapport hebdomadaire est exécuté selon l'horaire ci-dessous. Il a été défini lors de l'inscription.",
+    everyWeekOn: "Chaque {day} à {hour}",
+    days: {
+      "0": "Dimanche",
+      "1": "Lundi",
+      "2": "Mardi",
+      "3": "Mercredi",
+      "4": "Jeudi",
+      "5": "Vendredi",
+      "6": "Samedi",
+    },
+  },
+
   upgradeSuccess: {
     processing: "Traitement de votre mise à niveau...",
     title: "Plan mis à niveau avec succès !",

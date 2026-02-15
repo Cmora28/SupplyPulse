@@ -38,6 +38,9 @@ model User {
   polarCustomerId     String?
   polarSubscriptionId String?
   locale              String           @default("en")
+  reportDay           Int              @default(1)    // 0=Sun, 1=Mon, ..., 6=Sat
+  reportHour          Int              @default(8)    // 0-23 UTC
+  nextReportAt        DateTime?                       // Pre-calculated next run time
   emailNotifications  Boolean          @default(true)
   resetToken          String?          @unique
   resetTokenExpiry    DateTime?
