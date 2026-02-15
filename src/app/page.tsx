@@ -534,9 +534,18 @@ export default function LandingPage() {
               </div>
               <span className="text-sm font-medium">{t("common.appName")}</span>
             </div>
-            <p className="text-sm text-muted-foreground">
-              {t("landing.footerCopyright", { year: new Date().getFullYear() })}
-            </p>
+            <div className="flex items-center gap-4">
+              <a
+                href="mailto:support@supplypulse.net"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              >
+                <Mail className="h-3.5 w-3.5" />
+                {t("landing.footerSupport")}
+              </a>
+              <p className="text-sm text-muted-foreground">
+                {t("landing.footerCopyright", { year: new Date().getFullYear() })}
+              </p>
+            </div>
           </div>
         </div>
       </footer>

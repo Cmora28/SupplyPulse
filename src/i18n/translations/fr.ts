@@ -46,6 +46,7 @@ const fr: TranslationType = {
     billing: "Facturation",
     settings: "Paramètres",
     admin: "Administration",
+    support: "Support",
     toggleMenu: "Basculer le menu de navigation",
   },
 
@@ -355,6 +356,7 @@ const fr: TranslationType = {
     ctaTitle: "Commencez à surveiller votre chaîne d'approvisionnement dès aujourd'hui",
     ctaSubtitle:
       "Rejoignez les entreprises manufacturières qui utilisent l'intelligence propulsée par l'IA pour anticiper les perturbations de la chaîne d'approvisionnement.",
+    footerSupport: "support@supplypulse.net",
     footerCopyright: "© {year} Supply Pulse. Tous droits réservés.",
 
     statsTitle: "Pourquoi la surveillance des risques de la chaîne d'approvisionnement est importante",
@@ -543,6 +545,22 @@ const fr: TranslationType = {
       "5": "Vendredi",
       "6": "Samedi",
     },
+  },
+
+  support: {
+    title: "Support",
+    subtitle: "Vous avez une question ou besoin d'aide ? Envoyez-nous un message et nous vous répondrons.",
+    formTitle: "Contacter le Support",
+    formDesc: "Décrivez votre problème ou commentaire ci-dessous. Nous répondons généralement sous 24 heures.",
+    subjectLabel: "Sujet",
+    subjectPlaceholder: "ex., Problème avec la génération de rapports",
+    messageLabel: "Message",
+    messagePlaceholder: "Décrivez votre problème, question ou commentaire en détail...",
+    send: "Envoyer le Message",
+    sending: "Envoi en cours...",
+    success: "Message envoyé",
+    successDesc: "Votre demande de support a été soumise. Nous vous répondrons bientôt.",
+    failed: "Échec de l'envoi du message",
   },
 
   upgradeSuccess: {
