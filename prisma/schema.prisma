@@ -48,6 +48,12 @@ model User {
   updatedAt           DateTime         @updatedAt
   suppliers           Supplier[]
   reportRuns          ReportRun[]
+
+  // Scheduler queries WHERE nextReportAt <= now every 15 min
+  @@index([nextReportAt])
+  // Polar webhook lookups by customer/subscription ID
+  @@index([polarCustomerId])
+  @@index([polarSubscriptionId])
 }
 
 model Supplier {
@@ -92,7 +98,10 @@ model ReportRun {
   user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   items     ReportRunItem[]
 
-  @@index([userId])
+  // Dashboard: count this month + find latest run (covers both range filter and ordering)
+  @@index([userId, createdAt])
+  // Crash recovery: find stuck runs by status
+  @@index([status])
 }
 
 model ReportRunItem {
@@ -107,6 +116,7 @@ model ReportRunItem {
   reportRun     ReportRun     @relation(fields: [reportRunId], references: [id], onDelete: Cascade)
   supplier      Supplier      @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
-  @@index([reportRunId])
+  // Finalizer: count remaining items by run + status (hot path)
+  @@index([reportRunId, status])
   @@index([supplierId])
 }
