@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 import { cookies, headers } from "next/headers";
 import { createTranslator, getServerLocale } from "@/i18n";
 import { TIER_LIMITS } from "@/lib/tier-limits";
-import { nextMonday, format } from "date-fns";
+import { format } from "date-fns";
+import { calculateNextReportAt } from "@/lib/schedule";
 import {
   Card,
   CardContent,
@@ -36,7 +37,7 @@ export default async function DashboardPage() {
 
   const dbUser = await prisma.user.findUnique({
     where: { id: userId },
-    select: { subscriptionTier: true },
+    select: { subscriptionTier: true, reportDay: true, reportHour: true, nextReportAt: true },
   });
   const tier = dbUser?.subscriptionTier || session.user.subscriptionTier;
 
@@ -62,7 +63,11 @@ export default async function DashboardPage() {
   ]);
 
   const supplierLimit = TIER_LIMITS[tier];
-  const nextReportDate = nextMonday(new Date());
+  const userReportDay = dbUser?.reportDay ?? 1;
+  const userReportHour = dbUser?.reportHour ?? 8;
+  const nextReportDate = dbUser?.nextReportAt
+    ? new Date(dbUser.nextReportAt)
+    : calculateNextReportAt(userReportDay, userReportHour);
 
   const statusColors: Record<string, string> = {
     PENDING: "bg-yellow-100 text-yellow-700",
@@ -121,7 +126,9 @@ export default async function DashboardPage() {
             <div className="text-2xl font-bold">
               {format(nextReportDate, "MMM d")}
             </div>
-            <p className="text-xs text-muted-foreground">{t("dashboard.nextReportTime")}</p>
+            <p className="text-xs text-muted-foreground">
+              {t(`schedule.days.${userReportDay}`)} {String(userReportHour).padStart(2, "0")}:00 UTC
+            </p>
           </CardContent>
         </Card>
 
