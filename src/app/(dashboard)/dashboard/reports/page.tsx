@@ -82,13 +82,15 @@ export default async function ReportsPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {reportRuns.map((run) => {
+          {reportRuns.map((run, index) => {
             const status = statusConfig[run.status] || statusConfig.PENDING;
             const successCount = run.items.filter(
               (i) => i.status === "SUCCESS"
             ).length;
+            // Only allow PDF download for the most recent (latest) report run
+            const isLatest = index === 0;
             const canDownload =
-              run.status === "EMAILED" || run.status === "READY";
+              isLatest && (run.status === "EMAILED" || run.status === "READY");
 
             return (
               <Card key={run.id}>
