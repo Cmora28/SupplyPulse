@@ -53,7 +53,7 @@ const en = {
     totalSuppliers: "Total Suppliers",
     reportsThisMonth: "Reports This Month",
     nextReport: "Next Report",
-    nextReportTime: "Monday 8:00 AM UTC",
+    nextReportTime: "Weekly, on your chosen schedule",
     currentPlan: "Current Plan",
     quickActions: "Quick Actions",
     quickActionsSubtitle: "Get started with your supply chain monitoring",
@@ -135,7 +135,7 @@ const en = {
     subtitle: "Your weekly AI-generated supply chain risk reports.",
     noReports: "No reports yet",
     noReportsDesc:
-      "Reports are generated automatically every Monday at 8:00 AM UTC. Make sure you have at least one supplier added to receive reports.",
+      "Reports are generated automatically every week on your chosen schedule. Make sure you have at least one supplier added to receive reports.",
     manageSuppliers: "Manage Suppliers",
     weekOf: "Week of {date}",
     statusPending: "Pending",
@@ -288,7 +288,7 @@ const en = {
     heroTitle: "AI-Powered Supply Chain Intelligence",
     heroSubtitle: "Know your supply chain risks before they hit",
     heroDesc:
-      "Automatically generated weekly risk reports powered by advanced AI research. Monitor suppliers, identify disruptions, and receive actionable intelligence every Monday morning.",
+      "Automatically generated weekly risk reports powered by advanced AI research. Monitor suppliers, identify disruptions, and receive actionable intelligence on your chosen schedule.",
     startFree: "Start Free",
     viewPricing: "View Pricing",
     noCreditCard:
@@ -303,7 +303,7 @@ const en = {
     step2: "STEP 2",
     step2Title: "AI analyzes risks",
     step2Desc:
-      "Every Monday, our AI researches current disruptions, assesses risks, and identifies upcoming threats for each supplier.",
+      "Every week, our AI researches current disruptions, assesses risks, and identifies upcoming threats for each supplier.",
     step3: "STEP 3",
     step3Title: "Get your report",
     step3Desc:
@@ -322,7 +322,7 @@ const en = {
       "Professional, consolidated PDF reports with markdown formatting, supplier profiles, and cited sources.",
     featureEmailTitle: "Email Delivery",
     featureEmailDesc:
-      "Reports delivered to your inbox every Monday morning at 8 AM UTC. No manual effort needed.",
+      "Reports delivered to your inbox weekly on your chosen schedule. No manual effort needed.",
     featureInsightsTitle: "Actionable Insights",
     featureInsightsDesc:
       "Specific recommendations: buffer adjustments, alternative suppliers, and immediate action items.",
@@ -362,13 +362,13 @@ const en = {
     freeDesc: "Get started with basic supply chain monitoring.",
     freeFeature1: "Monitor 1 supplier",
     freeFeature2: "Weekly AI risk report",
-    freeFeature3: "Email delivery every Monday",
+    freeFeature3: "Weekly email delivery",
     freeFeature4: "PDF download",
     freeFeature5: "Basic email support",
     standardDesc: "For teams monitoring multiple critical suppliers.",
     standardFeature1: "Monitor up to 5 suppliers",
     standardFeature2: "Weekly AI risk reports",
-    standardFeature3: "Email delivery every Monday",
+    standardFeature3: "Weekly email delivery",
     standardFeature4: "PDF downloads with full citations",
     standardFeature5: "Priority email support",
     standardFeature6: "Consolidated multi-supplier PDF",
@@ -379,7 +379,7 @@ const en = {
     premiumFeature3:
       "In-depth geopolitical & financial risk analysis",
     premiumFeature4: "Multi-source intelligence with cited evidence",
-    premiumFeature5: "Email delivery every Monday",
+    premiumFeature5: "Weekly email delivery",
     premiumFeature6: "PDF downloads with full citations",
     premiumFeature7: "Priority email support",
     premiumFeature8: "Consolidated multi-supplier PDF",
@@ -437,7 +437,7 @@ const en = {
       highlight5: "All findings backed by cited sources",
       pdfNote: "The full PDF report is attached to this email. You can also view your reports on the dashboard.",
       viewDashboard: "View in Dashboard",
-      footerGenerated: "Generated automatically every Monday at 8 AM UTC",
+      footerGenerated: "Generated automatically on your weekly schedule",
       footerQuestions: "Questions? Reply to this email or visit your",
       footerDashboard: "dashboard",
       subject: "Weekly Supply Chain Report - {weekLabel}",

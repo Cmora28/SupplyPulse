@@ -55,7 +55,7 @@ const fr: TranslationType = {
     totalSuppliers: "Total des fournisseurs",
     reportsThisMonth: "Rapports ce mois-ci",
     nextReport: "Prochain rapport",
-    nextReportTime: "Lundi 8h00 UTC",
+    nextReportTime: "Hebdomadaire, selon votre horaire choisi",
     currentPlan: "Plan actuel",
     quickActions: "Actions rapides",
     quickActionsSubtitle: "Démarrez la surveillance de votre chaîne d'approvisionnement",
@@ -137,7 +137,7 @@ const fr: TranslationType = {
     subtitle: "Vos rapports hebdomadaires de risques de la chaîne d'approvisionnement générés par l'IA.",
     noReports: "Aucun rapport pour l'instant",
     noReportsDesc:
-      "Les rapports sont générés automatiquement chaque lundi à 8h00 UTC. Assurez-vous d'avoir ajouté au moins un fournisseur pour recevoir des rapports.",
+      "Les rapports sont générés automatiquement chaque semaine selon votre horaire choisi. Assurez-vous d'avoir ajouté au moins un fournisseur pour recevoir des rapports.",
     manageSuppliers: "Gérer les fournisseurs",
     weekOf: "Semaine du {date}",
     statusPending: "En attente",
@@ -291,7 +291,7 @@ const fr: TranslationType = {
     heroTitle: "Intelligence de la chaîne d'approvisionnement propulsée par l'IA",
     heroSubtitle: "Anticipez les risques de votre chaîne d'approvisionnement",
     heroDesc:
-      "Rapports de risques hebdomadaires générés automatiquement grâce à une recherche IA avancée. Surveillez vos fournisseurs, identifiez les perturbations et recevez des renseignements exploitables chaque lundi matin.",
+      "Rapports de risques hebdomadaires générés automatiquement grâce à une recherche IA avancée. Surveillez vos fournisseurs, identifiez les perturbations et recevez des renseignements exploitables selon votre horaire choisi.",
     startFree: "Commencer gratuitement",
     viewPricing: "Voir les tarifs",
     noCreditCard:
@@ -306,7 +306,7 @@ const fr: TranslationType = {
     step2: "ÉTAPE 2",
     step2Title: "L'IA analyse les risques",
     step2Desc:
-      "Chaque lundi, notre IA recherche les perturbations en cours, évalue les risques et identifie les menaces à venir pour chaque fournisseur.",
+      "Chaque semaine, notre IA recherche les perturbations en cours, évalue les risques et identifie les menaces à venir pour chaque fournisseur.",
     step3: "ÉTAPE 3",
     step3Title: "Recevez votre rapport",
     step3Desc:
@@ -325,7 +325,7 @@ const fr: TranslationType = {
       "Rapports PDF professionnels et consolidés avec mise en forme, profils des fournisseurs et sources citées.",
     featureEmailTitle: "Livraison par e-mail",
     featureEmailDesc:
-      "Rapports livrés dans votre boîte de réception chaque lundi matin à 8h00 UTC. Aucun effort manuel requis.",
+      "Rapports livrés dans votre boîte de réception chaque semaine selon votre horaire. Aucun effort manuel requis.",
     featureInsightsTitle: "Recommandations exploitables",
     featureInsightsDesc:
       "Recommandations spécifiques : ajustements de stocks tampons, fournisseurs alternatifs et actions immédiates à entreprendre.",
@@ -365,13 +365,13 @@ const fr: TranslationType = {
     freeDesc: "Démarrez avec une surveillance de base de la chaîne d'approvisionnement.",
     freeFeature1: "Surveiller 1 fournisseur",
     freeFeature2: "Rapport de risques IA hebdomadaire",
-    freeFeature3: "Livraison par e-mail chaque lundi",
+    freeFeature3: "Livraison hebdomadaire par e-mail",
     freeFeature4: "Téléchargement PDF",
     freeFeature5: "Support par e-mail basique",
     standardDesc: "Pour les équipes surveillant plusieurs fournisseurs critiques.",
     standardFeature1: "Surveiller jusqu'à 5 fournisseurs",
     standardFeature2: "Rapports de risques IA hebdomadaires",
-    standardFeature3: "Livraison par e-mail chaque lundi",
+    standardFeature3: "Livraison hebdomadaire par e-mail",
     standardFeature4: "Téléchargements PDF avec citations complètes",
     standardFeature5: "Support par e-mail prioritaire",
     standardFeature6: "PDF consolidé multi-fournisseurs",
@@ -382,7 +382,7 @@ const fr: TranslationType = {
     premiumFeature3:
       "Analyse approfondie des risques géopolitiques et financiers",
     premiumFeature4: "Intelligence multi-sources avec preuves citées",
-    premiumFeature5: "Livraison par e-mail chaque lundi",
+    premiumFeature5: "Livraison hebdomadaire par e-mail",
     premiumFeature6: "Téléchargements PDF avec citations complètes",
     premiumFeature7: "Support par e-mail prioritaire",
     premiumFeature8: "PDF consolidé multi-fournisseurs",
@@ -440,7 +440,7 @@ const fr: TranslationType = {
       highlight5: "Toutes les conclusions étayées par des sources citées",
       pdfNote: "Le rapport PDF complet est joint à cet e-mail. Vous pouvez également consulter vos rapports sur le tableau de bord.",
       viewDashboard: "Voir le Tableau de Bord",
-      footerGenerated: "Généré automatiquement chaque lundi à 8h UTC",
+      footerGenerated: "Généré automatiquement selon votre horaire hebdomadaire",
       footerQuestions: "Des questions ? Répondez à cet e-mail ou visitez votre",
       footerDashboard: "tableau de bord",
       subject: "Rapport Hebdomadaire Chaîne d'Approvisionnement - {weekLabel}",
