@@ -6,7 +6,9 @@ import { createTranslator } from "@/i18n";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-const FROM_EMAIL = process.env.EMAIL_FROM || "onboarding@resend.dev";
+// Use your verified domain in Resend. Set EMAIL_FROM to override (e.g. "Supply Pulse <reports@supplypulse.net>").
+const FROM_EMAIL =
+  process.env.EMAIL_FROM || "Supply Pulse <reports@supplypulse.net>";
 
 function buildEmailHtml(
   userName: string,
