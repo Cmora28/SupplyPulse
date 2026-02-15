@@ -20,6 +20,7 @@ import {
   FileText,
   CreditCard,
   Settings,
+  MessageSquare,
   Shield,
 } from "lucide-react";
 
@@ -31,6 +32,7 @@ const navItems = [
   { key: "nav.reports" as const, href: "/dashboard/reports", icon: FileText },
   { key: "nav.billing" as const, href: "/dashboard/billing", icon: CreditCard },
   { key: "nav.settings" as const, href: "/dashboard/settings", icon: Settings },
+  { key: "nav.support" as const, href: "/dashboard/support", icon: MessageSquare },
 ];
 
 export function MobileNav() {
