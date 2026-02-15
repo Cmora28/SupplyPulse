@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Info, ArrowLeft, Clock } from "lucide-react";
 import { useTranslation } from "@/i18n/client";
+import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
 import { locales, localeNames, localeFlags, type Locale } from "@/i18n";
 import { Separator } from "@/components/ui/separator";
 
@@ -109,7 +110,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4 relative">
+      <div className="absolute top-4 right-4">
+        <PublicLanguageSwitcher />
+      </div>
       <div className="w-full max-w-md space-y-4">
         <Link
           href="/"

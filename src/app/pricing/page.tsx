@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/client";
+import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
 
 export default function PricingPage() {
   const { data: session } = useSession();
@@ -152,16 +153,20 @@ export default function PricingPage() {
             </div>
             <span className="text-lg font-bold">{t("common.appName")}</span>
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {session ? (
-              <Link href="/dashboard">
-                <Button variant="outline">{t("common.dashboard")}</Button>
-              </Link>
+              <>
+                <PublicLanguageSwitcher />
+                <Link href="/dashboard">
+                  <Button variant="outline">{t("common.dashboard")}</Button>
+                </Link>
+              </>
             ) : (
               <>
                 <Link href="/login">
                   <Button variant="ghost">{t("common.signIn")}</Button>
                 </Link>
+                <PublicLanguageSwitcher />
                 <Link href="/register">
                   <Button>{t("common.getStarted")}</Button>
                 </Link>
