@@ -295,6 +295,8 @@ const fr: TranslationType = {
       "Rapports de risques hebdomadaires générés automatiquement grâce à une recherche IA avancée. Surveillez vos fournisseurs, identifiez les perturbations et recevez des renseignements exploitables selon votre horaire choisi.",
     startFree: "Commencer gratuitement",
     viewPricing: "Voir les tarifs",
+    viewSampleReport: "Voir un Rapport Exemple",
+    sampleReportDesc: "Rapport réel de 18 pages généré par notre modèle AI Deep Research",
     noCreditCard:
       "Aucune carte de crédit requise. Le plan gratuit inclut 1 fournisseur.",
     howItWorks: "Comment ça fonctionne",

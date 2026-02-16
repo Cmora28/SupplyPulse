@@ -295,6 +295,8 @@ const es: TranslationType = {
       "Informes de riesgo semanales generados automáticamente con tecnología de investigación avanzada de IA. Monitorea proveedores, identifica interrupciones y recibe inteligencia accionable según tu horario elegido.",
     startFree: "Comenzar gratis",
     viewPricing: "Ver precios",
+    viewSampleReport: "Ver Informe de Ejemplo",
+    sampleReportDesc: "Informe real de 18 páginas generado por nuestro modelo AI Deep Research",
     noCreditCard:
       "No se requiere tarjeta de crédito. El plan gratuito incluye 1 proveedor.",
     howItWorks: "Cómo funciona",

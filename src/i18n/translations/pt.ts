@@ -295,6 +295,8 @@ const pt: TranslationType = {
       "Relatórios semanais de risco gerados automaticamente com tecnologia de IA avançada. Monitore fornecedores, identifique interrupções e receba inteligência acionável no horário escolhido.",
     startFree: "Começar Grátis",
     viewPricing: "Ver Preços",
+    viewSampleReport: "Ver Relatório de Exemplo",
+    sampleReportDesc: "Relatório real de 18 páginas gerado pelo nosso modelo AI Deep Research",
     noCreditCard:
       "Não é necessário cartão de crédito. O plano gratuito inclui 1 fornecedor.",
     howItWorks: "Como funciona",

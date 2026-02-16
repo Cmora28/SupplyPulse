@@ -299,6 +299,24 @@ export default function LandingPage() {
                 </Button>
               </Link>
             </div>
+            <div className="mt-6 flex flex-col items-center gap-2">
+              <a
+                href="/supply-chain-report-example.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-5 py-2.5 text-sm font-medium text-primary transition-all hover:bg-primary/10 hover:border-primary/40 hover:shadow-md"
+              >
+                <FileText className="h-4 w-4" />
+                {t("landing.viewSampleReport")}
+                <Badge variant="secondary" className="ml-1 bg-primary/10 text-primary text-[10px] px-1.5 py-0 leading-4 uppercase tracking-wider font-semibold">
+                  Deep Research
+                </Badge>
+                <ArrowRight className="h-3 w-3 opacity-0 -translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-x-0" />
+              </a>
+              <p className="text-xs text-muted-foreground">
+                {t("landing.sampleReportDesc")}
+              </p>
+            </div>
             <p className="text-sm text-muted-foreground mt-4">
               {t("landing.noCreditCard")}
             </p>
