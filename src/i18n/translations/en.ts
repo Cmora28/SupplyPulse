@@ -286,45 +286,8 @@ const en = {
   },
 
   landing: {
-    // Hero
-    heroTitle: "Stop Reacting to Supply Chain Disruptions",
-    heroSubtitle: "Get 24/7 AI monitoring for every supplier in your network. Detect risks weeks before they hit your bottom line.",
-    heroCta: "Start Monitoring Free",
-    heroSecondaryCta: "View Sample Report",
-    
-    // Trust
-    trustedBy: "TRUSTED BY MODERN SUPPLY CHAIN TEAMS",
-
-    // Problem Section
-    problemTitle: "Don't let supply chain shocks kill your cash flow",
-    problemSubtitle: "SMBs are hit hardest by disruptions. You don't have a crisis team—now you don't need one.",
-    problem1Title: "One Strike Can End It",
-    problem1Desc: "Small businesses often operate on thin margins. A single delayed shipment or supplier bankruptcy can wipe out months of profit.",
-    problem2Title: "No Dedicated Team",
-    problem2Desc: "You can't afford a full-time risk analyst. Supply Pulse acts as your automated 24/7 supply chain watchdog.",
-    problem3Title: "Manual Chaos",
-    problem3Desc: "Tracking suppliers in spreadsheets is a recipe for disaster. Automate the boring stuff and focus on growing your business.",
-
-    // Feature Deep Dives
-    deepDive1Title: "Automated 24/7 Watchtower",
-    deepDive1Desc: "Our AI agents scan 100,000+ sources daily—news, financial reports, government filings, and local media in 50+ languages. If a supplier is mentioned in a risk context, you'll know.",
-    deepDive1Point1: "Real-time disruption alerts",
-    deepDive1Point2: "Global geopolitical monitoring",
-    deepDive1Point3: "Financial health tracking",
-
-    deepDive2Title: "Deep Research, No Hallucinations",
-    deepDive2Desc: "Unlike generic AI, Supply Pulse is built for fact-checking. Every claim is cross-referenced and every risk score is backed by cited, clickable sources.",
-    deepDive2Point1: "Full citation trail",
-    deepDive2Point2: "Entity resolution & verification",
-    deepDive2Point3: "Filter out noise & false positives",
-
-    deepDive3Title: "Executive-Ready Reporting",
-    deepDive3Desc: "Stop spending Fridays copy-pasting into Excel. Get a professional, branded PDF risk briefing in your inbox every Monday morning (or whenever you choose).",
-    deepDive3Point1: "Customizable delivery schedule",
-    deepDive3Point2: "Trend analysis & recommendations",
-    deepDive3Point3: "Shareable with one click",
-
-    // Old keys (kept for backward compatibility or reused)
+    heroTitle: "AI-Powered Supply Chain Intelligence",
+    heroSubtitle: "Know your supply chain risks before they hit",
     heroDesc:
       "Automatically generated weekly risk reports powered by advanced AI research. Monitor suppliers, identify disruptions, and receive actionable intelligence on your chosen schedule.",
     startFree: "Start Free",
