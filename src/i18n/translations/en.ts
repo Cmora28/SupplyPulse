@@ -296,14 +296,14 @@ const en = {
     trustedBy: "TRUSTED BY MODERN SUPPLY CHAIN TEAMS",
 
     // Problem Section
-    problemTitle: "The Cost of \"Not Knowing\"",
-    problemSubtitle: "Manual monitoring is impossible at scale. Blind spots are where the money leaks.",
-    problem1Title: "$4M+ Average Cost",
-    problem1Desc: "The average cost of a single supply chain disruption event for enterprise companies.",
-    problem2Title: "48 Hours Late",
-    problem2Desc: "Most teams find out about supplier bankruptcies or strikes days after the news breaks.",
-    problem3Title: "Zero Visibility",
-    problem3Desc: "90% of organizations have no visibility into their Tier 2 and Tier 3 supplier risks.",
+    problemTitle: "Don't let supply chain shocks kill your cash flow",
+    problemSubtitle: "SMBs are hit hardest by disruptions. You don't have a crisis team—now you don't need one.",
+    problem1Title: "One Strike Can End It",
+    problem1Desc: "Small businesses often operate on thin margins. A single delayed shipment or supplier bankruptcy can wipe out months of profit.",
+    problem2Title: "No Dedicated Team",
+    problem2Desc: "You can't afford a full-time risk analyst. Supply Pulse acts as your automated 24/7 supply chain watchdog.",
+    problem3Title: "Manual Chaos",
+    problem3Desc: "Tracking suppliers in spreadsheets is a recipe for disaster. Automate the boring stuff and focus on growing your business.",
 
     // Feature Deep Dives
     deepDive1Title: "Automated 24/7 Watchtower",
