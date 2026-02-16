@@ -593,7 +593,7 @@ const en = {
 
     privacySection3Title: "3. Third-Party Services",
     privacyThirdPartyIntro: "We share limited data with the following third-party services to operate our platform:",
-    privacyThirdParty1: "Your supplier information (name, country, category) is sent to Perplexity AI to generate risk analysis reports. No personal data (name, email) is shared with Perplexity.",
+    privacyThirdParty1: "Your supplier information (name, country, category) is sent to our AI research provider to generate risk analysis reports. No personal data (name, email) is shared with the AI provider.",
     privacyThirdParty2: "Your email address and name are used by Resend to deliver report emails, password reset emails, and support confirmations.",
     privacyThirdParty3: "Your email and subscription details are processed by Polar to manage payments and subscriptions.",
 
