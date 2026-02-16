@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MobileNav } from "@/components/mobile-nav";
 import { User, Settings, LogOut } from "lucide-react";
 import Link from "next/link";
+import { Logo } from "@/components/logo";
 
 function getTierColor(tier: string) {
   switch (tier) {
@@ -49,9 +50,7 @@ export function Header() {
         <div className="flex items-center gap-2 md:hidden">
           <MobileNav />
           <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xs">S</span>
-            </div>
+            <Logo size={28} />
             <span className="font-bold">{t("common.appName")}</span>
           </Link>
         </div>

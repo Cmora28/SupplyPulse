@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useTranslation } from "@/i18n/client";
 import { cn } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Logo } from "@/components/logo";
 import {
   LayoutDashboard,
   Factory,
@@ -38,9 +39,7 @@ export function Sidebar() {
       <div className="flex flex-col flex-grow border-r bg-card pt-5 overflow-y-auto">
         <div className="flex items-center flex-shrink-0 px-6 mb-6">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">S</span>
-            </div>
+            <Logo size={32} />
             <span className="text-lg font-bold">{t("common.appName")}</span>
           </Link>
         </div>
