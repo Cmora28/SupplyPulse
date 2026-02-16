@@ -302,6 +302,8 @@ const de: TranslationType = {
       "Automatisch generierte wöchentliche Risikoberichte, unterstützt durch fortschrittliche KI-Analyse. Überwachen Sie Lieferanten, erkennen Sie Störungen und erhalten Sie verwertbare Informationen nach Ihrem gewählten Zeitplan.",
     startFree: "Kostenlos starten",
     viewPricing: "Preise ansehen",
+    viewSampleReport: "Beispielbericht ansehen",
+    sampleReportDesc: "Echter 18-seitiger Bericht, erstellt von unserem AI Deep Research-Modell",
     noCreditCard:
       "Keine Kreditkarte erforderlich. Der kostenlose Plan umfasst 1 Lieferanten.",
     howItWorks: "So funktioniert es",
