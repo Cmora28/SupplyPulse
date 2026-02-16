@@ -35,7 +35,6 @@ const COLORS = {
 };
 
 // ---- State Management ----
-let pageNum = 0;
 let generatedDate = "";
 let tFunc: (key: string, params?: Record<string, string | number>) => string;
 
@@ -189,7 +188,7 @@ function drawHeader(doc: PDFKit.PDFDocument) {
   doc.restore();
 }
 
-function stampFooter(doc: PDFKit.PDFDocument, pageNum: number, totalPages: number) {
+function stampFooter(doc: PDFKit.PDFDocument, pageNum: number, _totalPages: number) {
   const savedY = doc.y;
   const savedBottom = doc.page.margins.bottom;
   doc.page.margins.bottom = 0;
@@ -419,7 +418,7 @@ export async function generateReportPDF(
 
       // ============ SUPPLIER REPORTS ============
       
-      supplierReports.forEach((sr, index) => {
+      supplierReports.forEach((sr) => {
         doc.addPage();
         drawHeader(doc);
         doc.y = HEADER_HEIGHT + 30; // Start below header
