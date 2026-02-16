@@ -597,7 +597,7 @@ const de: TranslationType = {
     privacyUse5: "Um auf Supportanfragen zu antworten",
     privacySection3Title: "3. Drittanbieter-Dienste",
     privacyThirdPartyIntro: "Wir teilen begrenzte Daten mit den folgenden Drittanbieter-Diensten, um unsere Plattform zu betreiben:",
-    privacyThirdParty1: "Ihre Lieferanteninformationen (Name, Land, Kategorie) werden an Perplexity AI gesendet, um Risikoanalyseberichte zu erstellen. Keine persönlichen Daten (Name, E-Mail) werden mit Perplexity geteilt.",
+    privacyThirdParty1: "Ihre Lieferanteninformationen (Name, Land, Kategorie) werden an unseren KI-Forschungsanbieter gesendet, um Risikoanalyseberichte zu erstellen. Keine persönlichen Daten (Name, E-Mail) werden mit dem KI-Anbieter geteilt.",
     privacyThirdParty2: "Ihre E-Mail-Adresse und Ihr Name werden von Resend verwendet, um Berichts-E-Mails, Passwort-Zurücksetzungs-E-Mails und Support-Bestätigungen zuzustellen.",
     privacyThirdParty3: "Ihre E-Mail und Abonnementdetails werden von Polar verarbeitet, um Zahlungen und Abonnements zu verwalten.",
     privacySection4Title: "4. Cookies",

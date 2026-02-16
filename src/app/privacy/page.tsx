@@ -77,7 +77,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-xl font-semibold mt-8 mb-3">{t("legal.privacySection3Title")}</h2>
             <p className="text-muted-foreground text-sm mb-3">{t("legal.privacyThirdPartyIntro")}</p>
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground text-sm">
-              <li><strong>Perplexity AI</strong> — {t("legal.privacyThirdParty1")}</li>
+              <li><strong>AI Research Provider</strong> — {t("legal.privacyThirdParty1")}</li>
               <li><strong>Resend</strong> — {t("legal.privacyThirdParty2")}</li>
               <li><strong>Polar</strong> — {t("legal.privacyThirdParty3")}</li>
             </ul>
