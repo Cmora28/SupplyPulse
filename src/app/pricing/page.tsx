@@ -274,6 +274,19 @@ export default function PricingPage() {
         <p className="text-center text-xs text-muted-foreground mt-8">
           {t("pricing.taxNote")}
         </p>
+        <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground mt-6">
+          <Link href="/privacy" className="hover:text-foreground transition-colors">
+            {t("legal.privacyTitle")}
+          </Link>
+          <span>·</span>
+          <Link href="/terms" className="hover:text-foreground transition-colors">
+            {t("legal.termsTitle")}
+          </Link>
+          <span>·</span>
+          <Link href="/cookies" className="hover:text-foreground transition-colors">
+            {t("legal.cookiesTitle")}
+          </Link>
+        </div>
       </div>
     </div>
   );

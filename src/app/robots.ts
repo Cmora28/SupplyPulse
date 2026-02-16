@@ -8,43 +8,43 @@ export default function robots(): MetadataRoute.Robots {
       {
         // Default rule for all crawlers (Google, Bing, etc.)
         userAgent: "*",
-        allow: ["/", "/pricing", "/login", "/register"],
+        allow: ["/", "/pricing", "/privacy", "/terms", "/cookies", "/login", "/register"],
         disallow: ["/dashboard/", "/api/", "/_next/"],
       },
       {
         // OpenAI's ChatGPT web browsing and training crawler
         userAgent: "GPTBot",
-        allow: ["/", "/pricing"],
+        allow: ["/", "/pricing", "/privacy", "/terms", "/cookies"],
         disallow: ["/dashboard/", "/api/"],
       },
       {
         // ChatGPT user-facing browsing
         userAgent: "ChatGPT-User",
-        allow: ["/", "/pricing"],
+        allow: ["/", "/pricing", "/privacy", "/terms", "/cookies"],
         disallow: ["/dashboard/", "/api/"],
       },
       {
         // Anthropic's Claude crawler
         userAgent: "ClaudeBot",
-        allow: ["/", "/pricing"],
+        allow: ["/", "/pricing", "/privacy", "/terms", "/cookies"],
         disallow: ["/dashboard/", "/api/"],
       },
       {
         // Perplexity AI crawler
         userAgent: "PerplexityBot",
-        allow: ["/", "/pricing"],
+        allow: ["/", "/pricing", "/privacy", "/terms", "/cookies"],
         disallow: ["/dashboard/", "/api/"],
       },
       {
         // Google's AI training crawler (Gemini)
         userAgent: "Google-Extended",
-        allow: ["/", "/pricing"],
+        allow: ["/", "/pricing", "/privacy", "/terms", "/cookies"],
         disallow: ["/dashboard/", "/api/"],
       },
       {
         // Cohere's AI crawler
         userAgent: "cohere-ai",
-        allow: ["/", "/pricing"],
+        allow: ["/", "/pricing", "/privacy", "/terms", "/cookies"],
         disallow: ["/dashboard/", "/api/"],
       },
     ],

@@ -527,24 +527,39 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="h-6 w-6 rounded bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-xs">S</span>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <div className="h-6 w-6 rounded bg-primary flex items-center justify-center">
+                  <span className="text-primary-foreground font-bold text-xs">S</span>
+                </div>
+                <span className="text-sm font-medium">{t("common.appName")}</span>
               </div>
-              <span className="text-sm font-medium">{t("common.appName")}</span>
+              <div className="flex items-center gap-4">
+                <a
+                  href="mailto:support@supplypulse.net"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  <Mail className="h-3.5 w-3.5" />
+                  {t("landing.footerSupport")}
+                </a>
+                <p className="text-sm text-muted-foreground">
+                  {t("landing.footerCopyright", { year: new Date().getFullYear() })}
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-4">
-              <a
-                href="mailto:support@supplypulse.net"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
-              >
-                <Mail className="h-3.5 w-3.5" />
-                {t("landing.footerSupport")}
-              </a>
-              <p className="text-sm text-muted-foreground">
-                {t("landing.footerCopyright", { year: new Date().getFullYear() })}
-              </p>
+            <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+              <Link href="/privacy" className="hover:text-foreground transition-colors">
+                {t("legal.privacyTitle")}
+              </Link>
+              <span>·</span>
+              <Link href="/terms" className="hover:text-foreground transition-colors">
+                {t("legal.termsTitle")}
+              </Link>
+              <span>·</span>
+              <Link href="/cookies" className="hover:text-foreground transition-colors">
+                {t("legal.cookiesTitle")}
+              </Link>
             </div>
           </div>
         </div>

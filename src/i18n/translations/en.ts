@@ -562,6 +562,143 @@ const en = {
     failed: "Failed to send message",
   },
 
+  legal: {
+    lastUpdated: "Last updated: {date}",
+
+    // Privacy Policy
+    privacyTitle: "Privacy Policy",
+    privacyIntro: "Supply Pulse (\"we\", \"us\", \"our\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our web application and services.",
+
+    privacySection1Title: "1. Information We Collect",
+    privacyAccountDataTitle: "Account Data",
+    privacyAccountData1: "Full name and email address (provided during registration)",
+    privacyAccountData2: "Password (stored securely using bcrypt hashing — we never store plain text passwords)",
+    privacyAccountData3: "Language preference and report schedule settings",
+    privacyAccountData4: "Subscription tier and payment identifiers (managed by Polar)",
+    privacySupplierDataTitle: "Supplier Data",
+    privacySupplierData1: "Supplier information you enter: name, country, product category, lead time, COGS percentage, shipping routes, and dependencies",
+    privacySupplierData2: "This is business data you voluntarily provide to generate risk reports",
+    privacyAutoDataTitle: "Automatically Collected Data",
+    privacyAutoData1: "IP addresses are temporarily processed for rate limiting and security purposes (not stored permanently)",
+    privacyAutoData2: "Cookies for authentication and language preferences (see Cookies section below)",
+
+    privacySection2Title: "2. How We Use Your Data",
+    privacyUse1: "To create and manage your account",
+    privacyUse2: "To generate AI-powered supply chain risk reports using the supplier data you provide",
+    privacyUse3: "To send weekly report emails and password reset emails",
+    privacyUse4: "To process subscription payments",
+    privacyUse5: "To respond to support requests",
+
+    privacySection3Title: "3. Third-Party Services",
+    privacyThirdPartyIntro: "We share limited data with the following third-party services to operate our platform:",
+    privacyThirdParty1: "Your supplier information (name, country, category) is sent to Perplexity AI to generate risk analysis reports. No personal data (name, email) is shared with Perplexity.",
+    privacyThirdParty2: "Your email address and name are used by Resend to deliver report emails, password reset emails, and support confirmations.",
+    privacyThirdParty3: "Your email and subscription details are processed by Polar to manage payments and subscriptions.",
+
+    privacySection4Title: "4. Cookies",
+    privacyCookiesIntro: "We use only essential and functional cookies:",
+    privacyCookie1: "Essential session cookie for authentication (expires after 7 days)",
+    privacyCookie2: "Functional cookie to remember your language preference (expires after 1 year)",
+    privacyCookiesNoTracking: "We do not use any tracking, advertising, or analytics cookies.",
+
+    privacySection5Title: "5. Data Retention",
+    privacyRetention: "Your account data is retained as long as your account is active. When you delete your account (available in Settings), all personal data, supplier information, and report history are permanently deleted. IP addresses used for rate limiting are held in memory only and are not persisted.",
+
+    privacySection6Title: "6. Your Rights",
+    privacyRightsIntro: "Depending on your location, you may have the following rights regarding your personal data:",
+    privacyRight1: "Right to access — request a copy of the data we hold about you",
+    privacyRight2: "Right to correction — update inaccurate information in your account settings",
+    privacyRight3: "Right to deletion — delete your account and all associated data",
+    privacyRight4: "Right to data portability — request your data in a machine-readable format",
+    privacyRightsDelete: "You can delete your account at any time from the Settings page in your dashboard. To exercise other rights, contact us at support@supplypulse.net.",
+
+    privacySection7Title: "7. Data Security",
+    privacySecurity: "We implement industry-standard security measures including password hashing (bcrypt), HTTPS encryption, Content Security Policy headers, rate limiting, and input validation. However, no method of transmission or storage is 100% secure, and we cannot guarantee absolute security.",
+
+    privacySection8Title: "8. International Data Transfers",
+    privacyInternational: "Our services are hosted on infrastructure that may process data in different geographic regions. By using Supply Pulse, you consent to the transfer and processing of your information in these locations.",
+
+    privacySection9Title: "9. Changes to This Policy",
+    privacyChanges: "We may update this Privacy Policy from time to time. We will notify you of significant changes by email or through a notice on our website. Your continued use of the service after changes constitutes acceptance of the updated policy.",
+
+    privacySection10Title: "10. Contact Us",
+    privacyContact: "If you have questions about this Privacy Policy or your personal data, contact us at",
+
+    // Terms of Service
+    termsTitle: "Terms of Service",
+    termsSection1Title: "1. Acceptance of Terms",
+    termsAcceptance: "By accessing or using Supply Pulse (\"the Service\"), you agree to be bound by these Terms of Service. If you do not agree to these terms, do not use the Service. These terms constitute a legally binding agreement between you and Supply Pulse.",
+
+    termsSection2Title: "2. Service Description",
+    termsServiceDesc: "Supply Pulse is an AI-powered supply chain risk monitoring platform. We generate weekly risk assessment reports for suppliers you add to the platform, using artificial intelligence to analyze publicly available information. Reports are delivered via email as PDF documents.",
+
+    termsSection3Title: "3. Account Responsibilities",
+    termsAccount1: "You must provide accurate and complete information when creating your account",
+    termsAccount2: "You are responsible for maintaining the security of your password and account",
+    termsAccount3: "You must not share your account credentials with third parties",
+    termsAccount4: "You are responsible for all activity that occurs under your account",
+
+    termsSection4Title: "4. Subscription and Billing",
+    termsBilling: "Supply Pulse offers Free, Standard, Premium, and Enterprise subscription tiers. Paid subscriptions are billed monthly through our payment processor, Polar. Prices are in USD and exclude applicable taxes, which are calculated at checkout. You may cancel your subscription at any time through the Customer Portal. Upon cancellation, your plan will revert to Free at the end of the current billing period.",
+
+    termsSection5Title: "5. AI-Generated Content Disclaimer",
+    termsAiDisclaimer: "Important: Supply Pulse reports are generated by artificial intelligence and are provided for informational purposes only.",
+    termsAi1: "Reports do not constitute professional, legal, financial, or business advice",
+    termsAi2: "AI-generated content may contain inaccuracies, outdated information, or errors",
+    termsAi3: "You should independently verify all findings using the cited sources provided",
+    termsAi4: "Business decisions should not be based solely on AI-generated reports without independent verification",
+
+    termsSection6Title: "6. Intellectual Property",
+    termsIP: "You retain ownership of all supplier data you enter into the platform. Supply Pulse retains ownership of the platform, its software, design, and branding. The AI-generated report content is provided to you for your use, but the underlying technology and methodology remain our intellectual property.",
+
+    termsSection7Title: "7. Limitation of Liability",
+    termsLiability: "To the maximum extent permitted by law, Supply Pulse shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, business opportunities, or goodwill, arising from your use of the Service or reliance on AI-generated reports. Our total liability shall not exceed the amount you paid us in the 12 months preceding the claim.",
+
+    termsSection8Title: "8. Termination",
+    termsTermination: "Either party may terminate this agreement at any time. You can delete your account from the Settings page. We reserve the right to suspend or terminate accounts that violate these terms, engage in abusive behavior, or misuse the platform. Upon termination, your data will be deleted in accordance with our Privacy Policy.",
+
+    termsSection9Title: "9. Changes to Terms",
+    termsChanges: "We may modify these Terms of Service at any time. We will provide notice of material changes via email or through the Service. Your continued use of the Service after changes take effect constitutes acceptance of the modified terms.",
+
+    termsSection10Title: "10. Governing Law",
+    termsGoverning: "These Terms of Service shall be governed by and construed in accordance with applicable law. Any disputes arising from these terms or your use of the Service shall be resolved through good-faith negotiation, and if necessary, through binding arbitration or the courts of competent jurisdiction.",
+
+    termsSection11Title: "11. Contact Us",
+    termsContact: "If you have questions about these Terms of Service, contact us at",
+
+    // Cookie Policy
+    cookiesTitle: "Cookie Policy",
+    cookiesSection1Title: "1. What Are Cookies",
+    cookiesWhat: "Cookies are small text files stored on your device by your web browser when you visit a website. They are used to remember your preferences and provide essential functionality.",
+
+    cookiesSection2Title: "2. Cookies We Use",
+    cookiesWeUseIntro: "Supply Pulse uses only two cookies, both essential for the basic operation of the platform:",
+    cookiesTableName: "Cookie Name",
+    cookiesTableType: "Type",
+    cookiesTableDuration: "Duration",
+    cookiesTablePurpose: "Purpose",
+    cookiesTypeEssential: "Essential",
+    cookiesTypeFunctional: "Functional",
+    cookies7Days: "7 days",
+    cookies1Year: "1 year",
+    cookiesSessionDesc: "Keeps you signed in to your account",
+    cookiesLocaleDesc: "Remembers your preferred language",
+
+    cookiesSection3Title: "3. No Tracking or Advertising Cookies",
+    cookiesNoTracking: "We do not use any third-party tracking cookies, advertising cookies, analytics cookies, or social media cookies. We do not track your browsing behavior across websites. We do not share cookie data with advertisers or data brokers.",
+
+    cookiesSection4Title: "4. Managing Cookies",
+    cookiesManage: "You can manage or delete cookies through your browser settings. Please note that disabling the session cookie will prevent you from signing in to your account. Disabling the locale cookie will reset your language preference to the browser default on each visit.",
+
+    cookiesSection5Title: "5. Questions",
+    cookiesContact: "If you have questions about our use of cookies, contact us at",
+
+    // Cookie Banner
+    cookieBannerText: "We use essential cookies for authentication and language preferences. No tracking cookies.",
+    cookieBannerLink: "Learn more",
+    cookieBannerAccept: "Got it",
+  },
+
   upgradeSuccess: {
     processing: "Processing your upgrade...",
     title: "Plan upgraded successfully!",
