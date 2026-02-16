@@ -8,6 +8,7 @@ import { useTranslation } from "@/i18n/client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Logo } from "@/components/logo";
 import {
   Sheet,
   SheetContent,
@@ -53,9 +54,7 @@ export function MobileNav() {
       <SheetContent side="left" className="w-64 p-0">
         <div className="flex flex-col h-full pt-6">
           <div className="flex items-center px-6 mb-6">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">S</span>
-            </div>
+            <Logo size={32} />
             <span className="ml-2 text-lg font-bold">{t("common.appName")}</span>
           </div>
           <nav className="flex-1 px-3 space-y-1">

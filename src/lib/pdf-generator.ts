@@ -8,35 +8,41 @@ interface SupplierWithReport {
   report: SupplierReport;
 }
 
-const MARGIN = 54;
-const PAGE_WIDTH = 612;
+// Layout Constants
+const MARGIN = 50;
+const PAGE_WIDTH = 612; // Letter
 const PAGE_HEIGHT = 792;
 const CONTENT_WIDTH = PAGE_WIDTH - 2 * MARGIN;
 const FOOTER_Y = PAGE_HEIGHT - 40;
-const USABLE_BOTTOM = FOOTER_Y - 8;
+const HEADER_HEIGHT = 60; // For content pages
 
+// Theme Colors (Matches globals.css HSL(221, 83%, 53%))
 const COLORS = {
-  primary: "#1e40af",
-  primaryLight: "#3b82f6",
-  accent: "#0f172a",
-  text: "#1e293b",
-  textLight: "#475569",
-  muted: "#94a3b8",
-  link: "#2563eb",
-  border: "#cbd5e1",
-  bgLight: "#f1f5f9",
+  primary: "#2563eb", // Vibrant Blue
+  primaryDark: "#1e40af", // Darker Blue for headers
+  primaryLight: "#dbeafe", // Very light blue for backgrounds
+  accent: "#0f172a", // Slate 900
+  text: "#334155", // Slate 700
+  textDark: "#0f172a", // Slate 900
+  textLight: "#64748b", // Slate 500
+  border: "#e2e8f0", // Slate 200
   white: "#ffffff",
+  success: "#16a34a",
+  warning: "#ca8a04",
+  danger: "#dc2626",
+  link: "#2563eb",
+  bgLight: "#f8fafc",
 };
 
-// ---- State ----
-let pageNum = 0;
+// ---- State Management ----
 let generatedDate = "";
 let tFunc: (key: string, params?: Record<string, string | number>) => string;
 
-// ---- Text Preprocessing ----
+// ---- Text Processing Helpers ----
 
 function stripMarkdown(text: string): string {
   let t = text;
+  // Remove bold/italic markers but keep text
   t = t.replace(/\*\*([^*]+)\*\*/g, "$1");
   t = t.replace(/\*([^*]+)\*/g, "$1");
   t = t.replace(/__([^_]+)__/g, "$1");
@@ -94,7 +100,11 @@ function parseContentToBlocks(content: string): Block[] {
     }
     const numMatch = trimmed.match(/^(\d+)\.\s+(.+)/);
     if (numMatch) {
-      blocks.push({ type: "numbered", num: numMatch[1], text: stripMarkdown(numMatch[2]) });
+      blocks.push({
+        type: "numbered",
+        num: numMatch[1],
+        text: stripMarkdown(numMatch[2]),
+      });
       continue;
     }
     blocks.push({ type: "paragraph", text: stripMarkdown(trimmed) });
@@ -102,150 +112,204 @@ function parseContentToBlocks(content: string): Block[] {
   return blocks;
 }
 
+// ---- Graphical Helpers ----
+
+function drawLogo(doc: PDFKit.PDFDocument, x: number, y: number, size: number) {
+  doc.save();
+  // Background Circle (Gradient-like effect by stacking)
+  doc.circle(x + size / 2, y + size / 2, size / 2).fill(COLORS.white);
+
+  // "S" Pulse Path
+  // Simple stylized pulse/S shape
+  const p = size * 0.2; // padding
+  const w = size - 2 * p;
+  const h = size - 2 * p;
+  const sx = x + p;
+  const sy = y + p;
+
+  doc
+    .moveTo(sx + w * 0.8, sy + h * 0.2)
+    .bezierCurveTo(sx + w * 0.1, sy + h * 0.2, sx + w * 0.1, sy + h * 0.5, sx + w * 0.5, sy + h * 0.5)
+    .bezierCurveTo(sx + w * 0.9, sy + h * 0.5, sx + w * 0.9, sy + h * 0.8, sx + w * 0.2, sy + h * 0.8)
+    .lineWidth(size * 0.12)
+    .lineCap("round")
+    .strokeColor(COLORS.primary)
+    .stroke();
+
+  doc.restore();
+}
+
+// Simple icon drawer using paths
+function drawIcon(doc: PDFKit.PDFDocument, type: "globe" | "tag" | "clock" | "chart", x: number, y: number, size: number, color: string) {
+  doc.save().translate(x, y).scale(size / 24); // Normalize to 24px grid
+
+  doc.fillColor(color);
+
+  switch (type) {
+    case "globe":
+      doc.path("M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-1.07 3.9-2.74 5.08z").fill();
+      break;
+    case "tag":
+      doc.path("M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z").fill();
+      break;
+    case "clock":
+      doc.path("M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z").fill();
+      break;
+    case "chart":
+      doc.path("M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z").fill();
+      break;
+  }
+
+  doc.restore();
+}
+
 // ---- PDF Page Helpers ----
 
-function stampFooter(doc: PDFKit.PDFDocument) {
+function drawHeader(doc: PDFKit.PDFDocument) {
+  // Only for content pages
+  doc.save();
+  // Header background (optional, keeping it clean for now)
+  // doc.rect(0, 0, PAGE_WIDTH, HEADER_HEIGHT).fill(COLORS.primaryLight);
+
+  // Logo small
+  drawLogo(doc, MARGIN, 20, 24);
+
+  // Title
+  doc.fontSize(10).font("Helvetica-Bold").fillColor(COLORS.textLight)
+    .text("Supply Pulse", MARGIN + 32, 26);
+
+  // Date right aligned
+  doc.fontSize(9).font("Helvetica").fillColor(COLORS.textLight)
+    .text(generatedDate, MARGIN, 26, { width: CONTENT_WIDTH, align: "right" });
+
+  // Divider
+  doc.moveTo(MARGIN, 50).lineTo(PAGE_WIDTH - MARGIN, 50).strokeColor(COLORS.border).lineWidth(0.5).stroke();
+
+  doc.restore();
+}
+
+function stampFooter(doc: PDFKit.PDFDocument, pageNum: number) {
   const savedY = doc.y;
   const savedBottom = doc.page.margins.bottom;
   doc.page.margins.bottom = 0;
 
+  // Divider
   doc
-    .moveTo(MARGIN, FOOTER_Y - 4)
-    .lineTo(MARGIN + CONTENT_WIDTH, FOOTER_Y - 4)
+    .moveTo(MARGIN, FOOTER_Y - 10)
+    .lineTo(PAGE_WIDTH - MARGIN, FOOTER_Y - 10)
     .strokeColor(COLORS.border)
-    .lineWidth(0.3)
+    .lineWidth(0.5)
     .stroke();
 
-  doc.fontSize(7).font("Helvetica").fillColor(COLORS.muted);
-  doc.text(generatedDate, MARGIN, FOOTER_Y, {
-    width: CONTENT_WIDTH / 2,
-    lineBreak: false,
-  });
-  doc.text(tFunc("pdf.page", { num: pageNum }), MARGIN + CONTENT_WIDTH / 2, FOOTER_Y, {
-    width: CONTENT_WIDTH / 2,
-    align: "right",
-    lineBreak: false,
-  });
+  // Confidential Text
+  doc.fontSize(8).font("Helvetica").fillColor(COLORS.textLight)
+    .text("Confidential - Generated by Supply Pulse AI", MARGIN, FOOTER_Y, {
+      width: CONTENT_WIDTH / 2,
+      lineBreak: false,
+    });
+
+  // Page Number
+  if (pageNum > 0) { // Don't show on cover
+    doc.text(`${tFunc("pdf.page", { num: pageNum })}`, MARGIN + CONTENT_WIDTH / 2, FOOTER_Y, {
+      width: CONTENT_WIDTH / 2,
+      align: "right",
+      lineBreak: false,
+    });
+  }
 
   doc.page.margins.bottom = savedBottom;
   doc.y = savedY;
 }
 
-function newPage(doc: PDFKit.PDFDocument) {
-  if (pageNum > 0) {
-    stampFooter(doc);
-  }
-  doc.addPage();
-  pageNum++;
-  doc.y = MARGIN;
-}
-
-function checkSpace(doc: PDFKit.PDFDocument, needed: number) {
-  if (doc.y + needed > USABLE_BOTTOM) {
-    newPage(doc);
-  }
-}
-
 // ---- Block Renderers ----
 
 function renderBlock(doc: PDFKit.PDFDocument, block: Block) {
+  const checkSpace = (needed: number) => {
+    if (doc.y + needed > PAGE_HEIGHT - MARGIN - 20) {
+      doc.addPage();
+      drawHeader(doc);
+      doc.y = HEADER_HEIGHT + 20;
+    }
+  };
+
   switch (block.type) {
     case "blank":
-      doc.y += 4;
+      doc.y += 6;
       break;
 
     case "hr":
-      checkSpace(doc, 16);
-      doc.y += 6;
+      checkSpace(20);
+      doc.y += 10;
       doc
         .moveTo(MARGIN, doc.y)
         .lineTo(MARGIN + CONTENT_WIDTH, doc.y)
         .strokeColor(COLORS.border)
         .lineWidth(0.5)
         .stroke();
-      doc.y += 10;
+      doc.y += 15;
       break;
 
     case "h1":
-      checkSpace(doc, 32);
-      doc.y += 8;
-      doc.fontSize(16).font("Helvetica-Bold").fillColor(COLORS.primary)
+      checkSpace(40);
+      doc.y += 15;
+      doc.fontSize(18).font("Helvetica-Bold").fillColor(COLORS.primaryDark)
         .text(block.text, MARGIN, doc.y, { width: CONTENT_WIDTH });
-      doc.y += 2;
-      doc
-        .moveTo(MARGIN, doc.y)
-        .lineTo(MARGIN + 60, doc.y)
-        .strokeColor(COLORS.primaryLight)
-        .lineWidth(1.5)
-        .stroke();
-      doc.y += 6;
+      doc.y += 5;
       break;
 
     case "h2":
-      checkSpace(doc, 28);
-      doc.y += 6;
-      doc.fontSize(13).font("Helvetica-Bold").fillColor(COLORS.primary)
+      checkSpace(35);
+      doc.y += 12;
+      doc.fontSize(15).font("Helvetica-Bold").fillColor(COLORS.textDark)
+        .text(block.text, MARGIN, doc.y, { width: CONTENT_WIDTH });
+      doc.y += 5;
+      break;
+
+    case "h3":
+      checkSpace(30);
+      doc.y += 10;
+      doc.fontSize(13).font("Helvetica-Bold").fillColor(COLORS.textDark)
         .text(block.text, MARGIN, doc.y, { width: CONTENT_WIDTH });
       doc.y += 4;
       break;
 
-    case "h3":
-      checkSpace(doc, 24);
-      doc.y += 5;
-      doc.fontSize(11.5).font("Helvetica-Bold").fillColor(COLORS.accent)
+    case "h4":
+      checkSpace(25);
+      doc.y += 8;
+      doc.fontSize(11).font("Helvetica-Bold").fillColor(COLORS.text)
         .text(block.text, MARGIN, doc.y, { width: CONTENT_WIDTH });
       doc.y += 3;
       break;
 
-    case "h4":
-      checkSpace(doc, 20);
-      doc.y += 4;
-      doc.fontSize(10.5).font("Helvetica-Bold").fillColor(COLORS.text)
-        .text(block.text, MARGIN, doc.y, { width: CONTENT_WIDTH });
-      doc.y += 2;
-      break;
-
     case "bullet": {
-      const indent = 12;
-      const bulletW = 8;
-      const textX = MARGIN + indent + bulletW;
-      const textW = CONTENT_WIDTH - indent - bulletW;
-
-      const h = doc.fontSize(9.5).font("Helvetica").heightOfString(block.text, { width: textW });
-      checkSpace(doc, h + 5);
-
+      const h = doc.fontSize(10).font("Helvetica").heightOfString(block.text, { width: CONTENT_WIDTH - 20 });
+      checkSpace(h + 8);
       const sy = doc.y;
-      doc.circle(MARGIN + indent + 2.5, sy + 5, 1.8).fill(COLORS.textLight);
-      doc.fontSize(9.5).font("Helvetica").fillColor(COLORS.text)
-        .text(block.text, textX, sy, { width: textW });
-      doc.y += 2;
+      doc.circle(MARGIN + 6, sy + 6, 2).fill(COLORS.primary);
+      doc.fontSize(10).font("Helvetica").fillColor(COLORS.text)
+        .text(block.text, MARGIN + 18, sy, { width: CONTENT_WIDTH - 18, align: "justify" });
+      doc.y += 6;
       break;
     }
 
     case "numbered": {
-      const indent = 12;
-      const numW = 16;
-      const textX = MARGIN + indent + numW;
-      const textW = CONTENT_WIDTH - indent - numW;
-
-      const h = doc.fontSize(9.5).font("Helvetica").heightOfString(block.text, { width: textW });
-      checkSpace(doc, h + 5);
-
+      const h = doc.fontSize(10).font("Helvetica").heightOfString(block.text, { width: CONTENT_WIDTH - 25 });
+      checkSpace(h + 8);
       const sy = doc.y;
-      doc.fontSize(9.5).font("Helvetica-Bold").fillColor(COLORS.primaryLight)
-        .text(`${block.num}.`, MARGIN + indent, sy, { width: numW, lineBreak: false });
-      doc.fontSize(9.5).font("Helvetica").fillColor(COLORS.text)
-        .text(block.text, textX, sy, { width: textW });
-      doc.y += 2;
+      doc.fontSize(10).font("Helvetica-Bold").fillColor(COLORS.primary)
+        .text(`${block.num}.`, MARGIN + 4, sy, { width: 20, lineBreak: false });
+      doc.fontSize(10).font("Helvetica").fillColor(COLORS.text)
+        .text(block.text, MARGIN + 28, sy, { width: CONTENT_WIDTH - 28, align: "justify" });
+      doc.y += 6;
       break;
     }
 
     case "paragraph": {
-      const h = doc.fontSize(9.5).font("Helvetica").heightOfString(block.text, { width: CONTENT_WIDTH });
-      checkSpace(doc, h + 3);
-      doc.fontSize(9.5).font("Helvetica").fillColor(COLORS.text)
-        .text(block.text, MARGIN, doc.y, { width: CONTENT_WIDTH, lineGap: 1.5 });
-      doc.y += 2;
+      const h = doc.fontSize(10).font("Helvetica").heightOfString(block.text, { width: CONTENT_WIDTH });
+      checkSpace(h + 8);
+      doc.fontSize(10).font("Helvetica").fillColor(COLORS.text)
+        .text(block.text, MARGIN, doc.y, { width: CONTENT_WIDTH, align: "justify", lineGap: 3 });
+      doc.y += 8;
       break;
     }
   }
@@ -263,15 +327,14 @@ export async function generateReportPDF(
 
   return new Promise((resolve, reject) => {
     try {
-      // Reset state
-      pageNum = 0;
       tFunc = t;
-      generatedDate = t("pdf.generated", { date: format(new Date(), "MMMM d, yyyy 'at' h:mm a") });
+      generatedDate = format(new Date(), "MMMM d, yyyy");
 
       const doc = new PDFDocument({
         size: "LETTER",
         margins: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN },
         autoFirstPage: false,
+        bufferPages: true, // Important: Enable bufferPages to support switching pages
       });
 
       const chunks: Buffer[] = [];
@@ -281,161 +344,212 @@ export async function generateReportPDF(
 
       // ============ COVER PAGE ============
       doc.addPage();
-      pageNum++;
+      
+      // Full background accent
+      doc.rect(0, 0, PAGE_WIDTH, 280).fill(COLORS.primary);
+      
+      // Geometric patterns
+      doc.save();
+      doc.circle(PAGE_WIDTH, 0, 300).fillOpacity(0.1).fill(COLORS.white);
+      doc.circle(0, 280, 100).fillOpacity(0.1).fill(COLORS.white);
+      doc.restore();
 
-      // Top accent bar
-      doc.rect(0, 0, PAGE_WIDTH, 6).fill(COLORS.primary);
+      // Logo
+      drawLogo(doc, MARGIN, MARGIN + 40, 60); // Draw white logo? Need to adjust colors
+      // Actually drawLogo uses PRIMARY color. Let's make a white version inline or adjust.
+      // Custom White Logo for Cover
+      doc.save();
+      doc.translate(MARGIN, MARGIN + 40);
+      doc.circle(30, 30, 30).fill(COLORS.white);
+      doc.path("M48 12c-6 0-10 6-10 6s-4-6-10-6c-8 0-14 8-14 8s6 12 14 12c6 0 10-6 10-6s4 6 10 6c8 0 14-8 14-8s-6-12-14-12z").fillColor(COLORS.primary).fill(); // Simplified cloud/pulse shape
+      doc.restore();
 
-      // Title block
-      doc.y = MARGIN + 160;
-      doc.fontSize(32).font("Helvetica-Bold").fillColor(COLORS.primary)
-        .text(t("pdf.coverTitle1"), MARGIN, doc.y, { width: CONTENT_WIDTH, align: "center" });
-      doc.fontSize(32).font("Helvetica-Bold").fillColor(COLORS.primary)
-        .text(t("pdf.coverTitle2"), MARGIN, doc.y, { width: CONTENT_WIDTH, align: "center" });
+      // Title Block
+      doc.y = 160;
+      doc.fontSize(36).font("Helvetica-Bold").fillColor(COLORS.white)
+        .text(t("pdf.coverTitle1") + " " + t("pdf.coverTitle2"), MARGIN, doc.y);
+      
+      doc.y += 10;
+      doc.fontSize(16).font("Helvetica").fillColor(COLORS.primaryLight)
+        .text("Weekly Intelligence & Risk Analysis", MARGIN, doc.y);
 
-      doc.y += 16;
+      // Info Card (Floating over the break)
+      const cardY = 240;
+      doc.roundedRect(MARGIN, cardY, CONTENT_WIDTH, 140, 8).fill(COLORS.white);
+      // Shadow effect manually? PDFKit doesn't do shadows easily. The white card on blue/white split looks good.
 
-      // Decorative line
-      const lineCenter = PAGE_WIDTH / 2;
-      doc
-        .moveTo(lineCenter - 40, doc.y)
-        .lineTo(lineCenter + 40, doc.y)
-        .strokeColor(COLORS.primaryLight)
-        .lineWidth(2)
-        .stroke();
-      doc.y += 20;
+      doc.fillColor(COLORS.text);
+      doc.fontSize(10).font("Helvetica-Bold").text("PREPARED FOR", MARGIN + 30, cardY + 30);
+      doc.fontSize(14).font("Helvetica").text(user.name || user.email, MARGIN + 30, cardY + 45);
 
-      doc.fontSize(14).font("Helvetica").fillColor(COLORS.textLight)
-        .text(user.name || user.email, MARGIN, doc.y, { width: CONTENT_WIDTH, align: "center" });
-      doc.y += 8;
-      doc.fontSize(13).font("Helvetica").fillColor(COLORS.text)
-        .text(t("pdf.weekOf", { date: format(weekOf, "MMMM d, yyyy") }), MARGIN, doc.y, {
-          width: CONTENT_WIDTH, align: "center",
-        });
-      doc.y += 20;
+      doc.fontSize(10).font("Helvetica-Bold").text("REPORT DATE", MARGIN + 30, cardY + 80);
+      doc.fontSize(14).font("Helvetica").text(t("pdf.weekOf", { date: format(weekOf, "MMMM d, yyyy") }), MARGIN + 30, cardY + 95);
 
-      const plural = supplierReports.length !== 1 ? "s" : "";
-      doc.fontSize(11).font("Helvetica").fillColor(COLORS.muted)
-        .text(
-          t("pdf.suppliersAnalyzed", { count: String(supplierReports.length), plural, plural2: plural }),
-          MARGIN, doc.y,
-          { width: CONTENT_WIDTH, align: "center" }
-        );
+      doc.fontSize(10).font("Helvetica-Bold").text("SUPPLIERS ANALYZED", MARGIN + 300, cardY + 30);
+      doc.fontSize(24).font("Helvetica-Bold").fillColor(COLORS.primary)
+        .text(String(supplierReports.length), MARGIN + 300, cardY + 45);
 
-      // Bottom branding
-      doc.fontSize(9).font("Helvetica").fillColor(COLORS.muted)
-        .text(t("pdf.poweredBy"), MARGIN, PAGE_HEIGHT - 80, {
-          width: CONTENT_WIDTH, align: "center",
-        });
+      // Bottom Branding
+      doc.fontSize(10).font("Helvetica").fillColor(COLORS.textLight)
+        .text(t("pdf.poweredBy"), 0, PAGE_HEIGHT - 80, { align: "center", width: PAGE_WIDTH });
 
-      stampFooter(doc);
 
       // ============ TABLE OF CONTENTS ============
-      newPage(doc);
+      // If cover page overflowed, we might already be on page 2.
+      if (doc.bufferedPageRange().count === 1) {
+        doc.addPage();
+      } else {
+        // Auto-added page, just reset to top
+        doc.switchToPage(1); // Ensure we are on the second page (index 1)
+        doc.y = MARGIN;
+      }
+      const tocIndex = doc.bufferedPageRange().count - 1; // Capture the index of the TOC page
+      
+      doc.fontSize(24).font("Helvetica-Bold").fillColor(COLORS.textDark)
+        .text(t("pdf.tableOfContents"), MARGIN, MARGIN + 40);
+      
+      doc.moveTo(MARGIN, doc.y + 10).lineTo(PAGE_WIDTH - MARGIN, doc.y + 10).strokeColor(COLORS.primary).lineWidth(2).stroke();
+      
+      const tocStartY = doc.y + 40;
+      
+      // Map to store page number for each supplier
+      const supplierPages: number[] = [];
 
-      doc.fontSize(20).font("Helvetica-Bold").fillColor(COLORS.accent)
-        .text(t("pdf.tableOfContents"), MARGIN, doc.y, { width: CONTENT_WIDTH });
-      doc.y += 4;
-      doc.moveTo(MARGIN, doc.y).lineTo(MARGIN + 50, doc.y)
-        .strokeColor(COLORS.primaryLight).lineWidth(1.5).stroke();
-      doc.y += 16;
 
-      supplierReports.forEach((sr, index) => {
-        const numText = `${index + 1}`;
-        doc.fontSize(11).font("Helvetica-Bold").fillColor(COLORS.primaryLight)
-          .text(numText, MARGIN + 8, doc.y, { width: 16, lineBreak: false });
-        doc.fontSize(11).font("Helvetica").fillColor(COLORS.text)
-          .text(sr.supplier.name, MARGIN + 26, doc.y, { width: CONTENT_WIDTH - 26 });
-        doc.y += 4;
-      });
+      // ============ SUPPLIER REPORTS ============
+      
+      supplierReports.forEach((sr) => {
+        doc.addPage();
+        drawHeader(doc);
+        doc.y = HEADER_HEIGHT + 30; // Start below header
 
-      // ============ SUPPLIER SECTIONS ============
-      supplierReports.forEach((sr, index) => {
-        newPage(doc);
+        // Store current page number (1-based count)
+        // doc.bufferedPageRange().count gives total pages.
+        // The Cover is page 1. TOC is page 2. This is page 3+
+        // Wait, standard page numbering usually starts after cover.
+        // Let's say Cover is not numbered. TOC is i. Report is 1.
+        // For simplicity: Sequential numbering from TOC = 1? 
+        // Let's just use absolute page count for now.
+        supplierPages.push(doc.bufferedPageRange().count);
 
-        // Section header with accent
-        doc.rect(MARGIN, doc.y, 4, 22).fill(COLORS.primary);
-        doc.fontSize(18).font("Helvetica-Bold").fillColor(COLORS.accent)
-          .text(`${index + 1}. ${sr.supplier.name}`, MARGIN + 14, doc.y + 1, { width: CONTENT_WIDTH - 14 });
-        doc.y += 30;
+        // Header Section
+        doc.fontSize(22).font("Helvetica-Bold").fillColor(COLORS.primaryDark)
+          .text(sr.supplier.name, MARGIN, doc.y);
+        
+        doc.y += 5;
+        // Accent line
+        doc.rect(MARGIN, doc.y, 60, 4).fill(COLORS.primary);
+        doc.y += 20;
 
-        // ---- Profile card ----
-        const profileItems: [string, string][] = [
-          [t("pdf.country"), sr.supplier.country],
-          [t("pdf.category"), sr.supplier.category],
-          [t("pdf.leadTime"), t("pdf.leadTimeDays", { days: String(sr.supplier.leadTimeDays) })],
-          [t("pdf.cogs"), `${sr.supplier.cogsPercentage}%`],
-        ];
-        if (sr.supplier.shippingRoute) {
-          profileItems.push([t("pdf.shippingRoute"), sr.supplier.shippingRoute]);
-        }
-        if (sr.supplier.dependencies) {
-          profileItems.push([t("pdf.dependencies"), sr.supplier.dependencies]);
-        }
+        // Metadata Grid (Card Style)
+        const startCardY = doc.y;
+        doc.roundedRect(MARGIN, startCardY, CONTENT_WIDTH, 70, 6)
+           .fillAndStroke(COLORS.bgLight, COLORS.border);
+        
+        const colWidth = CONTENT_WIDTH / 4;
+        const iconY = startCardY + 15;
+        const labelY = iconY + 28;
+        const valY = labelY + 12;
 
-        const rows = Math.ceil(profileItems.length / 2);
-        const boxHeight = rows * 30 + 14;
-        const boxY = doc.y;
+        // Col 1: Country
+        drawIcon(doc, "globe", MARGIN + 20, iconY, 20, COLORS.primary);
+        doc.fontSize(8).font("Helvetica-Bold").fillColor(COLORS.textLight)
+           .text(t("pdf.country").toUpperCase(), MARGIN + 20, labelY);
+        doc.fontSize(10).font("Helvetica").fillColor(COLORS.textDark)
+           .text(sr.supplier.country, MARGIN + 20, valY, { width: colWidth - 20, lineBreak: false });
 
-        // Card background
-        doc.roundedRect(MARGIN, boxY, CONTENT_WIDTH, boxHeight, 4)
-          .fillAndStroke(COLORS.bgLight, COLORS.border);
+        // Col 2: Category
+        drawIcon(doc, "tag", MARGIN + colWidth + 20, iconY, 20, COLORS.warning);
+        doc.fontSize(8).font("Helvetica-Bold").fillColor(COLORS.textLight)
+           .text(t("pdf.category").toUpperCase(), MARGIN + colWidth + 20, labelY);
+        doc.fontSize(10).font("Helvetica").fillColor(COLORS.textDark)
+           .text(sr.supplier.category, MARGIN + colWidth + 20, valY, { width: colWidth - 20, lineBreak: false });
 
-        // Left accent bar on card
-        doc.rect(MARGIN, boxY, 3, boxHeight).fill(COLORS.primaryLight);
+        // Col 3: Lead Time
+        drawIcon(doc, "clock", MARGIN + colWidth * 2 + 20, iconY, 20, COLORS.textLight);
+        doc.fontSize(8).font("Helvetica-Bold").fillColor(COLORS.textLight)
+           .text(t("pdf.leadTime").toUpperCase(), MARGIN + colWidth * 2 + 20, labelY);
+        doc.fontSize(10).font("Helvetica").fillColor(COLORS.textDark)
+           .text(t("pdf.leadTimeDays", { days: String(sr.supplier.leadTimeDays) }), MARGIN + colWidth * 2 + 20, valY, { width: colWidth - 20, lineBreak: false });
 
-        let py = boxY + 8;
-        const colWidth = (CONTENT_WIDTH - 30) / 2;
+        // Col 4: COGS
+        drawIcon(doc, "chart", MARGIN + colWidth * 3 + 20, iconY, 20, COLORS.success);
+        doc.fontSize(8).font("Helvetica-Bold").fillColor(COLORS.textLight)
+           .text(t("pdf.cogs").toUpperCase(), MARGIN + colWidth * 3 + 20, labelY);
+        doc.fontSize(10).font("Helvetica").fillColor(COLORS.textDark)
+           .text(`${sr.supplier.cogsPercentage}%`, MARGIN + colWidth * 3 + 20, valY, { width: colWidth - 20, lineBreak: false });
 
-        profileItems.forEach((item, i) => {
-          const col = i % 2;
-          const xPos = MARGIN + 14 + col * (colWidth + 10);
+        doc.y = startCardY + 90;
 
-          doc.fontSize(7.5).font("Helvetica-Bold").fillColor(COLORS.muted)
-            .text(item[0].toUpperCase(), xPos, py, { width: colWidth, lineBreak: false });
-          doc.fontSize(9.5).font("Helvetica").fillColor(COLORS.text)
-            .text(item[1], xPos, py + 9, { width: colWidth, lineBreak: false });
-
-          if (col === 1 || i === profileItems.length - 1) {
-            py += 30;
-          }
-        });
-
-        doc.y = boxY + boxHeight + 14;
-
-        // ---- Report content ----
+        // Content
         const blocks = parseContentToBlocks(sr.report.content);
         for (const block of blocks) {
           renderBlock(doc, block);
         }
 
-        // ---- Citations ----
+        // Citations
         if (sr.report.citations && sr.report.citations.length > 0) {
+          if (doc.y > PAGE_HEIGHT - MARGIN - 100) {
+            doc.addPage();
+            drawHeader(doc);
+            doc.y = HEADER_HEIGHT + 20;
+          } else {
+            doc.y += 20;
+          }
+
+          doc.fontSize(12).font("Helvetica-Bold").fillColor(COLORS.primaryDark)
+             .text(t("pdf.sources"), MARGIN, doc.y);
+          doc.y += 5;
+          doc.moveTo(MARGIN, doc.y).lineTo(MARGIN + 40, doc.y).strokeColor(COLORS.border).stroke();
           doc.y += 10;
-          checkSpace(doc, 30);
 
-          doc.fontSize(12).font("Helvetica-Bold").fillColor(COLORS.accent)
-            .text(t("pdf.sources"), MARGIN, doc.y, { width: CONTENT_WIDTH });
-          doc.y += 2;
-          doc.moveTo(MARGIN, doc.y).lineTo(MARGIN + 35, doc.y)
-            .strokeColor(COLORS.primaryLight).lineWidth(1).stroke();
-          doc.y += 6;
-
-          sr.report.citations.forEach((citation, citIndex) => {
-            checkSpace(doc, 12);
-            doc.fontSize(7.5).font("Helvetica").fillColor(COLORS.link)
-              .text(`[${citIndex + 1}] ${citation}`, MARGIN + 6, doc.y, {
-                width: CONTENT_WIDTH - 6,
-                link: citation,
-                underline: true,
-              });
-            doc.y += 1;
+          sr.report.citations.forEach((citation, i) => {
+            doc.fontSize(8).font("Helvetica").fillColor(COLORS.link)
+               .text(`[${i + 1}] ${citation}`, MARGIN, doc.y, {
+                 link: citation,
+                 underline: true,
+                 width: CONTENT_WIDTH
+               });
+            doc.y += 4;
           });
         }
       });
 
-      // Stamp footer on the final page
-      stampFooter(doc);
+      // ============ POPULATE TOC ============
+      // Switch back to TOC page
+      doc.switchToPage(tocIndex);
+      doc.y = tocStartY;
+      doc.fillColor(COLORS.textDark); // Reset color explicitly
+
+      supplierReports.forEach((sr, i) => {
+        const pageNum = supplierPages[i];
+        
+        // Dot leader
+        const nameText = `${i + 1}. ${sr.supplier.name}`;
+        const pageText = `Page ${pageNum}`;
+        
+        doc.fontSize(11).font("Helvetica").fillColor(COLORS.textDark)
+           .text(nameText, MARGIN, doc.y, { continued: true });
+        
+        // Calculate dots width? Hard in pdfkit.
+        // Simple align right approach
+        doc.text(pageText, { align: "right" });
+        
+        // Underline or separator
+        doc.y += 5;
+        doc.moveTo(MARGIN, doc.y).lineTo(PAGE_WIDTH - MARGIN, doc.y)
+           .strokeColor(COLORS.border).lineWidth(0.5).dash(2, { space: 2 }).stroke();
+        doc.undash();
+        doc.y += 15;
+      });
+
+      // ============ FOOTERS ============
+      // Add footers to all pages except cover
+      const range = doc.bufferedPageRange();
+      for (let i = 1; i < range.count; i++) { // Skip 0 (Cover)
+        doc.switchToPage(i);
+        stampFooter(doc, i + 1); // Show page number (1-based)
+      }
 
       doc.end();
     } catch (error) {

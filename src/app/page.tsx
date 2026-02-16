@@ -4,6 +4,7 @@ import { createTranslator, getServerLocale } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Logo } from "@/components/logo";
 import {
   Shield,
   Zap,
@@ -244,9 +245,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">S</span>
-              </div>
+              <Logo size={32} />
               <span className="text-lg font-bold">{t("common.appName")}</span>
             </div>
             <div className="flex items-center gap-2">
@@ -530,9 +529,7 @@ export default function LandingPage() {
           <div className="flex flex-col gap-4">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-2">
-                <div className="h-6 w-6 rounded bg-primary flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-xs">S</span>
-                </div>
+                <Logo size={24} />
                 <span className="text-sm font-medium">{t("common.appName")}</span>
               </div>
               <div className="flex items-center gap-4">
