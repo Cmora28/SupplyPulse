@@ -225,7 +225,7 @@ export default function LandingPage() {
         title={t("landing.deepDive1Title")}
         description={t("landing.deepDive1Desc")}
         points={[t("landing.deepDive1Point1"), t("landing.deepDive1Point2"), t("landing.deepDive1Point3")]}
-        icon={Zap}
+        icon={<Zap className="h-4 w-4" />}
         imageSide="right"
       >
         <div className="bg-slate-900 p-8 min-h-[300px] flex items-center justify-center">
@@ -259,7 +259,7 @@ export default function LandingPage() {
         title={t("landing.deepDive2Title")}
         description={t("landing.deepDive2Desc")}
         points={[t("landing.deepDive2Point1"), t("landing.deepDive2Point2"), t("landing.deepDive2Point3")]}
-        icon={Search}
+        icon={<Search className="h-4 w-4" />}
         imageSide="left"
       >
         <div className="bg-white p-8 min-h-[300px] flex flex-col gap-4 border-l-4 border-primary/20">
@@ -285,7 +285,7 @@ export default function LandingPage() {
         title={t("landing.deepDive3Title")}
         description={t("landing.deepDive3Desc")}
         points={[t("landing.deepDive3Point1"), t("landing.deepDive3Point2"), t("landing.deepDive3Point3")]}
-        icon={FileText}
+        icon={<FileText className="h-4 w-4" />}
         imageSide="right"
       >
         <div className="bg-slate-50 p-8 min-h-[300px] flex items-center justify-center">

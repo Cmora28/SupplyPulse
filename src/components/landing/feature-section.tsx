@@ -1,19 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface FeatureSectionProps {
   title: string;
   description: string;
   points: string[];
-  icon: LucideIcon;
+  icon: React.ReactNode;
   imageSide: "left" | "right";
   children: React.ReactNode; // For the visual/mockup part
 }
 
-export function FeatureSection({ title, description, points, icon: Icon, imageSide, children }: FeatureSectionProps) {
+export function FeatureSection({ title, description, points, icon, imageSide, children }: FeatureSectionProps) {
   return (
     <section className="py-24 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -30,7 +29,7 @@ export function FeatureSection({ title, description, points, icon: Icon, imageSi
             className="flex-1 space-y-8"
           >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
-              <Icon className="h-4 w-4" />
+              {icon}
               <span>Feature Highlight</span>
             </div>
             
