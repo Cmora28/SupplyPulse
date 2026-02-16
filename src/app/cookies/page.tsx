@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cookies, headers } from "next/headers";
 import { createTranslator, getServerLocale } from "@/i18n";
 import type { Metadata } from "next";
+import { Logo } from "@/components/logo";
 
 export const metadata: Metadata = {
   title: "Cookie Policy",
@@ -20,9 +21,7 @@ export default function CookiePolicyPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">S</span>
-              </div>
+              <Logo size={32} />
               <span className="text-lg font-bold">{t("common.appName")}</span>
             </Link>
           </div>
