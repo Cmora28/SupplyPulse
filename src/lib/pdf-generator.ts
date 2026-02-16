@@ -188,7 +188,7 @@ function drawHeader(doc: PDFKit.PDFDocument) {
   doc.restore();
 }
 
-function stampFooter(doc: PDFKit.PDFDocument, pageNum: number, _totalPages: number) {
+function stampFooter(doc: PDFKit.PDFDocument, pageNum: number) {
   const savedY = doc.y;
   const savedBottom = doc.page.margins.bottom;
   doc.page.margins.bottom = 0;
@@ -548,7 +548,7 @@ export async function generateReportPDF(
       const range = doc.bufferedPageRange();
       for (let i = 1; i < range.count; i++) { // Skip 0 (Cover)
         doc.switchToPage(i);
-        stampFooter(doc, i + 1, range.count); // Show page number (1-based)
+        stampFooter(doc, i + 1); // Show page number (1-based)
       }
 
       doc.end();
