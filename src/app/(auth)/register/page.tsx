@@ -33,6 +33,7 @@ import { useTranslation } from "@/i18n/client";
 import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
 import { locales, localeNames, localeFlags, type Locale } from "@/i18n";
 import { Separator } from "@/components/ui/separator";
+import { Logo } from "@/components/logo";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -125,9 +126,7 @@ export default function RegisterPage() {
         <Card className="w-full">
           <CardHeader className="space-y-1 text-center">
             <div className="flex justify-center mb-2">
-              <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">S</span>
-              </div>
+              <Logo size={40} />
             </div>
             <CardTitle className="text-2xl font-bold">{t("auth.createAccount")}</CardTitle>
             <CardDescription>

@@ -16,6 +16,7 @@ import { Check } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/client";
 import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
+import { Logo } from "@/components/logo";
 
 export default function PricingPage() {
   const { data: session } = useSession();
@@ -148,9 +149,7 @@ export default function PricingPage() {
       <div className="border-b bg-card">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">S</span>
-            </div>
+            <Logo size={32} />
             <span className="text-lg font-bold">{t("common.appName")}</span>
           </Link>
           <div className="flex items-center gap-2">
