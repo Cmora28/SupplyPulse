@@ -22,8 +22,6 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
-import { HeroMockup } from "@/components/landing/hero-mockup";
-import { TrustBar } from "@/components/landing/trust-bar";
 import { FeatureSection } from "@/components/landing/feature-section";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://supplypulse.net";
@@ -162,7 +160,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-20 pb-16 md:pt-32 md:pb-24">
+      <section className="relative overflow-hidden pt-20 pb-16 md:pt-32 md:pb-32">
         {/* Background Gradients */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/5 rounded-full blur-3xl -z-10" />
         <div className="absolute bottom-0 right-0 w-[800px] h-[600px] bg-blue-100/20 rounded-full blur-3xl -z-10" />
@@ -180,7 +178,7 @@ export default function LandingPage() {
             {t("landing.heroSubtitle")}
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/register">
               <Button size="lg" className="h-12 px-8 text-base shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all">
                 {t("landing.heroCta")} <ArrowRight className="ml-2 h-4 w-4" />
@@ -192,12 +190,8 @@ export default function LandingPage() {
               </Button>
             </Link>
           </div>
-
-          <HeroMockup />
         </div>
       </section>
-
-      <TrustBar />
 
       {/* Problem Section */}
       <section className="py-24 bg-slate-950 text-white relative overflow-hidden">
@@ -214,6 +208,52 @@ export default function LandingPage() {
                 <stat.icon className="h-10 w-10 text-primary mb-6" />
                 <h3 className="text-2xl font-bold mb-3">{stat.title}</h3>
                 <p className="text-slate-400 leading-relaxed">{stat.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-24 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold mb-4">{t("landing.howItWorks")}</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">{t("landing.howItWorksSubtitle")}</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-12">
+            {[
+              {
+                step: t("landing.step1"),
+                title: t("landing.step1Title"),
+                desc: t("landing.step1Desc"),
+                icon: Factory
+              },
+              {
+                step: t("landing.step2"),
+                title: t("landing.step2Title"),
+                desc: t("landing.step2Desc"),
+                icon: TrendingUp
+              },
+              {
+                step: t("landing.step3"),
+                title: t("landing.step3Title"),
+                desc: t("landing.step3Desc"),
+                icon: FileText
+              }
+            ].map((item, i) => (
+              <div key={i} className="relative flex flex-col items-center text-center">
+                <div className="mb-6 relative">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                    <item.icon className="h-8 w-8" />
+                  </div>
+                  <div className="absolute -top-3 -right-3 bg-card border shadow-sm px-2 py-0.5 rounded-full text-xs font-bold text-muted-foreground">
+                    {item.step}
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
