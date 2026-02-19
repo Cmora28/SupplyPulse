@@ -203,8 +203,6 @@ export default function LandingPage() {
         t("landing.everythingInStandard"),
         t("landing.deepResearchReports"),
         t("landing.geoFinancialRisk"),
-        t("landing.weekArchive"),
-        t("landing.excelExport"),
       ],
       popular: false,
     },
