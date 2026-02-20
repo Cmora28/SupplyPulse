@@ -194,8 +194,21 @@ export default function LandingPage() {
       popular: true,
     },
     {
+      name: t("common.plus"),
+      price: "$79.99",
+      description: t("landing.upTo5"),
+      badge: t("common.deepResearch"),
+      highlight: t("landing.deepResearchDetail"),
+      features: [
+        t("landing.everythingInStandard"),
+        t("landing.deepResearchReports"),
+        t("landing.geoFinancialRisk"),
+      ],
+      popular: false,
+    },
+    {
       name: t("common.premium"),
-      price: "$199",
+      price: "$199.99",
       description: t("landing.upTo15"),
       badge: t("common.deepResearch"),
       highlight: t("landing.deepResearchDetail"),
@@ -421,7 +434,7 @@ export default function LandingPage() {
               {t("landing.pricingSubtitle")}
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {plans.map((plan) => (
               <Card
                 key={plan.name}

@@ -84,7 +84,7 @@ export async function POST(request: Request) {
           );
         }
 
-        const validTiers = ["STANDARD", "PREMIUM", "ENTERPRISE"];
+        const validTiers = ["STANDARD", "PLUS", "PREMIUM", "ENTERPRISE"];
         if (!validTiers.includes(tier)) {
           console.error(`[Polar Webhook] Invalid tier: ${tier}`);
           return NextResponse.json(
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
         await prisma.user.update({
           where: { id: userId },
           data: {
-            subscriptionTier: tier as "STANDARD" | "PREMIUM" | "ENTERPRISE",
+            subscriptionTier: tier as "STANDARD" | "PLUS" | "PREMIUM" | "ENTERPRISE",
             polarCustomerId:
               (sub.customer_id as string) ||
               (sub.customerId as string) ||

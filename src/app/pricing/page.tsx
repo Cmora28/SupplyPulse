@@ -62,9 +62,30 @@ export default function PricingPage() {
       popular: true,
     },
     {
+      name: t("common.plus"),
+      tier: "PLUS",
+      price: "$79.99",
+      period: t("common.perMonth"),
+      description: t("pricing.plusDesc"),
+      badge: t("common.deepResearch"),
+      highlight: null,
+      features: [
+        t("pricing.plusFeature1"),
+        t("pricing.plusFeature2"),
+        t("pricing.plusFeature3"),
+        t("pricing.plusFeature4"),
+        t("pricing.plusFeature5"),
+        t("pricing.plusFeature6"),
+        t("pricing.plusFeature7"),
+        t("pricing.plusFeature8"),
+      ],
+      cta: t("pricing.upgradeTo", { tier: t("common.plus") }),
+      popular: false,
+    },
+    {
       name: t("common.premium"),
       tier: "PREMIUM",
-      price: "$199",
+      price: "$199.99",
       period: t("common.perMonth"),
       description: t("pricing.premiumDesc"),
       badge: t("common.deepResearch"),
@@ -183,7 +204,7 @@ export default function PricingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {plans.map((plan) => {
             const isCurrent = currentTier === plan.tier;
             return (
@@ -192,7 +213,7 @@ export default function PricingPage() {
                 className={`relative flex flex-col ${
                   plan.popular
                     ? "border-primary shadow-lg"
-                    : plan.tier === "PREMIUM"
+                    : plan.tier === "PREMIUM" || plan.tier === "PLUS"
                     ? "border-amber-500 shadow-lg shadow-amber-100"
                     : ""
                 }`}
@@ -252,11 +273,11 @@ export default function PricingPage() {
                 <CardFooter>
                   <Button
                     className={`w-full ${
-                      plan.tier === "PREMIUM"
+                      plan.tier === "PREMIUM" || plan.tier === "PLUS"
                         ? "bg-amber-500 hover:bg-amber-600 text-white"
                         : ""
                     }`}
-                    variant={plan.popular ? "default" : plan.tier === "PREMIUM" ? "default" : "outline"}
+                    variant={plan.popular ? "default" : (plan.tier === "PREMIUM" || plan.tier === "PLUS") ? "default" : "outline"}
                     disabled={isCurrent}
                     onClick={() => handleUpgrade(plan.tier)}
                   >

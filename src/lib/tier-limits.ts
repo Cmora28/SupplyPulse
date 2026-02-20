@@ -3,6 +3,7 @@ import { SubscriptionTier } from "@prisma/client";
 export const TIER_LIMITS: Record<SubscriptionTier, number> = {
   FREE: 1,
   STANDARD: 5,
+  PLUS: 5,
   PREMIUM: 15,
   ENTERPRISE: Infinity,
 };
@@ -10,7 +11,8 @@ export const TIER_LIMITS: Record<SubscriptionTier, number> = {
 export const TIER_PRICES: Record<SubscriptionTier, string> = {
   FREE: "$0",
   STANDARD: "$29",
-  PREMIUM: "$199",
+  PLUS: "$79.99",
+  PREMIUM: "$199.99",
   ENTERPRISE: "Custom",
 };
 
@@ -26,6 +28,16 @@ export const TIER_FEATURES: Record<SubscriptionTier, string[]> = {
     "Monitor up to 5 suppliers",
     "Weekly AI risk reports",
     "Email delivery every Monday",
+    "PDF downloads with full citations",
+    "Priority email support",
+    "Consolidated multi-supplier PDF",
+  ],
+  PLUS: [
+    "Monitor up to 5 suppliers",
+    "Deep Research AI reports — 10x more detailed analysis",
+    "In-depth geopolitical and financial risk intelligence",
+    "Multi-source intelligence with cited evidence",
+    "Weekly email delivery",
     "PDF downloads with full citations",
     "Priority email support",
     "Consolidated multi-supplier PDF",
@@ -55,6 +67,7 @@ export const TIER_FEATURES: Record<SubscriptionTier, string[]> = {
 export const TIER_MODEL: Record<SubscriptionTier, string> = {
   FREE: "sonar-pro",
   STANDARD: "sonar-pro",
+  PLUS: "sonar-deep-research",
   PREMIUM: "sonar-deep-research",
   ENTERPRISE: "sonar-deep-research",
 };
