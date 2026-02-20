@@ -28,6 +28,7 @@ const es: TranslationType = {
     perMo: "/mes",
     free: "Gratis",
     standard: "Estándar",
+    plus: "Plus",
     premium: "Premium",
     enterprise: "Empresa",
     mostPopular: "Más popular",
@@ -419,6 +420,17 @@ const es: TranslationType = {
     standardFeature4: "Descargas en PDF con citas completas",
     standardFeature5: "Soporte prioritario por correo electrónico",
     standardFeature6: "PDF consolidado multi-proveedor",
+    plusDesc:
+      "IA Deep Research para equipos en crecimiento con hasta 5 proveedores.",
+    plusFeature1: "Monitorizar hasta 5 proveedores",
+    plusFeature2: "IA Deep Research — informes 10x más detallados",
+    plusFeature3:
+      "Análisis en profundidad de riesgo geopolítico y financiero",
+    plusFeature4: "Inteligencia multi-fuente con evidencia citada",
+    plusFeature5: "Entrega semanal por correo electrónico",
+    plusFeature6: "Descargas en PDF con citas completas",
+    plusFeature7: "Soporte prioritario por correo electrónico",
+    plusFeature8: "PDF consolidado multi-proveedor",
     premiumDesc:
       "Inteligencia de investigación profunda para equipos serios de cadena de suministro.",
     premiumFeature1: "Monitorea hasta 15 proveedores",

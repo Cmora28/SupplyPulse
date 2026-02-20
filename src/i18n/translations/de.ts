@@ -28,6 +28,7 @@ const de: TranslationType = {
     perMo: "/Mo.",
     free: "Kostenlos",
     standard: "Standard",
+    plus: "Plus",
     premium: "Premium",
     enterprise: "Enterprise",
     mostPopular: "Am beliebtesten",
@@ -427,6 +428,17 @@ const de: TranslationType = {
     standardFeature4: "PDF-Downloads mit vollständigen Quellenangaben",
     standardFeature5: "Prioritäts-E-Mail-Support",
     standardFeature6: "Konsolidiertes Multi-Lieferanten-PDF",
+    plusDesc:
+      "Deep Research KI für wachsende Teams mit bis zu 5 Lieferanten.",
+    plusFeature1: "Bis zu 5 Lieferanten überwachen",
+    plusFeature2: "Deep Research KI — 10x detailliertere Berichte",
+    plusFeature3:
+      "Vertiefte geopolitische und finanzielle Risikoanalyse",
+    plusFeature4: "Multi-Quellen-Intelligenz mit zitierten Belegen",
+    plusFeature5: "Wöchentliche E-Mail-Zustellung",
+    plusFeature6: "PDF-Downloads mit vollständigen Zitaten",
+    plusFeature7: "Priorisierter E-Mail-Support",
+    plusFeature8: "Konsolidiertes Multi-Lieferanten-PDF",
     premiumDesc:
       "Deep Research-Intelligenz für anspruchsvolle Lieferketten-Teams.",
     premiumFeature1: "Bis zu 15 Lieferanten überwachen",

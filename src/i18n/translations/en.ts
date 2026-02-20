@@ -26,6 +26,7 @@ const en = {
     perMo: "/mo",
     free: "Free",
     standard: "Standard",
+    plus: "Plus",
     premium: "Premium",
     enterprise: "Enterprise",
     mostPopular: "Most Popular",
@@ -418,6 +419,17 @@ const en = {
     standardFeature4: "PDF downloads with full citations",
     standardFeature5: "Priority email support",
     standardFeature6: "Consolidated multi-supplier PDF",
+    plusDesc:
+      "Deep Research AI for growing teams with up to 5 suppliers.",
+    plusFeature1: "Monitor up to 5 suppliers",
+    plusFeature2: "Deep Research AI — 10x more detailed reports",
+    plusFeature3:
+      "In-depth geopolitical & financial risk analysis",
+    plusFeature4: "Multi-source intelligence with cited evidence",
+    plusFeature5: "Weekly email delivery",
+    plusFeature6: "PDF downloads with full citations",
+    plusFeature7: "Priority email support",
+    plusFeature8: "Consolidated multi-supplier PDF",
     premiumDesc:
       "Deep Research intelligence for serious supply chain teams.",
     premiumFeature1: "Monitor up to 15 suppliers",

@@ -13,12 +13,12 @@ const polar = new Polar({
 
 const PRODUCT_IDS: Record<string, string | undefined> = {
   STANDARD: process.env.POLAR_STANDARD_PRICE_ID,
+  PLUS: process.env.POLAR_PLUS_PRICE_ID,
   PREMIUM: process.env.POLAR_PREMIUM_PRICE_ID,
 };
 
-// A03: Strict schema for checkout input
 const checkoutSchema = z.object({
-  tier: z.enum(["STANDARD", "PREMIUM"]),
+  tier: z.enum(["STANDARD", "PLUS", "PREMIUM"]),
 });
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
