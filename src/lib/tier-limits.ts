@@ -10,7 +10,7 @@ export const TIER_LIMITS: Record<SubscriptionTier, number> = {
 
 export const TIER_PRICES: Record<SubscriptionTier, string> = {
   FREE: "$0",
-  STANDARD: "$29",
+  STANDARD: "$29.99",
   PLUS: "$79.99",
   PREMIUM: "$199.99",
   ENTERPRISE: "Custom",

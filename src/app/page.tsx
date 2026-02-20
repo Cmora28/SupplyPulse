@@ -181,7 +181,7 @@ export default function LandingPage() {
     },
     {
       name: t("common.standard"),
-      price: "$29",
+      price: "$29.99",
       description: t("landing.upTo5"),
       badge: null,
       highlight: null,
