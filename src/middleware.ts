@@ -1,6 +1,8 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@example.com";
+
 export default withAuth(
   function middleware(req) {
     const { pathname } = req.nextUrl;
@@ -19,7 +21,7 @@ export default withAuth(
     // A01: Protect admin routes at the middleware level
     if (pathname.startsWith("/dashboard/admin") || pathname.startsWith("/api/admin")) {
       const email = req.nextauth.token?.email;
-      if (email !== "admin@example.com") {
+      if (email !== ADMIN_EMAIL) {
         return NextResponse.redirect(new URL("/dashboard", req.url));
       }
     }

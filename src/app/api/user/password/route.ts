@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { changePasswordSchema } from "@/lib/validations";
+import { rateLimitAsync } from "@/lib/security";
 import bcrypt from "bcryptjs";
 
 export const dynamic = "force-dynamic";
@@ -12,6 +13,14 @@ export async function PUT(request: Request) {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const rl = await rateLimitAsync(`password:${session.user.id}`, 5, 60 * 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many password change attempts. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil((rl.retryAfterMs || 60000) / 1000)) } }
+      );
     }
 
     const body = await request.json();

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { cuidSchema } from "@/lib/validations";
+import { rateLimitAsync } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,6 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // A03: Validate route parameter format
     if (!cuidSchema.safeParse(params.id).success) {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
@@ -19,6 +19,14 @@ export async function DELETE(
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const rl = await rateLimitAsync(`report-delete:${session.user.id}`, 10, 10 * 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil((rl.retryAfterMs || 60000) / 1000)) } }
+      );
     }
 
     const reportRun = await prisma.reportRun.findFirst({
