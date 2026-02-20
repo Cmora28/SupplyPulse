@@ -45,7 +45,7 @@ export default function PricingPage() {
     {
       name: t("common.standard"),
       tier: "STANDARD",
-      price: "$29",
+      price: "$29.99",
       period: t("common.perMonth"),
       description: t("pricing.standardDesc"),
       badge: null,
