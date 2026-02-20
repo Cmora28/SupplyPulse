@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { ADMIN_EMAIL, rateLimitAsync } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
 
-const ADMIN_EMAIL = "lopezhk@gmail.com";
 const PAGE_SIZE = 10;
 
 export async function GET(req: NextRequest) {
@@ -13,6 +13,14 @@ export async function GET(req: NextRequest) {
     const session = await getServerSession(authOptions);
     if (!session?.user || session.user.email !== ADMIN_EMAIL) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const rl = await rateLimitAsync(`admin:users:${session.user.id}`, 60, 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429, headers: { "Retry-After": String(Math.ceil((rl.retryAfterMs || 60000) / 1000)) } }
+      );
     }
 
     const { searchParams } = new URL(req.url);

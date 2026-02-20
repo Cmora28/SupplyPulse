@@ -4,11 +4,18 @@ import {
   validateEvent,
   WebhookVerificationError,
 } from "@polar-sh/sdk/webhooks";
+import { rateLimitAsync, getClientIp } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const rl = await rateLimitAsync(`webhook:${ip}`, 100, 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
     const body = await request.text();
     const webhookSecret = process.env.POLAR_WEBHOOK_SECRET;
 
@@ -20,7 +27,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Use Polar SDK to verify and parse the webhook event
     let event: ReturnType<typeof validateEvent>;
     try {
       event = validateEvent(
@@ -40,7 +46,19 @@ export async function POST(request: Request) {
     }
 
     const eventType = event.type;
-    console.log(`[Polar Webhook] Event: ${eventType}`);
+    const eventData = event.data as Record<string, unknown>;
+    const eventId = (eventData.id as string) || "";
+    console.log(`[Polar Webhook] Event: ${eventType}, id: ${eventId}`);
+
+    // Idempotency: skip if we already processed this subscription state
+    if (eventId) {
+      const idempotencyKey = `webhook:idem:${eventType}:${eventId}`;
+      const dup = await rateLimitAsync(idempotencyKey, 1, 5 * 60 * 1000);
+      if (!dup.success) {
+        console.log(`[Polar Webhook] Duplicate event skipped: ${eventType} ${eventId}`);
+        return NextResponse.json({ received: true, duplicate: true }, { status: 200 });
+      }
+    }
 
     switch (eventType) {
       case "subscription.created":
@@ -60,13 +78,19 @@ export async function POST(request: Request) {
           console.error(
             "[Polar Webhook] Missing userId or tier in subscription metadata"
           );
-          break;
+          return NextResponse.json(
+            { error: "Missing userId or tier in metadata" },
+            { status: 400 }
+          );
         }
 
         const validTiers = ["STANDARD", "PREMIUM", "ENTERPRISE"];
         if (!validTiers.includes(tier)) {
           console.error(`[Polar Webhook] Invalid tier: ${tier}`);
-          break;
+          return NextResponse.json(
+            { error: `Invalid tier: ${tier}` },
+            { status: 400 }
+          );
         }
 
         const sub = subscription as Record<string, unknown>;
@@ -95,7 +119,10 @@ export async function POST(request: Request) {
           console.error(
             "[Polar Webhook] Missing subscription ID in cancellation event"
           );
-          break;
+          return NextResponse.json(
+            { error: "Missing subscription ID" },
+            { status: 400 }
+          );
         }
 
         const user = await prisma.user.findFirst({
@@ -126,6 +153,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true }, { status: 200 });
   } catch (error) {
     console.error("[Polar Webhook] Processing error:", error);
-    return NextResponse.json({ received: true }, { status: 200 });
+    return NextResponse.json(
+      { error: "Internal webhook processing error" },
+      { status: 500 }
+    );
   }
 }

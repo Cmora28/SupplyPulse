@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { generateReportPDF } from "@/lib/pdf-generator";
 import { format } from "date-fns";
 import { cuidSchema } from "@/lib/validations";
+import { rateLimitAsync } from "@/lib/security";
 import type { Supplier } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +15,6 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    // A03: Validate route parameter format
     if (!cuidSchema.safeParse(params.id).success) {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
@@ -22,6 +22,14 @@ export async function GET(
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const rl = await rateLimitAsync(`pdf:${session.user.id}`, 10, 10 * 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many PDF requests. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil((rl.retryAfterMs || 60000) / 1000)) } }
+      );
     }
 
     const reportRun = await prisma.reportRun.findFirst({

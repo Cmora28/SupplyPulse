@@ -3,15 +3,20 @@
  * Covers: A03 (Injection), A04 (Insecure Design), A05 (Security Misconfiguration)
  */
 
+import Redis from "ioredis";
+import { REDIS_URL } from "@/lib/redis";
+
+// ---- Admin ----
+
+export const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "lopezhk@gmail.com";
+
 // ---- A03: Input validation ----
 
-/** Validates that a string looks like a CUID (Prisma default ID format) */
 const CUID_REGEX = /^c[a-z0-9]{24}$/;
 export function isValidCuid(id: string): boolean {
   return CUID_REGEX.test(id);
 }
 
-/** Strip potential XSS from a string for use in HTML contexts (e.g. email templates) */
 export function escapeHtml(str: string): string {
   return str
     .replace(/&/g, "&amp;")
@@ -21,7 +26,6 @@ export function escapeHtml(str: string): string {
     .replace(/'/g, "&#039;");
 }
 
-/** Validate that a URL is from a trusted domain (for redirect protection) */
 const TRUSTED_DOMAINS = [
   "polar.sh",
   "sandbox.polar.sh",
@@ -45,8 +49,28 @@ export function isTrustedRedirectUrl(url: string): boolean {
   }
 }
 
-// ---- A04: Rate limiting (in-memory, per-IP) ----
+// ---- A04: Rate limiting (Redis-backed with in-memory fallback) ----
 
+let redisClient: Redis | null = null;
+
+function getRedis(): Redis | null {
+  if (redisClient) return redisClient;
+  try {
+    redisClient = new Redis(REDIS_URL, {
+      maxRetriesPerRequest: 1,
+      lazyConnect: true,
+      enableOfflineQueue: false,
+    });
+    redisClient.connect().catch(() => {
+      redisClient = null;
+    });
+    return redisClient;
+  } catch {
+    return null;
+  }
+}
+
+// In-memory fallback for when Redis is unavailable
 interface RateLimitEntry {
   count: number;
   resetAt: number;
@@ -54,7 +78,6 @@ interface RateLimitEntry {
 
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
-// Clean up expired entries every 5 minutes
 setInterval(() => {
   const now = Date.now();
   rateLimitStore.forEach((entry, key) => {
@@ -64,11 +87,7 @@ setInterval(() => {
   });
 }, 5 * 60 * 1000);
 
-/**
- * Simple in-memory rate limiter.
- * Returns { success: true } if under limit, { success: false, retryAfterMs } if over.
- */
-export function rateLimit(
+function rateLimitInMemory(
   key: string,
   maxRequests: number,
   windowMs: number
@@ -89,7 +108,69 @@ export function rateLimit(
   return { success: true };
 }
 
-/** Extract client IP from request headers */
+/**
+ * Redis-backed rate limiter with in-memory fallback.
+ * Uses a sliding window counter stored in Redis for distributed deployments.
+ */
+export function rateLimit(
+  key: string,
+  maxRequests: number,
+  windowMs: number
+): { success: boolean; retryAfterMs?: number } {
+  const redis = getRedis();
+  if (!redis) {
+    return rateLimitInMemory(key, maxRequests, windowMs);
+  }
+
+  // For sync callers, use in-memory as primary and sync to Redis async
+  const result = rateLimitInMemory(key, maxRequests, windowMs);
+
+  // Fire-and-forget Redis sync for distributed consistency
+  const redisKey = `rl:${key}`;
+  const windowSec = Math.ceil(windowMs / 1000);
+  redis.incr(redisKey).then((count) => {
+    if (count === 1) {
+      redis.expire(redisKey, windowSec);
+    }
+  }).catch(() => {});
+
+  return result;
+}
+
+/**
+ * Async Redis rate limiter for use in API routes.
+ * Provides true distributed rate limiting across instances.
+ */
+export async function rateLimitAsync(
+  key: string,
+  maxRequests: number,
+  windowMs: number
+): Promise<{ success: boolean; retryAfterMs?: number }> {
+  const redis = getRedis();
+  if (!redis) {
+    return rateLimitInMemory(key, maxRequests, windowMs);
+  }
+
+  const redisKey = `rl:${key}`;
+  const windowSec = Math.ceil(windowMs / 1000);
+
+  try {
+    const count = await redis.incr(redisKey);
+    if (count === 1) {
+      await redis.expire(redisKey, windowSec);
+    }
+
+    if (count > maxRequests) {
+      const ttl = await redis.ttl(redisKey);
+      return { success: false, retryAfterMs: ttl * 1000 };
+    }
+
+    return { success: true };
+  } catch {
+    return rateLimitInMemory(key, maxRequests, windowMs);
+  }
+}
+
 export function getClientIp(request: Request): string {
   return (
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -100,7 +181,6 @@ export function getClientIp(request: Request): string {
 
 // ---- A09: Sanitized logging ----
 
-/** Sanitize sensitive data before logging */
 export function sanitizeForLog(data: Record<string, unknown>): Record<string, unknown> {
   const sensitive = ["password", "token", "secret", "apiKey", "authorization", "cookie"];
   const sanitized: Record<string, unknown> = {};

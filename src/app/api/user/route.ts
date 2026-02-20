@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { rateLimitAsync } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
 
@@ -44,7 +45,14 @@ export async function DELETE() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Cascade delete will remove all related data
+    const rl = await rateLimitAsync(`delete-account:${session.user.id}`, 1, 60 * 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil((rl.retryAfterMs || 60000) / 1000)) } }
+      );
+    }
+
     await prisma.user.delete({
       where: { id: session.user.id },
     });

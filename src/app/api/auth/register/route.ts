@@ -39,13 +39,15 @@ export async function POST(request: Request) {
     });
 
     if (existingUser) {
+      // A07: Return same response shape to prevent email enumeration.
+      // Spend time hashing to keep response timing consistent.
+      await bcrypt.hash(password, 12);
       return NextResponse.json(
-        { error: "An account with this email already exists" },
-        { status: 409 }
+        { message: "Account created successfully" },
+        { status: 201 }
       );
     }
 
-    // A02: bcrypt with 12 rounds for strong hashing
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const day = reportDay ?? 1;

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Polar } from "@polar-sh/sdk";
+import { rateLimitAsync } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,14 @@ export async function POST() {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const rl = await rateLimitAsync(`portal:${session.user.id}`, 10, 10 * 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil((rl.retryAfterMs || 60000) / 1000)) } }
+      );
     }
 
     // Get the user's Polar customer ID from the database

@@ -5,16 +5,23 @@ import { prisma } from "@/lib/prisma";
 import { generateReportPDF } from "@/lib/pdf-generator";
 import { sendWeeklyReport } from "@/lib/email";
 import { cuidSchema } from "@/lib/validations";
+import { ADMIN_EMAIL, rateLimitAsync } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
-
-const ADMIN_EMAIL = "lopezhk@gmail.com";
 
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user || session.user.email !== ADMIN_EMAIL) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const rl = await rateLimitAsync(`admin:resend:${session.user.id}`, 10, 10 * 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429, headers: { "Retry-After": String(Math.ceil((rl.retryAfterMs || 60000) / 1000)) } }
+      );
     }
 
     const { reportRunId } = await request.json();

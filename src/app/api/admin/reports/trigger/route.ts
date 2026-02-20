@@ -5,10 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { Queue } from "bullmq";
 import { startOfWeek } from "date-fns";
 import { cuidSchema } from "@/lib/validations";
+import { ADMIN_EMAIL, rateLimitAsync } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
-
-const ADMIN_EMAIL = "lopezhk@gmail.com";
 
 const connection = {
   url: process.env.REDIS_URL || "redis://localhost:6379",
@@ -19,6 +18,14 @@ export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
     if (!session?.user || session.user.email !== ADMIN_EMAIL) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const rl = await rateLimitAsync(`admin:trigger:${session.user.id}`, 10, 10 * 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429, headers: { "Retry-After": String(Math.ceil((rl.retryAfterMs || 60000) / 1000)) } }
+      );
     }
 
     const { userId } = await request.json();
