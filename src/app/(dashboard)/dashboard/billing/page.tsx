@@ -85,6 +85,7 @@ export default function BillingPage() {
   const tierOrder: SubscriptionTier[] = [
     "FREE",
     "STANDARD",
+    "PLUS",
     "PREMIUM",
     "ENTERPRISE",
   ];
@@ -196,7 +197,7 @@ export default function BillingPage() {
               {tierOrder
                 .filter((_, i) => i > currentIndex)
                 .map((upgradeTier) => {
-                  const isDeepResearch = upgradeTier === "PREMIUM" || upgradeTier === "ENTERPRISE";
+                  const isDeepResearch = upgradeTier === "PLUS" || upgradeTier === "PREMIUM" || upgradeTier === "ENTERPRISE";
                   return (
                     <Card key={upgradeTier} className={`border ${isDeepResearch ? "border-amber-300" : ""}`}>
                       <CardHeader className="pb-2">
