@@ -14,6 +14,7 @@
     "db:studio": "npx prisma studio"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "^1.4.2",
     "@polar-sh/sdk": "^0.43.1",
     "@prisma/client": "^5.22.0",
     "@radix-ui/react-alert-dialog": "^1.1.15",

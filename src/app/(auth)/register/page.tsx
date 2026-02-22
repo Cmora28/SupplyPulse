@@ -29,6 +29,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Info, ArrowLeft, Clock } from "lucide-react";
+import { Turnstile } from "@marsidev/react-turnstile";
 import { useTranslation } from "@/i18n/client";
 import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
 import { locales, localeNames, localeFlags, type Locale } from "@/i18n";
@@ -47,6 +48,7 @@ export default function RegisterPage() {
   const [reportHour, setReportHour] = useState(8); // 8 AM UTC default
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   const handleLocaleChange = (value: string) => {
     const loc = value as Locale;
@@ -80,7 +82,7 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, locale: selectedLocale, reportDay, reportHour }),
+        body: JSON.stringify({ name, email, password, locale: selectedLocale, reportDay, reportHour, captchaToken: turnstileToken }),
       });
 
       const data = await res.json();
@@ -306,7 +308,15 @@ export default function RegisterPage() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Turnstile
+                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                onSuccess={(token) => setTurnstileToken(token)}
+                onError={() => setTurnstileToken("")}
+                onExpire={() => setTurnstileToken("")}
+                options={{ theme: "auto", size: "normal" }}
+                className="mx-auto"
+              />
+              <Button type="submit" className="w-full" disabled={loading || !turnstileToken}>
                 {loading ? t("auth.creatingAccount") : t("auth.createAccountBtn")}
               </Button>
               <p className="text-sm text-muted-foreground text-center">
