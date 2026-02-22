@@ -23,6 +23,34 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
+
+    // Verify Cloudflare Turnstile token before any processing
+    const captchaToken = body?.captchaToken;
+    if (!captchaToken) {
+      return NextResponse.json(
+        { error: "CAPTCHA verification required." },
+        { status: 400 }
+      );
+    }
+    const verifyRes = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          secret: process.env.TURNSTILE_SECRET_KEY,
+          response: captchaToken,
+        }),
+      }
+    );
+    const verifyData = await verifyRes.json() as { success: boolean };
+    if (!verifyData.success) {
+      return NextResponse.json(
+        { error: "CAPTCHA verification failed. Please try again." },
+        { status: 400 }
+      );
+    }
+
     const validated = registerSchema.safeParse(body);
 
     if (!validated.success) {
