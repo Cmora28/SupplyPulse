@@ -7,21 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import { Logo } from "@/components/logo";
 import { QuickCheckForm } from "@/components/landing/quick-check-form";
 import {
-  Shield,
-  Zap,
   FileText,
   Mail,
   Check,
   ArrowRight,
   Factory,
-  HelpCircle,
-  TrendingUp,
   AlertTriangle,
   Anchor,
   AlertOctagon,
   Search,
   Globe,
-  BarChart3
 } from "lucide-react";
 import type { Metadata } from "next";
 import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
