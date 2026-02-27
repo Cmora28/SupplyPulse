@@ -2,21 +2,26 @@ import Link from "next/link";
 import { cookies, headers } from "next/headers";
 import { createTranslator, getServerLocale } from "@/i18n";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Logo } from "@/components/logo";
+import { QuickCheckForm } from "@/components/landing/quick-check-form";
 import {
   Shield,
   Zap,
   FileText,
   Mail,
-  Globe,
-  BarChart3,
   Check,
   ArrowRight,
   Factory,
   HelpCircle,
   TrendingUp,
+  AlertTriangle,
+  Anchor,
+  AlertOctagon,
+  Search,
+  Globe,
+  BarChart3
 } from "lucide-react";
 import type { Metadata } from "next";
 import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
@@ -24,9 +29,9 @@ import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://supplypulse.net";
 
 export const metadata: Metadata = {
-  title: "Supply Pulse - AI-Powered Supply Chain Risk Monitoring & Disruption Detection",
+  title: "Supply Pulse - Prevent Supply Chain Disruptions",
   description:
-    "Supply Pulse monitors your supply chain for disruptions using AI-powered research. Get weekly risk reports with cited sources, actionable recommendations, and supplier risk scores. Free plan available.",
+    "Monitor critical suppliers 24/7. Get alerted to financial, geopolitical, and operational risks before they impact your business.",
   alternates: {
     canonical: "/",
   },
@@ -45,34 +50,9 @@ const FAQ_ITEMS = [
       "Supply Pulse uses advanced AI research models to scan thousands of sources including news outlets, government databases, trade publications, financial reports, and geopolitical intelligence feeds. The AI identifies current disruptions affecting your specific suppliers and predicts emerging risks for the next 30 days. Every finding is backed by cited sources so you can verify the intelligence.",
   },
   {
-    question: "What types of supply chain risks does Supply Pulse monitor?",
-    answer:
-      "Supply Pulse monitors a comprehensive range of supply chain risks: geopolitical instability and trade wars, natural disasters and climate events, supplier financial health and bankruptcy risk, port congestion and shipping delays, tariff and regulatory changes, raw material shortages, labor disputes and strikes, cybersecurity threats to suppliers, and capacity constraints.",
-  },
-  {
-    question: "How often are supply chain reports generated?",
-    answer:
-      "Reports are generated on a weekly schedule that you choose during registration. You select the day of the week and time (UTC) that works best for your team. Each report covers disruptions from the past 7 days and predicted risks for the next 30 days, delivered as a professional PDF via email.",
-  },
-  {
-    question: "What is included in a supply chain risk report?",
-    answer:
-      "Each weekly report includes: a risk assessment for every monitored supplier, current disruptions identified in the past 7 days, predicted risks for the next 30 days, actionable recommendations including buffer stock adjustments and alternative supplier suggestions, cited sources for every finding, and a consolidated PDF with supplier profiles, country risk analysis, and shipping route assessments.",
-  },
-  {
-    question: "How can supply chain disruptions impact my business?",
-    answer:
-      "Supply chain disruptions can lead to production stoppages, delayed deliveries, increased costs, lost revenue, and damaged customer relationships. The average disruption costs enterprises $43-47 million annually. Industries with complex global supply chains — manufacturing, automotive, electronics, pharmaceuticals — are particularly vulnerable. Early warning through AI-powered monitoring helps reduce response time from days to hours.",
-  },
-  {
-    question: "What is Deep Research AI and how is it different?",
-    answer:
-      "Deep Research AI is available on Premium and Enterprise plans. While standard AI analysis provides comprehensive weekly reports, Deep Research performs 10x more detailed investigation per supplier — including in-depth financial analysis, extended geopolitical intelligence, sub-tier supplier risk mapping, and cross-referencing across specialized industry databases.",
-  },
-  {
     question: "Can I try Supply Pulse for free?",
     answer:
-      "Yes. The Free plan lets you monitor 1 supplier with full weekly AI risk reports, email delivery, and PDF downloads — no credit card required. You can upgrade to Standard ($29/month for up to 5 suppliers) or Premium ($199/month for up to 15 suppliers with Deep Research AI) at any time.",
+      "Yes. The Free plan lets you monitor 1 supplier with full weekly AI risk reports, email delivery, and PDF downloads — no credit card required.",
   },
 ];
 
@@ -96,40 +76,12 @@ const softwareAppJsonLd = {
     },
     {
       "@type": "Offer",
-      name: "Standard",
-      price: "29",
+      name: "Plus",
+      price: "79.99",
       priceCurrency: "USD",
-      priceSpecification: {
-        "@type": "UnitPriceSpecification",
-        price: "29",
-        priceCurrency: "USD",
-        billingDuration: "P1M",
-      },
-      description: "Monitor up to 5 suppliers with full citations",
+      billingDuration: "P1M",
+      description: "Deep Research AI for up to 5 suppliers",
     },
-    {
-      "@type": "Offer",
-      name: "Premium",
-      price: "199",
-      priceCurrency: "USD",
-      priceSpecification: {
-        "@type": "UnitPriceSpecification",
-        price: "199",
-        priceCurrency: "USD",
-        billingDuration: "P1M",
-      },
-      description: "Monitor up to 15 suppliers with Deep Research AI analysis",
-    },
-  ],
-  featureList: [
-    "AI-powered supply chain risk assessment",
-    "Weekly PDF risk reports with cited sources",
-    "Automated email delivery",
-    "Geopolitical and financial risk analysis",
-    "Global disruption monitoring",
-    "Actionable recommendations",
-    "Multi-language support",
-    "Deep Research AI for premium plans",
   ],
 };
 
@@ -150,97 +102,71 @@ export default function LandingPage() {
   const locale = getServerLocale(cookies(), headers());
   const t = createTranslator(locale);
 
-  const steps = [
-    { step: "1", titleKey: "landing.step1Title", descKey: "landing.step1Desc", icon: Factory },
-    { step: "2", titleKey: "landing.step2Title", descKey: "landing.step2Desc", icon: Zap },
-    { step: "3", titleKey: "landing.step3Title", descKey: "landing.step3Desc", icon: Mail },
+  const problems = [
+    {
+      titleKey: "landing.problem1Title",
+      descKey: "landing.problem1Desc",
+      icon: AlertTriangle,
+      color: "text-amber-500",
+      bg: "bg-amber-500/10",
+    },
+    {
+      titleKey: "landing.problem2Title",
+      descKey: "landing.problem2Desc",
+      icon: Anchor,
+      color: "text-blue-500",
+      bg: "bg-blue-500/10",
+    },
+    {
+      titleKey: "landing.problem3Title",
+      descKey: "landing.problem3Desc",
+      icon: AlertOctagon,
+      color: "text-red-500",
+      bg: "bg-red-500/10",
+    },
   ];
 
-  const features = [
-    { icon: Shield, titleKey: "landing.featureRiskTitle", descKey: "landing.featureRiskDesc" },
-    { icon: Globe, titleKey: "landing.featureGlobalTitle", descKey: "landing.featureGlobalDesc" },
-    { icon: FileText, titleKey: "landing.featurePdfTitle", descKey: "landing.featurePdfDesc" },
-    { icon: Mail, titleKey: "landing.featureEmailTitle", descKey: "landing.featureEmailDesc" },
-    { icon: BarChart3, titleKey: "landing.featureInsightsTitle", descKey: "landing.featureInsightsDesc" },
-    { icon: Zap, titleKey: "landing.featureDeepTitle", descKey: "landing.featureDeepDesc" },
+  const radarSteps = [
+    { step: "1", titleKey: "landing.radarStep1Title", descKey: "landing.radarStep1Desc", icon: Factory },
+    { step: "2", titleKey: "landing.radarStep2Title", descKey: "landing.radarStep2Desc", icon: Search },
+    { step: "3", titleKey: "landing.radarStep3Title", descKey: "landing.radarStep3Desc", icon: Mail },
   ];
 
-  const plans = [
+  // Only showing Free and Plus for simplicity as per plan
+  const simplePlans = [
     {
       name: t("common.free"),
       price: "$0",
       description: t("landing.supplier1"),
       badge: null,
       highlight: null,
+      buttonText: t("landing.startFree"),
+      buttonVariant: "outline" as const,
       features: [
         t("landing.weeklyReport"),
         t("landing.emailDelivery"),
         t("landing.pdfDownload"),
       ],
-      popular: false,
-    },
-    {
-      name: t("common.standard"),
-      price: "$29.99",
-      description: t("landing.upTo5"),
-      badge: null,
-      highlight: null,
-      features: [
-        t("landing.everythingInFree"),
-        t("landing.fullCitations"),
-        t("landing.consolidatedPdf"),
-        t("landing.prioritySupport"),
-      ],
-      popular: true,
     },
     {
       name: t("common.plus"),
       price: "$79.99",
       description: t("landing.upTo5"),
-      badge: t("common.deepResearch"),
+      badge: t("common.mostPopular"),
       highlight: t("landing.deepResearchDetail"),
+      buttonText: t("common.getStarted"),
+      buttonVariant: "default" as const,
       features: [
-        t("landing.everythingInStandard"),
+        t("landing.everythingInFree"),
         t("landing.deepResearchReports"),
         t("landing.geoFinancialRisk"),
+        t("landing.fullCitations"),
       ],
-      popular: false,
     },
-    {
-      name: t("common.premium"),
-      price: "$199.99",
-      description: t("landing.upTo15"),
-      badge: t("common.deepResearch"),
-      highlight: t("landing.deepResearchDetail"),
-      features: [
-        t("landing.everythingInStandard"),
-        t("landing.deepResearchReports"),
-        t("landing.geoFinancialRisk"),
-      ],
-      popular: false,
-    },
-  ];
-
-  const stats = [
-    { valueKey: "landing.stat1Value", labelKey: "landing.stat1Label" },
-    { valueKey: "landing.stat2Value", labelKey: "landing.stat2Label" },
-    { valueKey: "landing.stat3Value", labelKey: "landing.stat3Label" },
-    { valueKey: "landing.stat4Value", labelKey: "landing.stat4Label" },
-  ];
-
-  const faqs = [
-    { qKey: "landing.faq1Q", aKey: "landing.faq1A" },
-    { qKey: "landing.faq2Q", aKey: "landing.faq2A" },
-    { qKey: "landing.faq3Q", aKey: "landing.faq3A" },
-    { qKey: "landing.faq4Q", aKey: "landing.faq4A" },
-    { qKey: "landing.faq5Q", aKey: "landing.faq5A" },
-    { qKey: "landing.faq6Q", aKey: "landing.faq6A" },
-    { qKey: "landing.faq7Q", aKey: "landing.faq7A" },
-    { qKey: "landing.faq8Q", aKey: "landing.faq8A" },
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
@@ -260,7 +186,7 @@ export default function LandingPage() {
               <span className="text-lg font-bold">{t("common.appName")}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Link href="/pricing">
+              <Link href="/pricing" className="hidden sm:block">
                 <Button variant="ghost" size="sm">
                   {t("common.pricing")}
                 </Button>
@@ -281,312 +207,382 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary/5 to-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
-          <div className="text-center max-w-3xl mx-auto">
-            <Badge variant="secondary" className="mb-6 px-3 py-1">
-              {t("landing.heroTitle")}
-            </Badge>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-tight">
-              {t("landing.heroSubtitle")}
-            </h1>
-            <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-              {t("landing.heroDesc")}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/register">
-                <Button size="lg" className="w-full sm:w-auto text-base px-8">
-                  {t("landing.startFree")} <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="/pricing">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full sm:w-auto text-base px-8"
+      {/* Hero Section: The "Wake Up" Call */}
+      <section className="relative pt-20 pb-32 overflow-hidden bg-slate-950 text-white">
+        {/* Abstract background elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-20 pointer-events-none">
+          <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-blue-600 blur-[100px]" />
+          <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-indigo-900 blur-[120px]" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="max-w-2xl">
+              <Badge variant="outline" className="mb-6 px-3 py-1 text-blue-300 border-blue-800 bg-blue-900/30">
+                {t("landing.heroTitle")}
+              </Badge>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-tight">
+                {t("landing.heroTitle")}
+              </h1>
+              <p className="text-lg sm:text-xl text-slate-300 mb-8 leading-relaxed">
+                {t("landing.heroSubtitle")}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/register">
+                  <Button size="lg" className="w-full sm:w-auto text-base px-8 bg-blue-600 hover:bg-blue-700 border-none">
+                    {t("landing.startFreeMonitoring")} <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <a
+                  href="/supply-chain-report-example.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  {t("landing.viewPricing")}
-                </Button>
-              </Link>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="w-full sm:w-auto text-base px-8 bg-transparent text-white border-slate-600 hover:bg-slate-800 hover:text-white"
+                  >
+                    <FileText className="mr-2 h-4 w-4" /> {t("landing.viewSampleReport")}
+                  </Button>
+                </a>
+              </div>
+              <p className="text-sm text-slate-500 mt-4">
+                {t("landing.noCreditCard")}
+              </p>
             </div>
-            <div className="mt-6 flex flex-col items-center gap-2">
+            
+            {/* Visual: Split Screen "Risk Alert" vs "Dashboard" */}
+            <div className="relative hidden lg:block">
+              <div className="relative rounded-xl border border-slate-800 bg-slate-900/50 shadow-2xl p-6 backdrop-blur-sm">
+                {/* Mockup content */}
+                <div className="flex items-center gap-3 mb-6 border-b border-slate-800 pb-4">
+                  <div className="h-3 w-3 rounded-full bg-red-500" />
+                  <div className="h-3 w-3 rounded-full bg-yellow-500" />
+                  <div className="h-3 w-3 rounded-full bg-green-500" />
+                  <div className="ml-auto text-xs text-slate-500 font-mono">supplypulse.net</div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4 p-4 rounded-lg bg-red-500/10 border border-red-500/20">
+                    <AlertTriangle className="h-6 w-6 text-red-500 shrink-0 mt-1" />
+                    <div>
+                      <h4 className="text-sm font-semibold text-red-400">Critical Alert: Supplier Insolvency Risk</h4>
+                      <p className="text-xs text-slate-400 mt-1">Detected: High probability of bankruptcy for key electronics supplier in Shenzhen region based on late filings and legal notices.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                    <div className="flex items-center gap-3">
+                      <Factory className="h-5 w-5 text-blue-400" />
+                      <div>
+                        <div className="text-sm font-medium text-slate-200">Global Tech Components</div>
+                        <div className="text-xs text-slate-500">Shenzhen, CN</div>
+                      </div>
+                    </div>
+                    <Badge className="bg-red-500/20 text-red-400 border-red-500/20">Risk Score: 8.5/10</Badge>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                    <div className="flex items-center gap-3">
+                      <Factory className="h-5 w-5 text-blue-400" />
+                      <div>
+                        <div className="text-sm font-medium text-slate-200">Pacific Logistics Ltd</div>
+                        <div className="text-xs text-slate-500">Los Angeles, US</div>
+                      </div>
+                    </div>
+                    <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/20">Risk Score: 6.2/10</Badge>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Floating "Notification" */}
+              <div className="absolute -bottom-6 -left-6 bg-white text-slate-900 p-4 rounded-lg shadow-xl border border-slate-200 max-w-[280px] animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
+                <div className="flex gap-3">
+                  <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                    <Mail className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm">New Risk Report</div>
+                    <div className="text-xs text-slate-500 mt-1">Found 3 new potential disruptions in your supply chain this week.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* The "Silent Killer" Section */}
+      <section className="py-20 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight mb-4 text-foreground">
+              {t("landing.silentKillerTitle")}
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              {t("landing.silentKillerSubtitle")}
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {problems.map((problem, idx) => (
+              <Card key={idx} className="border-none shadow-md hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className={`h-12 w-12 rounded-xl flex items-center justify-center mb-4 ${problem.bg}`}>
+                    <problem.icon className={`h-6 w-6 ${problem.color}`} />
+                  </div>
+                  <CardTitle className="text-xl">{t(problem.titleKey)}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {t(problem.descKey)}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* The "Radar" Solution */}
+      <section className="py-24 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge variant="outline" className="mb-4 text-primary border-primary/20 bg-primary/5">
+              How It Works
+            </Badge>
+            <h2 className="text-3xl font-bold tracking-tight mb-4">
+              {t("landing.radarTitle")}
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              {t("landing.radarSubtitle")}
+            </p>
+          </div>
+
+          <div className="relative">
+            {/* Connecting line for desktop */}
+            <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-muted-foreground/20 to-transparent -translate-y-1/2" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
+              {radarSteps.map((step, i) => (
+                <div key={i} className="flex flex-col items-center text-center bg-background p-4">
+                  <div className="h-16 w-16 rounded-full bg-primary/10 border-4 border-background flex items-center justify-center mb-6 shadow-sm">
+                    <step.icon className="h-7 w-7 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3">{t(step.titleKey)}</h3>
+                  <p className="text-muted-foreground max-w-xs mx-auto">
+                    {t(step.descKey)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* The "Proof" Section */}
+      <section className="py-24 bg-slate-950 text-white overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="order-2 lg:order-1">
+              <h2 className="text-3xl font-bold tracking-tight mb-6">
+                {t("landing.proofTitle")}
+              </h2>
+              <p className="text-lg text-slate-300 mb-8 leading-relaxed">
+                {t("landing.proofSubtitle")}
+              </p>
+              
+              <ul className="space-y-4 mb-10">
+                {[
+                  t("landing.proofPoint1"),
+                  t("landing.proofPoint2"),
+                  t("landing.proofPoint3"),
+                ].map((point, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <div className="h-6 w-6 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
+                      <Check className="h-4 w-4 text-blue-400" />
+                    </div>
+                    <span className="text-slate-200">{point}</span>
+                  </li>
+                ))}
+              </ul>
+              
               <a
                 href="/supply-chain-report-example.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-5 py-2.5 text-sm font-medium text-primary transition-all hover:bg-primary/10 hover:border-primary/40 hover:shadow-md"
               >
-                <FileText className="h-4 w-4" />
-                {t("landing.viewSampleReport")}
-                <Badge variant="secondary" className="ml-1 bg-primary/10 text-primary text-[10px] px-1.5 py-0 leading-4 uppercase tracking-wider font-semibold">
-                  Deep Research
-                </Badge>
-                <ArrowRight className="h-3 w-3 opacity-0 -translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-x-0" />
+                <Button variant="secondary" size="lg" className="group">
+                  <FileText className="mr-2 h-4 w-4" />
+                  {t("landing.downloadReport")}
+                  <ArrowRight className="ml-2 h-4 w-4 opacity-0 -translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-x-0" />
+                </Button>
               </a>
-              <p className="text-xs text-muted-foreground">
-                {t("landing.sampleReportDesc")}
-              </p>
             </div>
-            <p className="text-sm text-muted-foreground mt-4">
-              {t("landing.noCreditCard")}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section - Supply Chain Disruption Impact */}
-      <section className="py-16 border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <TrendingUp className="h-6 w-6 text-primary" />
-              <h2 className="text-3xl font-bold tracking-tight">
-                {t("landing.statsTitle")}
-              </h2>
-            </div>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              {t("landing.statsSubtitle")}
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((stat, i) => (
-              <div key={i} className="text-center p-4">
-                <p className="text-3xl sm:text-4xl font-bold text-primary mb-2">
-                  {t(stat.valueKey)}
-                </p>
-                <p className="text-sm text-muted-foreground leading-snug">
-                  {t(stat.labelKey)}
-                </p>
+            
+            {/* 3D Paper Effect for PDF */}
+            <div className="order-1 lg:order-2 flex justify-center perspective-1000">
+              <div className="relative group cursor-pointer transition-transform transform hover:-translate-y-2 duration-500">
+                <div className="absolute inset-0 bg-blue-500 blur-[60px] opacity-20 group-hover:opacity-30 transition-opacity" />
+                <div className="relative w-[300px] sm:w-[380px] aspect-[1/1.4] bg-white rounded-lg shadow-2xl overflow-hidden border border-slate-200 rotate-y-12 rotate-x-6 transform-style-3d">
+                  {/* PDF Cover Mockup Content */}
+                  <div className="h-full flex flex-col">
+                    <div className="bg-slate-900 p-6 text-white h-1/3 flex flex-col justify-between relative overflow-hidden">
+                      <div className="absolute top-0 right-0 p-4 opacity-10">
+                        <Globe className="h-32 w-32" />
+                      </div>
+                      <div className="flex justify-between items-start z-10">
+                        <Logo size={24} />
+                        <span className="text-xs font-mono opacity-70">CONFIDENTIAL</span>
+                      </div>
+                      <div className="z-10">
+                        <div className="text-xs font-semibold tracking-wider uppercase text-blue-400 mb-1">Weekly Risk Report</div>
+                        <h3 className="text-2xl font-serif">Global Supply Chain<br/>Risk Analysis</h3>
+                      </div>
+                    </div>
+                    <div className="p-6 bg-slate-50 flex-1 relative">
+                        <div className="space-y-4 opacity-60">
+                            <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                            <div className="h-4 bg-slate-200 rounded w-full"></div>
+                            <div className="h-4 bg-slate-200 rounded w-5/6"></div>
+                            <div className="h-32 bg-slate-200 rounded w-full mt-6 border border-slate-300"></div>
+                            <div className="flex gap-4 mt-2">
+                                <div className="h-20 bg-red-100 rounded flex-1 border border-red-200"></div>
+                                <div className="h-20 bg-green-100 rounded flex-1 border border-green-200"></div>
+                            </div>
+                        </div>
+                        {/* Overlay Badge */}
+                        <div className="absolute bottom-8 right-8">
+                            <div className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                                PDF DOCUMENT
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-20 bg-muted/30">
+      {/* Simple Pricing */}
+      <section className="py-24 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <h2 className="text-3xl font-bold tracking-tight mb-4">
-              {t("landing.howItWorks")}
+              {t("landing.pricingSimpleTitle")}
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              {t("landing.howItWorksSubtitle")}
+            <p className="text-xl text-muted-foreground">
+              {t("landing.pricingSimpleSubtitle")}
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {steps.map((item) => (
-              <Card key={item.step} className="text-center border-0 shadow-none bg-transparent">
-                <CardContent className="pt-6">
-                  <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    <item.icon className="h-7 w-7 text-primary" />
-                  </div>
-                  <div className="text-xs font-bold text-primary mb-2">
-                    {t(`landing.step${item.step}` as `landing.step1` | `landing.step2` | `landing.step3`)}
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">{t(item.titleKey)}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {t(item.descKey)}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Features */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight mb-4">
-              {t("landing.featuresTitle")}
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              {t("landing.featuresSubtitle")}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature) => (
-              <Card key={feature.titleKey}>
-                <CardContent className="pt-6">
-                  <feature.icon className="h-8 w-8 text-primary mb-3" />
-                  <h3 className="font-semibold mb-2">{t(feature.titleKey)}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {t(feature.descKey)}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Preview */}
-      <section className="py-20 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight mb-4">
-              {t("landing.pricingTitle")}
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              {t("landing.pricingSubtitle")}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {plans.map((plan) => (
-              <Card
-                key={plan.name}
-                className={
-                  plan.popular
-                    ? "border-primary shadow-md"
-                    : plan.badge
-                    ? "border-amber-400 shadow-md shadow-amber-50"
-                    : ""
-                }
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {simplePlans.map((plan) => (
+              <Card 
+                key={plan.name} 
+                className={`relative flex flex-col ${plan.name === t("common.plus") ? 'border-primary shadow-lg scale-105 z-10' : 'border-border shadow-sm'}`}
               >
-                <CardContent className="pt-6">
-                  {plan.popular && (
-                    <Badge className="mb-3 bg-primary text-primary-foreground">
-                      {t("common.mostPopular")}
-                    </Badge>
-                  )}
-                  {plan.badge && !plan.popular && (
-                    <Badge className="mb-3 bg-amber-500 text-white">
+                {plan.badge && (
+                  <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 sm:translate-x-0 sm:right-8">
+                    <Badge className="bg-primary text-primary-foreground px-3 py-1 text-sm">
                       {plan.badge}
                     </Badge>
-                  )}
-                  <h3 className="font-semibold text-lg">{plan.name}</h3>
-                  <div className="mt-2 mb-1">
-                    <span className="text-3xl font-bold">{plan.price}</span>
+                  </div>
+                )}
+                <CardHeader>
+                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                  <CardDescription>{plan.description}</CardDescription>
+                  <div className="mt-4">
+                    <span className="text-4xl font-bold">{plan.price}</span>
                     <span className="text-muted-foreground">{t("common.perMo")}</span>
                   </div>
-                  {plan.price !== "$0" && (
-                    <p className="text-xs text-muted-foreground">
-                      {t("common.applicableTaxes")}
-                    </p>
-                  )}
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {plan.description}
-                  </p>
-                  {plan.highlight && (
-                    <p className="text-xs font-medium text-amber-700 mb-3">
-                      {plan.highlight}
-                    </p>
-                  )}
-                  <ul className="space-y-2">
-                    {plan.features.map((f) => (
-                      <li key={f} className="flex items-center gap-2 text-sm">
-                        <Check className="h-4 w-4 text-primary" />
-                        <span>{f}</span>
+                </CardHeader>
+                <CardContent className="flex-1">
+                  <ul className="space-y-3">
+                    {plan.features.map((feature, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary shrink-0" />
+                        <span className="text-sm">{feature}</span>
                       </li>
                     ))}
                   </ul>
                 </CardContent>
+                <div className="p-6 pt-0 mt-auto">
+                  <Link href="/register" className="w-full">
+                    <Button variant={plan.buttonVariant} size="lg" className="w-full">
+                      {plan.buttonText}
+                    </Button>
+                  </Link>
+                </div>
               </Card>
             ))}
           </div>
-          <p className="text-center text-xs text-muted-foreground mt-6">
-            {t("common.taxDisclaimer")}
-          </p>
-          <div className="text-center mt-4">
-            <Link href="/pricing">
-              <Button variant="outline" size="lg">
-                {t("landing.viewAllPlans")} <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+          
+          <div className="text-center mt-12">
+            <Link href="/pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-1 group">
+              {t("landing.viewAllPlans")} <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <HelpCircle className="h-6 w-6 text-primary" />
-              <h2 className="text-3xl font-bold tracking-tight">
-                {t("landing.faqTitle")}
-              </h2>
-            </div>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              {t("landing.faqSubtitle")}
-            </p>
-          </div>
-          <div className="space-y-4">
-            {faqs.map((faq, i) => (
-              <details
-                key={i}
-                className="group border rounded-lg bg-card"
-              >
-                <summary className="flex items-center justify-between cursor-pointer p-5 text-left font-medium hover:bg-muted/50 rounded-lg transition-colors">
-                  <span className="pr-4">{t(faq.qKey)}</span>
-                  <span className="text-muted-foreground text-xl flex-shrink-0 group-open:rotate-45 transition-transform">
-                    +
-                  </span>
-                </summary>
-                <div className="px-5 pb-5 pt-0 text-muted-foreground leading-relaxed text-sm">
-                  {t(faq.aKey)}
-                </div>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-muted/30">
-        <div className="max-w-3xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold tracking-tight mb-4">
-            {t("landing.ctaTitle")}
+      {/* Final CTA */}
+      <section className="py-24 bg-background">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">
+            {t("landing.finalCtaTitle")}
           </h2>
-          <p className="text-muted-foreground text-lg mb-8">
-            {t("landing.ctaSubtitle")}
+          <p className="text-xl text-muted-foreground mb-10">
+            {t("landing.finalCtaSubtitle")}
           </p>
-          <Link href="/register">
-            <Button size="lg" className="text-base px-8">
-              {t("common.getStartedFree")} <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
+          
+          <QuickCheckForm 
+            buttonText={t("landing.checkRisk")} 
+            placeholder={t("landing.enterSupplier")} 
+          />
+          
+          <p className="text-xs text-muted-foreground mt-6">
+            {t("landing.noCreditCard")}
+          </p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8">
+      <footer className="border-t py-12 bg-muted/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <Logo size={24} />
-                <span className="text-sm font-medium">{t("common.appName")}</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <a
-                  href="mailto:support@supplypulse.net"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
-                >
-                  <Mail className="h-3.5 w-3.5" />
-                  {t("landing.footerSupport")}
-                </a>
-                <p className="text-sm text-muted-foreground">
-                  {t("landing.footerCopyright", { year: new Date().getFullYear() })}
-                </p>
-              </div>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-2">
+              <Logo size={24} />
+              <span className="text-sm font-semibold">{t("common.appName")}</span>
             </div>
-            <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+            
+            <div className="flex items-center gap-6 text-sm text-muted-foreground">
+              <Link href="/pricing" className="hover:text-foreground transition-colors">
+                {t("common.pricing")}
+              </Link>
               <Link href="/privacy" className="hover:text-foreground transition-colors">
                 {t("legal.privacyTitle")}
               </Link>
-              <span>·</span>
               <Link href="/terms" className="hover:text-foreground transition-colors">
                 {t("legal.termsTitle")}
               </Link>
-              <span>·</span>
-              <Link href="/cookies" className="hover:text-foreground transition-colors">
-                {t("legal.cookiesTitle")}
-              </Link>
             </div>
+            
+            <div className="flex items-center gap-4">
+              <a
+                href="mailto:support@supplypulse.net"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+              >
+                <Mail className="h-4 w-4" />
+                {t("landing.footerSupport")}
+              </a>
+            </div>
+          </div>
+          <div className="mt-8 text-center text-xs text-muted-foreground">
+            {t("landing.footerCopyright", { year: new Date().getFullYear() })}
           </div>
         </div>
       </footer>
