@@ -340,6 +340,20 @@ const es: TranslationType = {
     enterSupplier: "Enter Supplier Name",
     checkRisk: "Check Risk",
 
+    supplier1: "1 proveedor",
+    weeklyReport: "Informe semanal de riesgo con IA",
+    emailDelivery: "Entrega por correo electrónico",
+    pdfDownload: "Descarga en PDF",
+    upTo5: "Hasta 5 proveedores",
+    deepResearchDetail: "Análisis de IA 10x más detallado por proveedor",
+    everythingInFree: "Todo del plan Gratis",
+    deepResearchReports: "Informes con IA de Investigación Profunda",
+    geoFinancialRisk: "Análisis profundo de riesgos geopolíticos y financieros",
+    fullCitations: "Citas completas",
+    viewAllPlans: "Ver todos los planes",
+    footerSupport: "support@supplypulse.net",
+    footerCopyright: "© {year} Supply Pulse. Todos los derechos reservados.",
+
     statsTitle: "Por qué importa el monitoreo de riesgos en la cadena de suministro",
     statsSubtitle:
       "Las interrupciones en la cadena de suministro cuestan miles de millones a las empresas anualmente. El monitoreo proactivo convierte las reacciones de emergencia en preparación estratégica.",
