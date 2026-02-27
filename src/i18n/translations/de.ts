@@ -346,6 +346,20 @@ const de: TranslationType = {
     enterSupplier: "Enter Supplier Name",
     checkRisk: "Check Risk",
 
+    supplier1: "1 Lieferant",
+    weeklyReport: "Wöchentlicher KI-Risikobericht",
+    emailDelivery: "E-Mail-Zustellung",
+    pdfDownload: "PDF-Download",
+    upTo5: "Bis zu 5 Lieferanten",
+    deepResearchDetail: "10x detailliertere KI-Analyse pro Lieferant",
+    everythingInFree: "Alles im kostenlosen Plan",
+    deepResearchReports: "Deep Research KI-Berichte",
+    geoFinancialRisk: "Tiefgehende geopolitische & finanzielle Risikoanalyse",
+    fullCitations: "Vollständige Quellenangaben",
+    viewAllPlans: "Alle Pläne anzeigen",
+    footerSupport: "support@supplypulse.net",
+    footerCopyright: "© {year} Supply Pulse. Alle Rechte vorbehalten.",
+
     statsTitle: "Warum die Überwachung von Lieferkettenrisiken wichtig ist",
     statsSubtitle:
       "Lieferkettenstörungen kosten Unternehmen jährlich Milliarden. Proaktive Überwachung verwandelt reaktives Krisenmanagement in strategische Vorbereitung.",

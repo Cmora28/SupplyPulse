@@ -340,6 +340,20 @@ const fr: TranslationType = {
     enterSupplier: "Enter Supplier Name",
     checkRisk: "Check Risk",
 
+    supplier1: "1 fournisseur",
+    weeklyReport: "Rapport hebdomadaire de risque IA",
+    emailDelivery: "Livraison par e-mail",
+    pdfDownload: "Téléchargement PDF",
+    upTo5: "Jusqu'à 5 fournisseurs",
+    deepResearchDetail: "Analyse IA 10x plus détaillée par fournisseur",
+    everythingInFree: "Tout du plan Gratuit",
+    deepResearchReports: "Rapports IA de Recherche Approfondie",
+    geoFinancialRisk: "Analyse approfondie des risques géopolitiques et financiers",
+    fullCitations: "Citations complètes",
+    viewAllPlans: "Voir tous les plans",
+    footerSupport: "support@supplypulse.net",
+    footerCopyright: "© {year} Supply Pulse. Tous droits réservés.",
+
     statsTitle: "Pourquoi la surveillance des risques de la chaîne d'approvisionnement est importante",
     statsSubtitle:
       "Les perturbations de la chaîne d'approvisionnement coûtent des milliards aux entreprises chaque année. La surveillance proactive transforme les réactions d'urgence en préparation stratégique.",

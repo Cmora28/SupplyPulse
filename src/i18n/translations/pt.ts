@@ -340,6 +340,20 @@ const pt: TranslationType = {
     enterSupplier: "Enter Supplier Name",
     checkRisk: "Check Risk",
 
+    supplier1: "1 fornecedor",
+    weeklyReport: "Relatório semanal de risco com IA",
+    emailDelivery: "Entrega por e-mail",
+    pdfDownload: "Download em PDF",
+    upTo5: "Até 5 fornecedores",
+    deepResearchDetail: "Análise de IA 10x mais detalhada por fornecedor",
+    everythingInFree: "Tudo do plano Gratuito",
+    deepResearchReports: "Relatórios com IA de Pesquisa Aprofundada",
+    geoFinancialRisk: "Análise aprofundada de riscos geopolíticos e financeiros",
+    fullCitations: "Citações completas",
+    viewAllPlans: "Ver todos os planos",
+    footerSupport: "support@supplypulse.net",
+    footerCopyright: "© {year} Supply Pulse. Todos os direitos reservados.",
+
     statsTitle: "Por que o monitoramento de riscos na cadeia de suprimentos é importante",
     statsSubtitle:
       "Interrupções na cadeia de suprimentos custam bilhões às empresas anualmente. O monitoramento proativo transforma reações emergenciais em preparação estratégica.",

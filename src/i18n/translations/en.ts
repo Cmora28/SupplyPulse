@@ -337,6 +337,20 @@ const en = {
     enterSupplier: "Enter Supplier Name",
     checkRisk: "Check Risk",
 
+    supplier1: "1 supplier",
+    weeklyReport: "Weekly AI risk report",
+    emailDelivery: "Email delivery",
+    pdfDownload: "PDF download",
+    upTo5: "Up to 5 suppliers",
+    deepResearchDetail: "10x more detailed AI analysis per supplier",
+    everythingInFree: "Everything in Free",
+    deepResearchReports: "Deep Research AI reports",
+    geoFinancialRisk: "In-depth geopolitical & financial risk analysis",
+    fullCitations: "Full citations",
+    viewAllPlans: "View all plans",
+    footerSupport: "support@supplypulse.net",
+    footerCopyright: "© {year} Supply Pulse. All rights reserved.",
+
     // Stats section
     statsTitle: "Why supply chain risk monitoring matters",
     statsSubtitle:
