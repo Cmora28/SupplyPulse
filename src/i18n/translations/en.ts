@@ -287,8 +287,10 @@ const en = {
   },
 
   landing: {
+    heroBadge: "AI-Powered Supply Chain Intelligence",
     heroTitle: "Don't Let a Supplier Surprise Kill Your Quarter.",
     heroSubtitle: "Monitor your critical suppliers 24/7. Get alerted to financial, geopolitical, and operational risks before they hit your loading dock.",
+    setupTime: "Set up in 2 minutes. First report delivered on your chosen day.",
     heroDesc:
       "Automatically generated weekly risk reports powered by advanced AI research. Monitor suppliers, identify disruptions, and receive actionable intelligence on your chosen schedule.",
     startFree: "Start Free",
@@ -301,7 +303,8 @@ const en = {
     
     // Silent Killer Section
     silentKillerTitle: "The Silent Killers of SMB Supply Chains",
-    silentKillerSubtitle: "You're the last to know. Big corps have teams for this. You have... spreadsheets?",
+    silentKillerSubtitle: "Most SMBs don't have a risk team. Until something breaks, no one is watching.",
+    midCtaText: "Every week without monitoring is a week you're flying blind.",
     problem1Title: "The Silent Bankruptcy",
     problem1Desc: "Supplier goes dark overnight. You find out when the shipment doesn't arrive.",
     problem2Title: "The Hidden Delay",
@@ -310,6 +313,7 @@ const en = {
     problem3Desc: "Sub-tier supplier changes materials quietly, compromising your product.",
 
     // Radar Section
+    howItWorksLabel: "How It Works",
     radarTitle: "Your 24/7 Supply Chain Radar",
     radarSubtitle: "Three simple steps to sleep better at night.",
     radarStep1Title: "Upload",
@@ -328,12 +332,12 @@ const en = {
     downloadReport: "Download this exact report (PDF)",
 
     // Simple Pricing
-    pricingSimpleTitle: "Cheaper than one missed shipment",
+    pricingSimpleTitle: "Less than the cost of one missed shipment",
     pricingSimpleSubtitle: "Start free. Upgrade for Deep Research.",
 
     // Final CTA
-    finalCtaTitle: "Your supply chain is only as strong as your weakest link.",
-    finalCtaSubtitle: "Find it now.",
+    finalCtaTitle: "The next disruption is already forming. Are you watching?",
+    finalCtaSubtitle: "Start free. No credit card. First report this week.",
     enterSupplier: "Enter Supplier Name",
     checkRisk: "Check Risk",
 

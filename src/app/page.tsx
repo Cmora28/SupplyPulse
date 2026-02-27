@@ -17,6 +17,7 @@ import {
   AlertOctagon,
   Search,
   Globe,
+  ChevronDown,
 } from "lucide-react";
 import type { Metadata } from "next";
 import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
@@ -214,7 +215,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="max-w-2xl">
               <Badge variant="outline" className="mb-6 px-3 py-1 text-blue-300 border-blue-800 bg-blue-900/30">
-                {t("landing.heroTitle")}
+                {t("landing.heroBadge")}
               </Badge>
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-tight">
                 {t("landing.heroTitle")}
@@ -242,8 +243,8 @@ export default function LandingPage() {
                   </Button>
                 </a>
               </div>
-              <p className="text-sm text-slate-500 mt-4">
-                {t("landing.noCreditCard")}
+              <p className="text-sm text-slate-400 mt-4">
+                {t("landing.setupTime")}
               </p>
             </div>
             
@@ -308,6 +309,25 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Stats Trust Bar */}
+      <section className="py-12 bg-muted/50 border-y">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {[
+              { value: t("landing.stat1Value"), label: t("landing.stat1Label") },
+              { value: t("landing.stat2Value"), label: t("landing.stat2Label") },
+              { value: t("landing.stat3Value"), label: t("landing.stat3Label") },
+              { value: t("landing.stat4Value"), label: t("landing.stat4Label") },
+            ].map((stat, i) => (
+              <div key={i} className="space-y-1">
+                <div className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">{stat.value}</div>
+                <div className="text-xs md:text-sm text-muted-foreground leading-snug">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* The "Silent Killer" Section */}
       <section className="py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -340,12 +360,26 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Mid-Page CTA Strip */}
+      <section className="py-10 bg-slate-950 text-white">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <p className="text-lg md:text-xl font-medium mb-6">
+            {t("landing.midCtaText")}
+          </p>
+          <Link href="/register">
+            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-base px-8">
+              {t("landing.startFreeMonitoring")} <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+      </section>
+
       {/* The "Radar" Solution */}
       <section className="py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Badge variant="outline" className="mb-4 text-primary border-primary/20 bg-primary/5">
-              How It Works
+              {t("landing.howItWorksLabel")}
             </Badge>
             <h2 className="text-3xl font-bold tracking-tight mb-4">
               {t("landing.radarTitle")}
@@ -458,6 +492,40 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-24 bg-background">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight mb-4">
+              {t("landing.faqTitle")}
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              {t("landing.faqSubtitle")}
+            </p>
+          </div>
+
+          <div className="divide-y divide-border rounded-lg border">
+            {[
+              { q: t("landing.faq1Q"), a: t("landing.faq1A") },
+              { q: t("landing.faq2Q"), a: t("landing.faq2A") },
+              { q: t("landing.faq3Q"), a: t("landing.faq3A") },
+              { q: t("landing.faq4Q"), a: t("landing.faq4A") },
+              { q: t("landing.faq8Q"), a: t("landing.faq8A") },
+            ].map((faq, i) => (
+              <details key={i} className="group">
+                <summary className="flex items-center justify-between cursor-pointer px-6 py-5 text-left font-medium hover:bg-muted/50 transition-colors">
+                  <span>{faq.q}</span>
+                  <ChevronDown className="h-5 w-5 text-muted-foreground shrink-0 ml-4 transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-6 pb-5 text-muted-foreground leading-relaxed">
+                  {faq.a}
+                </div>
+              </details>
+            ))}
           </div>
         </div>
       </section>

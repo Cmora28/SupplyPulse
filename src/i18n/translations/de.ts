@@ -296,8 +296,10 @@ const de: TranslationType = {
   },
 
   landing: {
+    heroBadge: "KI-gestützte Lieferketten-Intelligence",
     heroTitle: "Don't Let a Supplier Surprise Kill Your Quarter.",
     heroSubtitle: "Monitor your critical suppliers 24/7. Get alerted to financial, geopolitical, and operational risks before they hit your loading dock.",
+    setupTime: "Einrichtung in 2 Minuten. Erster Bericht an Ihrem gewählten Tag.",
     heroDesc:
       "Automatically generated weekly risk reports powered by advanced AI research. Monitor suppliers, identify disruptions, and receive actionable intelligence on your chosen schedule.",
     startFree: "Start Free",
@@ -310,7 +312,8 @@ const de: TranslationType = {
     
     // Silent Killer Section
     silentKillerTitle: "The Silent Killers of SMB Supply Chains",
-    silentKillerSubtitle: "You're the last to know. Big corps have teams for this. You have... spreadsheets?",
+    silentKillerSubtitle: "Die meisten KMU haben kein Risikoteam. Bis etwas passiert, schaut niemand hin.",
+    midCtaText: "Jede Woche ohne Monitoring ist eine Woche im Blindflug.",
     problem1Title: "The Silent Bankruptcy",
     problem1Desc: "Supplier goes dark overnight. You find out when the shipment doesn't arrive.",
     problem2Title: "The Hidden Delay",
@@ -319,6 +322,7 @@ const de: TranslationType = {
     problem3Desc: "Sub-tier supplier changes materials quietly, compromising your product.",
 
     // Radar Section
+    howItWorksLabel: "So funktioniert's",
     radarTitle: "Your 24/7 Supply Chain Radar",
     radarSubtitle: "Three simple steps to sleep better at night.",
     radarStep1Title: "Upload",
@@ -337,12 +341,12 @@ const de: TranslationType = {
     downloadReport: "Download this exact report (PDF)",
 
     // Simple Pricing
-    pricingSimpleTitle: "Cheaper than one missed shipment",
+    pricingSimpleTitle: "Günstiger als eine verpasste Lieferung",
     pricingSimpleSubtitle: "Start free. Upgrade for Deep Research.",
 
     // Final CTA
-    finalCtaTitle: "Your supply chain is only as strong as your weakest link.",
-    finalCtaSubtitle: "Find it now.",
+    finalCtaTitle: "Die nächste Störung bahnt sich bereits an. Beobachten Sie?",
+    finalCtaSubtitle: "Kostenlos starten. Keine Kreditkarte. Erster Bericht diese Woche.",
     enterSupplier: "Enter Supplier Name",
     checkRisk: "Check Risk",
 
