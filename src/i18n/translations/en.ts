@@ -425,6 +425,48 @@ const en = {
       "Supply Pulse uses advanced AI research models to scan thousands of sources including news outlets, government databases, trade publications, financial reports, and geopolitical intelligence feeds. The AI identifies current disruptions affecting your specific suppliers and predicts emerging risks for the next 30 days. Every finding is backed by cited sources so you can verify the intelligence.",
     faq3Q: "What types of supply chain risks does Supply Pulse monitor?",
     faq3A:
+      "Supply Pulse monitors a comprehensive range of supply chain risks: geopolitical instability and trade wars, natural disasters and climate events, supplier financial health and bankruptcy risk, port congestion and shipping delays, tariff and regulatory changes, raw material shortages, labor disputes and strikes, cybersecurity threats to suppliers, and capacity constraints.",
+    faq4Q: "How often are supply chain reports generated?",
+    faq4A:
+      "Reports are generated on a weekly schedule that you choose during registration. You select the day of the week and time (UTC) that works best for your team. Each report covers disruptions from the past 7 days and predicted risks for the next 30 days, delivered as a professional PDF via email.",
+    faq5Q: "What is included in a supply chain risk report?",
+    faq5A:
+      "Each weekly report includes: a risk assessment for every monitored supplier, current disruptions identified in the past 7 days, predicted risks for the next 30 days, actionable recommendations including buffer stock adjustments and alternative supplier suggestions, cited sources for every finding, and a consolidated PDF with supplier profiles, country risk analysis, and shipping route assessments.",
+    faq6Q: "How can supply chain disruptions impact my business?",
+    faq6A:
+      "Supply chain disruptions can lead to production stoppages, delayed deliveries, increased costs, lost revenue, and damaged customer relationships. The average disruption costs enterprises $43-47 million annually. Industries with complex global supply chains — manufacturing, automotive, electronics, pharmaceuticals — are particularly vulnerable. Early warning through AI-powered monitoring helps reduce response time from days to hours.",
+    faq7Q: "What is Deep Research AI and how is it different?",
+    faq7A:
+      "Deep Research AI is available on Premium and Enterprise plans. While standard AI analysis provides comprehensive weekly reports, Deep Research performs 10x more detailed investigation per supplier — including in-depth financial analysis, extended geopolitical intelligence, sub-tier supplier risk mapping, and cross-referencing across specialized industry databases.",
+    faq8Q: "Can I try Supply Pulse for free?",
+    faq8A:
+      "Yes. The Free plan lets you monitor 1 supplier with full weekly AI risk reports, email delivery, and PDF downloads — no credit card required. You can upgrade to Standard ($29/month for up to 5 suppliers) or Premium ($199/month for up to 15 suppliers with Deep Research AI) at any time.",
+
+    // Stats section
+    statsTitle: "Why supply chain risk monitoring matters",
+    statsSubtitle:
+      "Supply chain disruptions cost businesses billions annually. Proactive monitoring turns reactive scrambling into strategic preparedness.",
+    stat1Value: "$2.5T",
+    stat1Label: "Annual global losses from supply chain disruptions",
+    stat2Value: "90%",
+    stat2Label: "Of organizations lack sub-tier supplier visibility",
+    stat3Value: "48h+",
+    stat3Label: "Average delay before disruption awareness without monitoring",
+    stat4Value: "$37M",
+    stat4Label: "Average annual savings from proactive supply chain risk management",
+
+    // FAQ section
+    faqTitle: "Frequently asked questions about supply chain risk",
+    faqSubtitle:
+      "Everything you need to know about AI-powered supply chain risk monitoring and disruption detection.",
+    faq1Q: "What is supply chain risk monitoring?",
+    faq1A:
+      "Supply chain risk monitoring is the continuous process of identifying, assessing, and tracking potential threats to your supply chain. This includes monitoring suppliers for financial instability, geopolitical risks, natural disasters, regulatory changes, and operational disruptions. Supply Pulse automates this process using AI to research and analyze risks across your entire supplier network every week.",
+    faq2Q: "How does AI detect supply chain disruptions?",
+    faq2A:
+      "Supply Pulse uses advanced AI research models to scan thousands of sources including news outlets, government databases, trade publications, financial reports, and geopolitical intelligence feeds. The AI identifies current disruptions affecting your specific suppliers and predicts emerging risks for the next 30 days. Every finding is backed by cited sources so you can verify the intelligence.",
+    faq3Q: "What types of supply chain risks does Supply Pulse monitor?",
+    faq3A:
       "Supply Pulse monitors a comprehensive range of supply chain risks: geopolitical instability and trade wars, natural disasters and climate events, supplier financial health and bankruptcy risk, port congestion and shipping delays, tariff and regulatory changes, raw material shortages, labor disputes and strikes, cybersecurity threats to suppliers, and capacity constraints. The AI tailors its analysis to each supplier's country, industry, and shipping routes.",
     faq4Q: "How often are supply chain reports generated?",
     faq4A:
