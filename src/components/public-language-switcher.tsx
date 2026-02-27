@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { locales, localeNames, localeFlags, type Locale, DEFAULT_LOCALE } from "@/i18n";
+import { useTranslation } from "@/i18n/client";
 import {
   Select,
   SelectContent,
@@ -11,53 +12,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const LOCALE_STORAGE_KEY = "supplypulse-locale";
-const LOCALE_COOKIE_NAME = "locale";
-
 /**
- * A compact language switcher for public (server-rendered) pages.
- * Sets the cookie and reloads the page so the server component
- * picks up the new locale via getServerLocale().
+ * A compact language switcher for public pages.
+ * Updates both the LanguageProvider context (for client components)
+ * and the cookie (for server components), then refreshes.
  */
 export function PublicLanguageSwitcher() {
   const router = useRouter();
+  const { locale: ctxLocale, setLocale: setCtxLocale } = useTranslation();
   const [locale, setLocale] = useState<Locale>(DEFAULT_LOCALE);
   const [mounted, setMounted] = useState(false);
 
-  // Read current locale from cookie/localStorage on mount
   useEffect(() => {
     setMounted(true);
-    const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
-    if (stored && locales.includes(stored as Locale)) {
-      setLocale(stored as Locale);
-      return;
-    }
-    const cookie = document.cookie
-      .split("; ")
-      .find((c) => c.startsWith(`${LOCALE_COOKIE_NAME}=`));
-    if (cookie) {
-      const val = cookie.split("=")[1];
-      if (locales.includes(val as Locale)) {
-        setLocale(val as Locale);
-        return;
-      }
-    }
-    // Detect from browser
-    const lang = navigator.language?.substring(0, 2).toLowerCase();
-    if (lang && locales.includes(lang as Locale)) {
-      setLocale(lang as Locale);
-    }
-  }, []);
+    setLocale(ctxLocale);
+  }, [ctxLocale]);
 
   const handleChange = (value: string) => {
     const newLocale = value as Locale;
     setLocale(newLocale);
-
-    // Persist to cookie and localStorage
-    localStorage.setItem(LOCALE_STORAGE_KEY, newLocale);
-    document.cookie = `${LOCALE_COOKIE_NAME}=${newLocale};path=/;max-age=${365 * 24 * 60 * 60};SameSite=Lax`;
-
-    // Refresh the page so the server component re-renders with the new locale
+    setCtxLocale(newLocale);
     router.refresh();
   };
 
