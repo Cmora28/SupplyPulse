@@ -523,7 +523,9 @@ const pt: TranslationType = {
   },
 
   pdf: {
-    coverTitle1: "Cadeia de Suprimentos",
+    coverEyebrow: "Relatório Semanal de Riscos",
+    coverConfidential: "CONFIDENCIAL",
+    coverTitle1: "Cadeia de Suprimentos Global",
     coverTitle2: "Análise de Riscos",
     weekOf: "Semana de {date}",
     suppliersAnalyzed: "{count} fornecedor{plural} analisado{plural2}",

@@ -32,7 +32,11 @@ const COLORS = {
   danger: "#dc2626",
   link: "#2563eb",
   bgLight: "#f8fafc",
+  coverBlue: "#60a5fa",
+  coverSlate: "#0f172a",
 };
+
+const COVER_HEADER_HEIGHT = 300;
 
 // ---- State Management ----
 let generatedDate = "";
@@ -113,6 +117,79 @@ function parseContentToBlocks(content: string): Block[] {
 }
 
 // ---- Graphical Helpers ----
+
+/** Site-style logo: blue rounded square + white pulse "S" */
+function drawBrandLogo(
+  doc: PDFKit.PDFDocument,
+  x: number,
+  y: number,
+  size: number
+) {
+  const radius = size * 0.25;
+  doc.roundedRect(x, y, size, size, radius).fill(COLORS.primary);
+  doc.save();
+  doc.translate(x, y);
+  const scale = size / 32;
+  doc.scale(scale);
+  doc
+    .moveTo(21.76, 10.24)
+    .bezierCurveTo(8.32, 10.24, 8.32, 16, 16, 16)
+    .bezierCurveTo(23.68, 16, 23.68, 21.76, 10.24, 21.76)
+    .lineWidth(3.84)
+    .lineCap("round")
+    .strokeColor(COLORS.white)
+    .stroke();
+  doc.restore();
+}
+
+function drawCoverGlobeWatermark(
+  doc: PDFKit.PDFDocument,
+  cx: number,
+  cy: number,
+  size: number
+) {
+  doc.save();
+  doc.opacity(0.1);
+  drawIcon(doc, "globe", cx - size / 2, cy - size / 2, size, COLORS.white);
+  doc.opacity(1);
+  doc.restore();
+}
+
+function drawCoverPageHeader(
+  doc: PDFKit.PDFDocument,
+  t: (key: string, params?: Record<string, string | number>) => string
+) {
+  doc.rect(0, 0, PAGE_WIDTH, COVER_HEADER_HEIGHT).fill(COLORS.coverSlate);
+
+  drawCoverGlobeWatermark(doc, PAGE_WIDTH - 100, COVER_HEADER_HEIGHT * 0.45, 220);
+
+  const logoSize = 32;
+  const left = MARGIN;
+  drawBrandLogo(doc, left, 40, logoSize);
+
+  doc
+    .fontSize(8)
+    .font("Helvetica")
+    .fillColor(COLORS.textLight)
+    .text(t("pdf.coverConfidential"), MARGIN, 44, {
+      width: CONTENT_WIDTH,
+      align: "right",
+    });
+
+  doc
+    .fontSize(9)
+    .font("Helvetica-Bold")
+    .fillColor(COLORS.coverBlue)
+    .text(t("pdf.coverEyebrow").toUpperCase(), left, 88, {
+      characterSpacing: 1.2,
+    });
+
+  const titleLine1 = t("pdf.coverTitle1");
+  const titleLine2 = t("pdf.coverTitle2");
+  doc.fontSize(30).font("Times-Bold").fillColor(COLORS.white);
+  doc.text(titleLine1, left, 108, { width: CONTENT_WIDTH - 80 });
+  doc.text(titleLine2, left, doc.y + 4, { width: CONTENT_WIDTH - 80 });
+}
 
 function drawLogo(doc: PDFKit.PDFDocument, x: number, y: number, size: number) {
   doc.save();
@@ -344,37 +421,11 @@ export async function generateReportPDF(
 
       // ============ COVER PAGE ============
       doc.addPage();
-      
-      // Full background accent
-      doc.rect(0, 0, PAGE_WIDTH, 280).fill(COLORS.primary);
-      
-      // Geometric patterns
-      doc.save();
-      doc.circle(PAGE_WIDTH, 0, 300).fillOpacity(0.1).fill(COLORS.white);
-      doc.circle(0, 280, 100).fillOpacity(0.1).fill(COLORS.white);
-      doc.restore();
 
-      // Logo
-      drawLogo(doc, MARGIN, MARGIN + 40, 60); // Draw white logo? Need to adjust colors
-      // Actually drawLogo uses PRIMARY color. Let's make a white version inline or adjust.
-      // Custom White Logo for Cover
-      doc.save();
-      doc.translate(MARGIN, MARGIN + 40);
-      doc.circle(30, 30, 30).fill(COLORS.white);
-      doc.path("M48 12c-6 0-10 6-10 6s-4-6-10-6c-8 0-14 8-14 8s6 12 14 12c6 0 10-6 10-6s4 6 10 6c8 0 14-8 14-8s-6-12-14-12z").fillColor(COLORS.primary).fill(); // Simplified cloud/pulse shape
-      doc.restore();
+      drawCoverPageHeader(doc, t);
 
-      // Title Block
-      doc.y = 160;
-      doc.fontSize(36).font("Helvetica-Bold").fillColor(COLORS.white)
-        .text(t("pdf.coverTitle1") + " " + t("pdf.coverTitle2"), MARGIN, doc.y);
-      
-      doc.y += 10;
-      doc.fontSize(16).font("Helvetica").fillColor(COLORS.primaryLight)
-        .text("Weekly Intelligence & Risk Analysis", MARGIN, doc.y);
-
-      // Info Card (Floating over the break)
-      const cardY = 240;
+      // Info card overlapping header / body
+      const cardY = 250;
       doc.roundedRect(MARGIN, cardY, CONTENT_WIDTH, 140, 8).fill(COLORS.white);
       // Shadow effect manually? PDFKit doesn't do shadows easily. The white card on blue/white split looks good.
 

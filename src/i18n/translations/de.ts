@@ -529,7 +529,9 @@ const de: TranslationType = {
   },
 
   pdf: {
-    coverTitle1: "Lieferkette",
+    coverEyebrow: "Wöchentlicher Risikobericht",
+    coverConfidential: "VERTRAULICH",
+    coverTitle1: "Globale Lieferkette",
     coverTitle2: "Risikoanalyse",
     weekOf: "Woche vom {date}",
     suppliersAnalyzed: "{count} Lieferant{plural} analysiert",

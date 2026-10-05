@@ -522,7 +522,9 @@ const en = {
   },
 
   pdf: {
-    coverTitle1: "Supply Chain",
+    coverEyebrow: "Weekly Risk Report",
+    coverConfidential: "CONFIDENTIAL",
+    coverTitle1: "Global Supply Chain",
     coverTitle2: "Risk Analysis",
     weekOf: "Week of {date}",
     suppliersAnalyzed: "{count} supplier{plural} analyzed",
