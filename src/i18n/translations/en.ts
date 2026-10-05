@@ -130,6 +130,12 @@ const en = {
     failedToDelete: "Failed to delete supplier",
     cogsDisplay: "{value}% COGS",
     leadTimeDisplay: "{value}d",
+    validatingProfile: "Validating supplier data…",
+    validatingProfileHint:
+      "Checking that country, category, and shipping route align. This may take a few seconds.",
+    validationFailed: "Supplier profile needs changes",
+    validationUnavailable:
+      "Could not verify supplier data. Please try again in a moment.",
   },
 
   reports: {

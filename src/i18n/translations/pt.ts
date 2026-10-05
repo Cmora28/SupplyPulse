@@ -132,6 +132,12 @@ const pt: TranslationType = {
     failedToDelete: "Falha ao excluir fornecedor",
     cogsDisplay: "{value}% COGS",
     leadTimeDisplay: "{value}d",
+    validatingProfile: "A validar dados do fornecedor…",
+    validatingProfileHint:
+      "A verificar se país, categoria e rota de envio estão alinhados. Isto pode demorar alguns segundos.",
+    validationFailed: "O perfil do fornecedor precisa de alterações",
+    validationUnavailable:
+      "Não foi possível verificar os dados do fornecedor. Tente novamente dentro de momentos.",
   },
 
   reports: {

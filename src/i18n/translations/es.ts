@@ -132,6 +132,12 @@ const es: TranslationType = {
     failedToDelete: "No se pudo eliminar el proveedor",
     cogsDisplay: "{value}% COGS",
     leadTimeDisplay: "{value}d",
+    validatingProfile: "Validando datos del proveedor…",
+    validatingProfileHint:
+      "Comprobando que país, categoría y ruta de envío coincidan. Puede tardar unos segundos.",
+    validationFailed: "El perfil del proveedor necesita cambios",
+    validationUnavailable:
+      "No se pudieron verificar los datos del proveedor. Inténtelo de nuevo en un momento.",
   },
 
   reports: {

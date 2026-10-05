@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { supplierSchema } from "@/lib/validations";
 import { canAddSupplier } from "@/lib/tier-limits";
 import { rateLimit, getClientIp } from "@/lib/security";
+import { runSupplierConsistencyCheck } from "@/lib/supplier-validation-api";
 
 export const dynamic = "force-dynamic";
 
@@ -75,6 +76,9 @@ export async function POST(request: Request) {
         { status: 403 }
       );
     }
+
+    const consistencyError = await runSupplierConsistencyCheck(validated.data);
+    if (consistencyError) return consistencyError;
 
     const supplier = await prisma.supplier.create({
       data: {

@@ -134,6 +134,12 @@ const de: TranslationType = {
     failedToDelete: "Lieferant konnte nicht gelöscht werden",
     cogsDisplay: "{value} % COGS",
     leadTimeDisplay: "{value} T.",
+    validatingProfile: "Lieferantendaten werden geprüft…",
+    validatingProfileHint:
+      "Es wird geprüft, ob Land, Kategorie und Versandroute zusammenpassen. Dies kann einige Sekunden dauern.",
+    validationFailed: "Lieferantenprofil muss angepasst werden",
+    validationUnavailable:
+      "Lieferantendaten konnten nicht verifiziert werden. Bitte versuchen Sie es gleich erneut.",
   },
 
   reports: {
