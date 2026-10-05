@@ -60,6 +60,8 @@ interface AddSupplierDialogProps {
   onClose?: () => void;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /** When true, do not render the default "Add Supplier" trigger button */
+  hideTrigger?: boolean;
 }
 
 export function AddSupplierDialog({
@@ -68,6 +70,7 @@ export function AddSupplierDialog({
   onClose,
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
+  hideTrigger = false,
 }: AddSupplierDialogProps) {
   const router = useRouter();
   const { toast } = useToast();
@@ -158,14 +161,15 @@ export function AddSupplierDialog({
     }
   };
 
-  const trigger = !isEditing ? (
-    <DialogTrigger asChild>
-      <Button disabled={disabled}>
-        <Plus className="mr-2 h-4 w-4" />
-        {t("suppliers.addSupplier")}
-      </Button>
-    </DialogTrigger>
-  ) : null;
+  const trigger =
+    !isEditing && !hideTrigger ? (
+      <DialogTrigger asChild>
+        <Button disabled={disabled}>
+          <Plus className="mr-2 h-4 w-4" />
+          {t("suppliers.addSupplier")}
+        </Button>
+      </DialogTrigger>
+    ) : null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
