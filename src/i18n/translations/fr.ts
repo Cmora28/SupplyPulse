@@ -132,6 +132,12 @@ const fr: TranslationType = {
     failedToDelete: "Échec de la suppression du fournisseur",
     cogsDisplay: "{value} % COGS",
     leadTimeDisplay: "{value} j",
+    validatingProfile: "Validation des données fournisseur…",
+    validatingProfileHint:
+      "Vérification de la cohérence du pays, de la catégorie et de l'itinéraire. Cela peut prendre quelques secondes.",
+    validationFailed: "Le profil fournisseur doit être corrigé",
+    validationUnavailable:
+      "Impossible de vérifier les données fournisseur. Réessayez dans un instant.",
   },
 
   reports: {

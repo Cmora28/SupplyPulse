@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslation } from "@/i18n/client";
-import { Plus, Info } from "lucide-react";
+import { Plus, Info, Loader2 } from "lucide-react";
 import type { Supplier } from "@prisma/client";
 import { COUNTRIES } from "@/lib/countries";
 
@@ -77,6 +77,10 @@ export function AddSupplierDialog({
   const { t } = useTranslation();
   const [internalOpen, setInternalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [validationFeedback, setValidationFeedback] = useState<{
+    summary: string;
+    issues: Array<{ field: string; message: string }>;
+  } | null>(null);
 
   const isEditing = !!supplier;
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
@@ -92,9 +96,16 @@ export function AddSupplierDialog({
     dependencies: supplier?.dependencies || "",
   });
 
+  const handleOpenChange = (next: boolean) => {
+    if (loading) return;
+    setOpen(next);
+    if (!next) setValidationFeedback(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setValidationFeedback(null);
 
     try {
       const payload = {
@@ -120,6 +131,26 @@ export function AddSupplierDialog({
       const data = await res.json();
 
       if (!res.ok) {
+        if (res.status === 422 && data.code === "validation_failed" && data.validation) {
+          setValidationFeedback({
+            summary: data.validation.summary,
+            issues: data.validation.issues ?? [],
+          });
+          toast({
+            title: t("suppliers.validationFailed"),
+            description: data.validation.summary,
+            variant: "destructive",
+          });
+          return;
+        }
+        if (res.status === 422 && data.code === "validation_unavailable") {
+          toast({
+            title: t("common.error"),
+            description: t("suppliers.validationUnavailable"),
+            variant: "destructive",
+          });
+          return;
+        }
         toast({
           title: t("common.error"),
           description: data.error || t("common.somethingWentWrong"),
@@ -171,8 +202,10 @@ export function AddSupplierDialog({
       </DialogTrigger>
     ) : null;
 
+  const fieldsetDisabled = loading;
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       {trigger}
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -184,7 +217,40 @@ export function AddSupplierDialog({
           </DialogDescription>
         </DialogHeader>
         <TooltipProvider delayDuration={200}>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="relative space-y-4">
+            {validationFeedback && (
+              <div
+                className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm space-y-2"
+                role="alert"
+              >
+                <p className="font-medium text-destructive">
+                  {validationFeedback.summary}
+                </p>
+                {validationFeedback.issues.length > 0 && (
+                  <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                    {validationFeedback.issues.map((issue, i) => (
+                      <li key={`${issue.field}-${i}`}>{issue.message}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+            {loading && (
+              <div
+                className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-md bg-background/85 px-6 text-center"
+                aria-live="polite"
+                aria-busy="true"
+              >
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <div>
+                  <p className="font-medium">{t("suppliers.validatingProfile")}</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {t("suppliers.validatingProfileHint")}
+                  </p>
+                </div>
+              </div>
+            )}
+            <fieldset disabled={fieldsetDisabled} className="space-y-4 border-0 p-0 m-0 min-w-0">
             <div className="space-y-2">
               <div className="flex items-center gap-1.5">
                 <Label htmlFor="name">{t("suppliers.nameLabel") + " *"}</Label>
@@ -315,20 +381,20 @@ export function AddSupplierDialog({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setOpen(false)}
+                onClick={() => handleOpenChange(false)}
+                disabled={loading}
               >
                 {t("common.cancel")}
               </Button>
               <Button type="submit" disabled={loading}>
                 {loading
-                  ? isEditing
-                    ? t("suppliers.saving")
-                    : t("suppliers.adding")
+                  ? t("suppliers.validatingProfile")
                   : isEditing
                   ? t("suppliers.saveChanges")
                   : t("suppliers.addSupplier")}
               </Button>
             </DialogFooter>
+            </fieldset>
           </form>
         </TooltipProvider>
       </DialogContent>

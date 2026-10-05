@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { supplierSchema, cuidSchema } from "@/lib/validations";
 import { rateLimitAsync } from "@/lib/security";
+import { runSupplierConsistencyCheck } from "@/lib/supplier-validation-api";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,9 @@ export async function PUT(
         { status: 400 }
       );
     }
+
+    const consistencyError = await runSupplierConsistencyCheck(validated.data);
+    if (consistencyError) return consistencyError;
 
     const supplier = await prisma.supplier.update({
       where: { id: params.id },
