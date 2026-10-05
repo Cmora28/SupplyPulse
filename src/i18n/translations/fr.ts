@@ -523,7 +523,9 @@ const fr: TranslationType = {
   },
 
   pdf: {
-    coverTitle1: "Chaîne d'Approvisionnement",
+    coverEyebrow: "Rapport Hebdomadaire des Risques",
+    coverConfidential: "CONFIDENTIEL",
+    coverTitle1: "Chaîne d'Approvisionnement Mondiale",
     coverTitle2: "Analyse des Risques",
     weekOf: "Semaine du {date}",
     suppliersAnalyzed: "{count} fournisseur{plural} analysé{plural2}",
