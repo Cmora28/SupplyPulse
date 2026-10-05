@@ -17,6 +17,7 @@ import { MobileNav } from "@/components/mobile-nav";
 import { User, Settings, LogOut } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { clearSupplierOnboardingPrompt } from "@/components/first-supplier-onboarding";
 
 function getTierColor(tier: string) {
   switch (tier) {
@@ -97,7 +98,10 @@ export function Header() {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive cursor-pointer"
-                onClick={() => signOut({ callbackUrl: "/login" })}
+                onClick={() => {
+                  clearSupplierOnboardingPrompt(session?.user?.id);
+                  signOut({ callbackUrl: "/login" });
+                }}
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 {t("common.signOut")}

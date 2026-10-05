@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
+import { clearSupplierOnboardingPrompt } from "@/components/first-supplier-onboarding";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -204,6 +205,7 @@ export default function SettingsPage() {
         return;
       }
 
+      clearSupplierOnboardingPrompt(session?.user?.id);
       signOut({ callbackUrl: "/" });
     } catch {
       toast({
