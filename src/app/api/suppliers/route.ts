@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { supplierSchema } from "@/lib/validations";
 import { canAddSupplier } from "@/lib/tier-limits";
 import { rateLimit, getClientIp } from "@/lib/security";
+import { AuditAction } from "@prisma/client";
+import { logAudit } from "@/lib/audit";
 import { runSupplierConsistencyCheck } from "@/lib/supplier-validation-api";
 
 export const dynamic = "force-dynamic";
@@ -77,7 +79,16 @@ export async function POST(request: Request) {
       );
     }
 
-    const consistencyError = await runSupplierConsistencyCheck(validated.data);
+    const auditCtx = {
+      actorUserId: session.user.id,
+      actorEmail: session.user.email ?? "",
+      request,
+      operation: "create" as const,
+    };
+    const consistencyError = await runSupplierConsistencyCheck(
+      validated.data,
+      auditCtx
+    );
     if (consistencyError) return consistencyError;
 
     const supplier = await prisma.supplier.create({
@@ -87,6 +98,16 @@ export async function POST(request: Request) {
         dependencies: validated.data.dependencies || null,
         userId: session.user.id,
       },
+    });
+
+    void logAudit({
+      action: AuditAction.SUPPLIER_CREATE,
+      actorUserId: session.user.id,
+      actorEmail: session.user.email,
+      request,
+      targetType: "Supplier",
+      targetId: supplier.id,
+      metadata: { supplierName: supplier.name },
     });
 
     return NextResponse.json(supplier, { status: 201 });

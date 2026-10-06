@@ -3,12 +3,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { cuidSchema } from "@/lib/validations";
+import { AuditAction } from "@prisma/client";
+import { logAudit } from "@/lib/audit";
 import { rateLimitAsync } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -50,6 +52,16 @@ export async function DELETE(
 
     await prisma.reportRun.delete({
       where: { id: reportRun.id },
+    });
+
+    void logAudit({
+      action: AuditAction.REPORT_DELETE,
+      actorUserId: session.user.id,
+      actorEmail: session.user.email,
+      request,
+      targetType: "ReportRun",
+      targetId: reportRun.id,
+      metadata: { weekOf: reportRun.weekOf.toISOString() },
     });
 
     return NextResponse.json({ success: true });

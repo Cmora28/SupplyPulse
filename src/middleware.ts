@@ -1,7 +1,7 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "lopezhk@gmail.com";
+import { ADMIN_EMAIL } from "@/lib/admin-config";
 
 export default withAuth(
   function middleware(req) {

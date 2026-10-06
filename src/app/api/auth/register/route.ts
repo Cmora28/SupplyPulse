@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validations";
 import { rateLimit, getClientIp } from "@/lib/security";
+import { AuditAction } from "@prisma/client";
+import { logAudit } from "@/lib/audit";
 import { calculateNextReportAt } from "@/lib/schedule";
 
 export const dynamic = "force-dynamic";
@@ -92,6 +94,22 @@ export async function POST(request: Request) {
         reportHour: hour,
         nextReportAt,
       },
+    });
+
+    void logAudit({
+      action: AuditAction.REGISTER,
+      actorUserId: user.id,
+      actorEmail: email,
+      request,
+      targetType: "User",
+      targetId: user.id,
+    });
+    void logAudit({
+      action: AuditAction.REPORT_SCHEDULE_SET,
+      actorUserId: user.id,
+      actorEmail: email,
+      request,
+      metadata: { reportDay: day, reportHour: hour },
     });
 
     return NextResponse.json(

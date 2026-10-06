@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+import { AuditAction } from "@prisma/client";
 import type { z } from "zod";
 import type { supplierSchema } from "@/lib/validations";
+import { logAudit } from "@/lib/audit";
 import {
   validateSupplierProfile,
   SupplierValidationServiceError,
@@ -9,8 +11,18 @@ import {
 
 type SupplierData = z.infer<typeof supplierSchema>;
 
+export type SupplierAuditContext = {
+  actorUserId: string;
+  actorEmail: string;
+  request?: Request;
+  operation: "create" | "update";
+  supplierId?: string;
+  supplierName?: string;
+};
+
 export async function runSupplierConsistencyCheck(
-  data: SupplierData
+  data: SupplierData,
+  audit?: SupplierAuditContext
 ): Promise<NextResponse | null> {
   if (isSupplierValidationSkipped()) {
     return null;
@@ -28,6 +40,22 @@ export async function runSupplierConsistencyCheck(
     });
 
     if (!result.valid) {
+      if (audit) {
+        void logAudit({
+          action: AuditAction.SUPPLIER_VALIDATION_REJECTED,
+          success: false,
+          actorUserId: audit.actorUserId,
+          actorEmail: audit.actorEmail,
+          request: audit.request,
+          targetType: audit.supplierId ? "Supplier" : undefined,
+          targetId: audit.supplierId,
+          metadata: {
+            operation: audit.operation,
+            supplierName: data.name,
+            summary: result.summary,
+          },
+        });
+      }
       return NextResponse.json(
         {
           error: "Supplier profile failed consistency check",

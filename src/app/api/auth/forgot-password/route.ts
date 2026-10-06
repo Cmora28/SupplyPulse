@@ -3,6 +3,8 @@ import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { rateLimit, getClientIp } from "@/lib/security";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { AuditAction } from "@prisma/client";
+import { logAudit } from "@/lib/audit";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -52,6 +54,13 @@ export async function POST(request: Request) {
     await prisma.user.update({
       where: { id: user.id },
       data: { resetToken, resetTokenExpiry },
+    });
+
+    void logAudit({
+      action: AuditAction.PASSWORD_RESET_REQUEST,
+      actorUserId: user.id,
+      actorEmail: email,
+      request,
     });
 
     // Send the email

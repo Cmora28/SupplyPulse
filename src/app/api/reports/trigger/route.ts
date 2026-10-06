@@ -4,17 +4,17 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Queue } from "bullmq";
 import { startOfWeek } from "date-fns";
-import { rateLimit } from "@/lib/security";
+import { AuditAction } from "@prisma/client";
+import { logAudit } from "@/lib/audit";
+import { ADMIN_EMAIL, rateLimit } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
-
-const ADMIN_EMAIL = "lopezhk@gmail.com";
 
 const connection = {
   url: process.env.REDIS_URL || "redis://localhost:6379",
 };
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -88,6 +88,19 @@ export async function POST() {
     }
 
     await supplierReportQueue.close();
+
+    void logAudit({
+      action: AuditAction.REPORT_TRIGGER_MANUAL,
+      actorUserId: session.user.id,
+      actorEmail: session.user.email,
+      request,
+      targetType: "ReportRun",
+      targetId: reportRun.id,
+      metadata: {
+        supplierCount: suppliers.length,
+        weekOf: weekOf.toISOString(),
+      },
+    });
 
     return NextResponse.json({
       message: `Report run started for ${suppliers.length} supplier(s)`,

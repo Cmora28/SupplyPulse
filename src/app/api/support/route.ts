@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { Resend } from "resend";
+import { AuditAction } from "@prisma/client";
+import { logAudit } from "@/lib/audit";
 import { rateLimit, getClientIp, escapeHtml } from "@/lib/security";
 import { z } from "zod";
 
@@ -103,6 +105,14 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
+
+    void logAudit({
+      action: AuditAction.SUPPORT_SUBMIT,
+      actorUserId: session.user.id,
+      actorEmail: userEmail,
+      request: req,
+      metadata: { subject: subject.slice(0, 200) },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

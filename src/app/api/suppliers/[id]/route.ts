@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { supplierSchema, cuidSchema } from "@/lib/validations";
 import { rateLimitAsync } from "@/lib/security";
+import { AuditAction } from "@prisma/client";
+import { diffSupplierFields, logAudit } from "@/lib/audit";
 import { runSupplierConsistencyCheck } from "@/lib/supplier-validation-api";
 
 export const dynamic = "force-dynamic";
@@ -48,15 +50,42 @@ export async function PUT(
       );
     }
 
-    const consistencyError = await runSupplierConsistencyCheck(validated.data);
+    const auditCtx = {
+      actorUserId: session.user.id,
+      actorEmail: session.user.email ?? "",
+      request,
+      operation: "update" as const,
+      supplierId: existing.id,
+      supplierName: existing.name,
+    };
+    const consistencyError = await runSupplierConsistencyCheck(
+      validated.data,
+      auditCtx
+    );
     if (consistencyError) return consistencyError;
 
+    const before = { ...existing } as Record<string, unknown>;
     const supplier = await prisma.supplier.update({
       where: { id: params.id },
       data: {
         ...validated.data,
         shippingRoute: validated.data.shippingRoute || null,
         dependencies: validated.data.dependencies || null,
+      },
+    });
+
+    const after = { ...supplier } as Record<string, unknown>;
+    const changes = diffSupplierFields(before, after);
+    void logAudit({
+      action: AuditAction.SUPPLIER_UPDATE,
+      actorUserId: session.user.id,
+      actorEmail: session.user.email,
+      request,
+      targetType: "Supplier",
+      targetId: supplier.id,
+      metadata: {
+        supplierName: supplier.name,
+        changes,
       },
     });
 
@@ -71,7 +100,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -101,6 +130,16 @@ export async function DELETE(
     }
 
     await prisma.supplier.delete({ where: { id: params.id } });
+
+    void logAudit({
+      action: AuditAction.SUPPLIER_DELETE,
+      actorUserId: session.user.id,
+      actorEmail: session.user.email,
+      request,
+      targetType: "Supplier",
+      targetId: existing.id,
+      metadata: { supplierName: existing.name },
+    });
 
     return NextResponse.json({ message: "Supplier deleted" });
   } catch (error) {

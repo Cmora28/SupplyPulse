@@ -3,6 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { SubscriptionTier } from "@prisma/client";
+import { AuditAction } from "@prisma/client";
+import { logAudit } from "@/lib/audit";
 import { rateLimit } from "@/lib/security";
 
 export const authOptions: NextAuthOptions = {
@@ -32,7 +34,11 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user) {
-          // A07: Use same error for missing user and wrong password (timing-safe)
+          void logAudit({
+            action: AuditAction.LOGIN_FAILURE,
+            success: false,
+            actorEmail: email,
+          });
           throw new Error("Invalid email or password");
         }
 
@@ -42,6 +48,12 @@ export const authOptions: NextAuthOptions = {
         );
 
         if (!isPasswordValid) {
+          void logAudit({
+            action: AuditAction.LOGIN_FAILURE,
+            success: false,
+            actorUserId: user.id,
+            actorEmail: email,
+          });
           throw new Error("Invalid email or password");
         }
 
@@ -96,6 +108,22 @@ export const authOptions: NextAuthOptions = {
           (token.locale as string) || "en";
       }
       return session;
+    },
+  },
+  events: {
+    async signIn({ user }) {
+      void logAudit({
+        action: AuditAction.LOGIN_SUCCESS,
+        actorUserId: user.id,
+        actorEmail: user.email ?? undefined,
+      });
+    },
+    async signOut({ token }) {
+      void logAudit({
+        action: AuditAction.LOGOUT,
+        actorUserId: (token?.id as string) ?? undefined,
+        actorEmail: (token?.email as string) ?? undefined,
+      });
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

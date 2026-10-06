@@ -4,6 +4,8 @@ import {
   validateEvent,
   WebhookVerificationError,
 } from "@polar-sh/sdk/webhooks";
+import { AuditAction } from "@prisma/client";
+import { logAudit } from "@/lib/audit";
 import { rateLimitAsync, getClientIp } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
@@ -93,6 +95,11 @@ export async function POST(request: Request) {
           );
         }
 
+        const existingUser = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { subscriptionTier: true, email: true },
+        });
+
         const sub = subscription as Record<string, unknown>;
         await prisma.user.update({
           where: { id: userId },
@@ -103,6 +110,21 @@ export async function POST(request: Request) {
               (sub.customerId as string) ||
               null,
             polarSubscriptionId: (sub.id as string) || null,
+          },
+        });
+
+        void logAudit({
+          action: AuditAction.SUBSCRIPTION_TIER_CHANGED,
+          actorUserId: userId,
+          actorEmail: existingUser?.email,
+          request,
+          targetType: "User",
+          targetId: userId,
+          metadata: {
+            from: existingUser?.subscriptionTier ?? "UNKNOWN",
+            to: tier,
+            source: "polar_webhook",
+            eventType,
           },
         });
 
@@ -130,11 +152,26 @@ export async function POST(request: Request) {
         });
 
         if (user) {
+          const fromTier = user.subscriptionTier;
           await prisma.user.update({
             where: { id: user.id },
             data: {
               subscriptionTier: "FREE",
               polarSubscriptionId: null,
+            },
+          });
+          void logAudit({
+            action: AuditAction.SUBSCRIPTION_TIER_CHANGED,
+            actorUserId: user.id,
+            actorEmail: user.email,
+            request,
+            targetType: "User",
+            targetId: user.id,
+            metadata: {
+              from: fromTier,
+              to: "FREE",
+              source: "polar_webhook",
+              eventType,
             },
           });
           console.log(`[Polar Webhook] User ${user.id} downgraded to FREE`);
