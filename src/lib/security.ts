@@ -8,7 +8,7 @@ import { REDIS_URL } from "@/lib/redis";
 
 // ---- Admin ----
 
-export const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@example.com";
+export { ADMIN_EMAIL } from "@/lib/admin-config";
 
 // ---- A03: Input validation ----
 

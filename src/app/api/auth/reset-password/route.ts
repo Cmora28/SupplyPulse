@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { rateLimit, getClientIp } from "@/lib/security";
+import { AuditAction } from "@prisma/client";
+import { logAudit } from "@/lib/audit";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -69,6 +71,13 @@ export async function POST(request: Request) {
         resetToken: null,
         resetTokenExpiry: null,
       },
+    });
+
+    void logAudit({
+      action: AuditAction.PASSWORD_RESET_COMPLETE,
+      actorUserId: user.id,
+      actorEmail: user.email,
+      request,
     });
 
     return NextResponse.json({

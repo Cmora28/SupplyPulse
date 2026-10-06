@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { generateReportPDF } from "@/lib/pdf-generator";
 import { sendWeeklyReport } from "@/lib/email";
 import { cuidSchema } from "@/lib/validations";
+import { AuditAction } from "@prisma/client";
+import { logAudit } from "@/lib/audit";
 import { ADMIN_EMAIL, rateLimitAsync } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
@@ -119,6 +121,19 @@ export async function POST(request: Request) {
     console.log(
       `[Admin] Email sent successfully to ${reportRun.user.email}`
     );
+
+    void logAudit({
+      action: AuditAction.ADMIN_RESEND_REPORT_EMAIL,
+      actorUserId: session.user.id,
+      actorEmail: session.user.email,
+      request,
+      targetType: "ReportRun",
+      targetId: reportRunId,
+      metadata: {
+        recipientEmail: reportRun.user.email,
+        recipientUserId: reportRun.userId,
+      },
+    });
 
     return NextResponse.json({
       message: `Email sent to ${reportRun.user.email} with ${validReports.length} supplier report(s)`,

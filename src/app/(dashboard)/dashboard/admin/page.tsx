@@ -29,11 +29,12 @@ import {
   ChevronLeft,
   ChevronsLeft,
   ChevronsRight,
+  ClipboardList,
 } from "lucide-react";
+import Link from "next/link";
 import { format } from "date-fns";
 import { useTranslation } from "@/i18n/client";
-
-const ADMIN_EMAIL = "admin@example.com";
+import { ADMIN_EMAIL } from "@/lib/admin-config";
 const PAGE_SIZE = 10;
 
 interface ReportRunItem {
@@ -296,10 +297,18 @@ export default function AdminPage() {
             <p className="text-muted-foreground">{t("admin.subtitle")}</p>
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={handleRefresh}>
-          <RefreshCw className="mr-2 h-4 w-4" />
-          {t("common.refresh")}
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/dashboard/admin/audit">
+              <ClipboardList className="mr-2 h-4 w-4" />
+              {t("admin.openAuditLog")}
+            </Link>
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleRefresh}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            {t("common.refresh")}
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}

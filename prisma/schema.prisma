@@ -30,6 +30,34 @@ enum RunItemStatus {
   FAILED
 }
 
+enum AuditAction {
+  LOGIN_SUCCESS
+  LOGIN_FAILURE
+  LOGOUT
+  REGISTER
+  SUPPLIER_CREATE
+  SUPPLIER_UPDATE
+  SUPPLIER_DELETE
+  SUPPLIER_VALIDATION_REJECTED
+  REPORT_TRIGGER_MANUAL
+  REPORT_TRIGGER_SCHEDULED
+  REPORT_TRIGGER_ADMIN
+  REPORT_DELETE
+  REPORT_FINALIZED
+  REPORT_EMAIL_SENT
+  PASSWORD_RESET_REQUEST
+  PASSWORD_RESET_COMPLETE
+  PASSWORD_CHANGE
+  PROFILE_UPDATE
+  LOCALE_CHANGE
+  NOTIFICATIONS_UPDATE
+  REPORT_SCHEDULE_SET
+  ACCOUNT_DELETE
+  SUBSCRIPTION_TIER_CHANGED
+  ADMIN_RESEND_REPORT_EMAIL
+  SUPPORT_SUBMIT
+}
+
 model User {
   id                  String           @id @default(cuid())
   email               String           @unique
@@ -120,4 +148,24 @@ model ReportRunItem {
   // Finalizer: count remaining items by run + status (hot path)
   @@index([reportRunId, status])
   @@index([supplierId])
+}
+
+model AuditEvent {
+  id          String      @id @default(cuid())
+  action      AuditAction
+  success     Boolean     @default(true)
+  actorUserId String?
+  actorEmail  String?
+  targetType  String?
+  targetId    String?
+  metadata    Json?
+  ipAddress   String?
+  userAgent   String?     @db.VarChar(512)
+  createdAt   DateTime    @default(now())
+
+  @@index([createdAt(sort: Desc)])
+  @@index([action, createdAt(sort: Desc)])
+  @@index([actorUserId, createdAt(sort: Desc)])
+  @@index([actorEmail, createdAt(sort: Desc)])
+  @@index([success, createdAt(sort: Desc)])
 }

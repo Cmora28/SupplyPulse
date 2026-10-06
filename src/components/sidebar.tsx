@@ -15,9 +15,9 @@ import {
   Settings,
   MessageSquare,
   Shield,
+  ClipboardList,
 } from "lucide-react";
-
-const ADMIN_EMAIL = "admin@example.com";
+import { ADMIN_EMAIL } from "@/lib/admin-config";
 
 const navItems = [
   { key: "nav.overview" as const, href: "/dashboard", icon: LayoutDashboard },
@@ -74,13 +74,25 @@ export function Sidebar() {
                 href="/dashboard/admin"
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                  pathname.startsWith("/dashboard/admin")
+                  pathname === "/dashboard/admin"
                     ? "bg-red-50 text-red-600"
                     : "text-red-400 hover:bg-red-50 hover:text-red-600"
                 )}
               >
                 <Shield className="h-4 w-4" />
                 {t("nav.admin")}
+              </Link>
+              <Link
+                href="/dashboard/admin/audit"
+                className={cn(
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  pathname.startsWith("/dashboard/admin/audit")
+                    ? "bg-red-50 text-red-600"
+                    : "text-red-400 hover:bg-red-50 hover:text-red-600"
+                )}
+              >
+                <ClipboardList className="h-4 w-4" />
+                {t("nav.adminAudit")}
               </Link>
             </>
           )}

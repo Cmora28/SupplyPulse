@@ -22,7 +22,7 @@ import { RunReportButton } from "@/components/run-report-button";
 import { UpgradeSuccess } from "@/components/upgrade-success";
 import { Suspense } from "react";
 
-const ADMIN_EMAIL = "admin@example.com";
+import { ADMIN_EMAIL } from "@/lib/admin-config";
 
 export const dynamic = "force-dynamic";
 

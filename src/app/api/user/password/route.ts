@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { changePasswordSchema } from "@/lib/validations";
 import { rateLimitAsync } from "@/lib/security";
+import { AuditAction } from "@prisma/client";
+import { logAudit } from "@/lib/audit";
 import bcrypt from "bcryptjs";
 
 export const dynamic = "force-dynamic";
@@ -58,6 +60,13 @@ export async function PUT(request: Request) {
     await prisma.user.update({
       where: { id: session.user.id },
       data: { password: hashedPassword },
+    });
+
+    void logAudit({
+      action: AuditAction.PASSWORD_CHANGE,
+      actorUserId: session.user.id,
+      actorEmail: session.user.email,
+      request,
     });
 
     return NextResponse.json({ message: "Password updated successfully" });

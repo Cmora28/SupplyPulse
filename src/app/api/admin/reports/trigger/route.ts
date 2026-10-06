@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { Queue } from "bullmq";
 import { startOfWeek } from "date-fns";
 import { cuidSchema } from "@/lib/validations";
+import { AuditAction } from "@prisma/client";
+import { logAudit } from "@/lib/audit";
 import { ADMIN_EMAIL, rateLimitAsync } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
@@ -95,6 +97,21 @@ export async function POST(request: Request) {
     }
 
     await supplierReportQueue.close();
+
+    void logAudit({
+      action: AuditAction.REPORT_TRIGGER_ADMIN,
+      actorUserId: session.user.id,
+      actorEmail: session.user.email,
+      request,
+      targetType: "ReportRun",
+      targetId: reportRun.id,
+      metadata: {
+        targetUserId: userId,
+        targetUserEmail: user.email,
+        supplierCount: suppliers.length,
+        weekOf: weekOf.toISOString(),
+      },
+    });
 
     return NextResponse.json({
       message: `Report run started for ${user.name} (${suppliers.length} supplier(s))`,

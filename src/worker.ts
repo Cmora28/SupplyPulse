@@ -7,7 +7,8 @@ import { generateReportPDF } from "./lib/pdf-generator";
 import { sendWeeklyReport } from "./lib/email";
 import { TIER_MODEL } from "./lib/tier-limits";
 import { calculateNextReportAt } from "./lib/schedule";
-import type { SubscriptionTier } from "@prisma/client";
+import { AuditAction, type SubscriptionTier } from "@prisma/client";
+import { logAudit } from "./lib/audit";
 
 // ---- Redis Connection ----
 const connection = {
@@ -96,6 +97,18 @@ const schedulerWorker = new Worker(
       await prisma.user.update({
         where: { id: user.id },
         data: { nextReportAt: newNextReportAt },
+      });
+
+      void logAudit({
+        action: AuditAction.REPORT_TRIGGER_SCHEDULED,
+        actorUserId: user.id,
+        actorEmail: user.email,
+        targetType: "ReportRun",
+        targetId: reportRun.id,
+        metadata: {
+          supplierCount: user.suppliers.length,
+          weekOf: weekOf.toISOString(),
+        },
       });
 
       console.log(
@@ -319,6 +332,30 @@ const finalizerWorker = new Worker(
       where: { id: reportRunId },
       data: { status: emailSent ? "EMAILED" : "READY" },
     });
+
+    void logAudit({
+      action: AuditAction.REPORT_FINALIZED,
+      actorUserId: reportRun.userId,
+      actorEmail: reportRun.user.email,
+      targetType: "ReportRun",
+      targetId: reportRunId,
+      metadata: {
+        status: emailSent ? "EMAILED" : "READY",
+        supplierReportCount: supplierReports.length,
+        weekOf: reportRun.weekOf.toISOString(),
+      },
+    });
+
+    if (emailSent) {
+      void logAudit({
+        action: AuditAction.REPORT_EMAIL_SENT,
+        actorUserId: reportRun.userId,
+        actorEmail: reportRun.user.email,
+        targetType: "ReportRun",
+        targetId: reportRunId,
+        metadata: { weekOf: reportRun.weekOf.toISOString() },
+      });
+    }
 
     await prisma.reportRunItem.updateMany({
       where: {

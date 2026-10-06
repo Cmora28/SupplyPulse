@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { AuditAction } from "@prisma/client";
+import { logAudit } from "@/lib/audit";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -23,9 +25,26 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Invalid locale" }, { status: 400 });
     }
 
+    const before = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { locale: true },
+    });
+
     await prisma.user.update({
       where: { id: session.user.id },
       data: { locale: parsed.data.locale },
+    });
+
+    void logAudit({
+      action: AuditAction.LOCALE_CHANGE,
+      actorUserId: session.user.id,
+      actorEmail: session.user.email,
+      request,
+      metadata: {
+        changes: {
+          locale: { from: before?.locale, to: parsed.data.locale },
+        },
+      },
     });
 
     return NextResponse.json({ message: "Locale updated" });
