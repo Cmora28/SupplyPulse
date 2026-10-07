@@ -15,6 +15,12 @@ export async function POST(request: Request) {
     const ip = getClientIp(request);
     const rl = rateLimit(`register:${ip}`, 5, 15 * 60 * 1000);
     if (!rl.success) {
+      void logAudit({
+        action: AuditAction.REGISTER,
+        success: false,
+        request,
+        metadata: { reason: "rate_limited" },
+      });
       return NextResponse.json(
         { error: "Too many registration attempts. Please try again later." },
         {
@@ -29,6 +35,12 @@ export async function POST(request: Request) {
     // Verify Cloudflare Turnstile token before any processing
     const captchaToken = body?.captchaToken;
     if (!captchaToken) {
+      void logAudit({
+        action: AuditAction.REGISTER,
+        success: false,
+        request,
+        metadata: { reason: "captcha_missing" },
+      });
       return NextResponse.json(
         { error: "CAPTCHA verification required." },
         { status: 400 }
@@ -47,6 +59,12 @@ export async function POST(request: Request) {
     );
     const verifyData = await verifyRes.json() as { success: boolean };
     if (!verifyData.success) {
+      void logAudit({
+        action: AuditAction.REGISTER,
+        success: false,
+        request,
+        metadata: { reason: "captcha_failed" },
+      });
       return NextResponse.json(
         { error: "CAPTCHA verification failed. Please try again." },
         { status: 400 }
@@ -56,6 +74,15 @@ export async function POST(request: Request) {
     const validated = registerSchema.safeParse(body);
 
     if (!validated.success) {
+      const attemptEmail =
+        typeof body?.email === "string" ? body.email.toLowerCase().trim() : undefined;
+      void logAudit({
+        action: AuditAction.REGISTER,
+        success: false,
+        actorEmail: attemptEmail,
+        request,
+        metadata: { reason: "validation_failed" },
+      });
       return NextResponse.json(
         { error: validated.error.issues[0].message },
         { status: 400 }
@@ -72,6 +99,13 @@ export async function POST(request: Request) {
       // A07: Return same response shape to prevent email enumeration.
       // Spend time hashing to keep response timing consistent.
       await bcrypt.hash(password, 12);
+      void logAudit({
+        action: AuditAction.REGISTER,
+        success: false,
+        actorEmail: email,
+        request,
+        metadata: { reason: "email_already_registered" },
+      });
       return NextResponse.json(
         { message: "Account created successfully" },
         { status: 201 }
@@ -103,6 +137,7 @@ export async function POST(request: Request) {
       request,
       targetType: "User",
       targetId: user.id,
+      metadata: { name, locale: locale || "en" },
     });
     void logAudit({
       action: AuditAction.REPORT_SCHEDULE_SET,
