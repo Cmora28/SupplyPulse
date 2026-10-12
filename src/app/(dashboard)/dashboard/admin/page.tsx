@@ -34,8 +34,24 @@ import {
 import Link from "next/link";
 import { format } from "date-fns";
 import { useTranslation } from "@/i18n/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ADMIN_EMAIL } from "@/lib/admin-config";
-const PAGE_SIZE = 10;
+
+const DEFAULT_PAGE_SIZE = 25;
+const PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
+const SUBSCRIPTION_TIERS = [
+  "FREE",
+  "STANDARD",
+  "PLUS",
+  "PREMIUM",
+  "ENTERPRISE",
+] as const;
 
 interface ReportRunItem {
   id: string;
@@ -88,6 +104,7 @@ const statusColors: Record<string, string> = {
 const tierColors: Record<string, string> = {
   FREE: "bg-gray-100 text-gray-700 border-gray-200",
   STANDARD: "bg-blue-100 text-blue-700 border-blue-200",
+  PLUS: "bg-indigo-100 text-indigo-700 border-indigo-200",
   PREMIUM: "bg-amber-100 text-amber-700 border-amber-200",
   ENTERPRISE: "bg-purple-100 text-purple-700 border-purple-200",
 };
@@ -99,9 +116,10 @@ export default function AdminPage() {
   const { t } = useTranslation();
 
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
-    limit: PAGE_SIZE,
+    limit: DEFAULT_PAGE_SIZE,
     totalUsers: 0,
     totalPages: 0,
   });
@@ -116,18 +134,20 @@ export default function AdminPage() {
   const [triggeringReport, setTriggeringReport] = useState<string | null>(null);
   const [resendingEmail, setResendingEmail] = useState<string | null>(null);
   const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set());
+  const [tierDraft, setTierDraft] = useState<Record<string, string>>({});
+  const [updatingTier, setUpdatingTier] = useState<string | null>(null);
 
   // Debounce timer ref
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchUsers = useCallback(
-    async (search: string, page: number) => {
+    async (search: string, page: number, limit: number) => {
       try {
         setLoading(true);
         const params = new URLSearchParams({
           search,
           page: String(page),
-          limit: String(PAGE_SIZE),
+          limit: String(limit),
         });
         const res = await fetch(`/api/admin/users?${params}`);
         if (!res.ok) {
@@ -141,6 +161,13 @@ export default function AdminPage() {
         setUsers(data.users);
         setPagination(data.pagination);
         setStats(data.stats);
+        setTierDraft((prev) => {
+          const next = { ...prev };
+          for (const u of data.users as AdminUser[]) {
+            if (!next[u.id]) next[u.id] = u.subscriptionTier;
+          }
+          return next;
+        });
       } catch {
         toast({
           title: t("common.error"),
@@ -161,7 +188,7 @@ export default function AdminPage() {
       router.push("/dashboard");
       return;
     }
-    fetchUsers(searchQuery, currentPage);
+    fetchUsers(searchQuery, currentPage, pageSize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, sessionStatus, router]);
 
@@ -171,19 +198,69 @@ export default function AdminPage() {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       setCurrentPage(1);
-      fetchUsers(value, 1);
+      fetchUsers(value, 1, pageSize);
     }, 400);
+  };
+
+  const handlePageSizeChange = (value: string) => {
+    const limit = parseInt(value, 10);
+    setPageSize(limit);
+    setCurrentPage(1);
+    setExpandedUsers(new Set());
+    fetchUsers(searchQuery, 1, limit);
   };
 
   // Page change
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
     setExpandedUsers(new Set());
-    fetchUsers(searchQuery, newPage);
+    fetchUsers(searchQuery, newPage, pageSize);
   };
 
   const handleRefresh = () => {
-    fetchUsers(searchQuery, currentPage);
+    fetchUsers(searchQuery, currentPage, pageSize);
+  };
+
+  const handleUpdateTier = async (userId: string) => {
+    const tier = tierDraft[userId];
+    if (!tier) return;
+
+    setUpdatingTier(userId);
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/subscription`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subscriptionTier: tier }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast({
+          title: t("common.error"),
+          description: data.error || t("admin.planUpdateFailed"),
+          variant: "destructive",
+        });
+        return;
+      }
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === userId
+            ? { ...u, subscriptionTier: data.user.subscriptionTier }
+            : u
+        )
+      );
+      toast({
+        title: t("admin.planUpdated"),
+        description: data.user.email,
+      });
+    } catch {
+      toast({
+        title: t("common.error"),
+        description: t("admin.planUpdateFailed"),
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingTier(null);
+    }
   };
 
   const toggleUser = (userId: string) => {
@@ -221,8 +298,6 @@ export default function AdminPage() {
         title: t("admin.reportTriggered"),
         description: data.message,
       });
-
-      setTimeout(() => fetchUsers(searchQuery, currentPage), 2000);
     } catch {
       toast({
         title: t("common.error"),
@@ -257,8 +332,6 @@ export default function AdminPage() {
         title: t("admin.emailSent"),
         description: data.message,
       });
-
-      fetchUsers(searchQuery, currentPage);
     } catch {
       toast({
         title: t("common.error"),
@@ -348,15 +421,34 @@ export default function AdminPage() {
         </Card>
       </div>
 
-      {/* Search Bar */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder={t("admin.searchPlaceholder")}
-          value={searchQuery}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          className="pl-10"
-        />
+      {/* Search & page size */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={t("admin.searchPlaceholder")}
+            value={searchQuery}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <div className="flex items-center gap-2 sm:w-48">
+          <span className="text-sm text-muted-foreground whitespace-nowrap">
+            {t("admin.perPage")}
+          </span>
+          <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PAGE_SIZE_OPTIONS.map((n) => (
+                <SelectItem key={n} value={String(n)}>
+                  {n}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Pagination Info */}
@@ -435,21 +527,61 @@ export default function AdminPage() {
                         </CardDescription>
                       </div>
                     </div>
-                    <Button
-                      size="sm"
-                      onClick={() => handleTriggerReport(user.id)}
-                      disabled={
-                        triggeringReport === user.id ||
-                        user._count.suppliers === 0
-                      }
-                    >
-                      {triggeringReport === user.id ? (
-                        <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                      ) : (
-                        <Play className="mr-2 h-3 w-3" />
-                      )}
-                      {t("admin.runReport")}
-                    </Button>
+                    <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+                      <div className="flex items-center gap-2">
+                        <Select
+                          value={tierDraft[user.id] ?? user.subscriptionTier}
+                          onValueChange={(value) =>
+                            setTierDraft((prev) => ({
+                              ...prev,
+                              [user.id]: value,
+                            }))
+                          }
+                        >
+                          <SelectTrigger className="w-[140px] h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {SUBSCRIPTION_TIERS.map((tier) => (
+                              <SelectItem key={tier} value={tier}>
+                                {tier}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          disabled={
+                            updatingTier === user.id ||
+                            (tierDraft[user.id] ?? user.subscriptionTier) ===
+                              user.subscriptionTier
+                          }
+                          onClick={() => handleUpdateTier(user.id)}
+                        >
+                          {updatingTier === user.id ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            t("admin.savePlan")
+                          )}
+                        </Button>
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => handleTriggerReport(user.id)}
+                        disabled={
+                          triggeringReport === user.id ||
+                          user._count.suppliers === 0
+                        }
+                      >
+                        {triggeringReport === user.id ? (
+                          <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                        ) : (
+                          <Play className="mr-2 h-3 w-3" />
+                        )}
+                        {t("admin.runReport")}
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
 
