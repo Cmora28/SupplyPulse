@@ -139,6 +139,7 @@ export default function AdminPage() {
 
   // Debounce timer ref
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const initialFetchDone = useRef(false);
 
   const fetchUsers = useCallback(
     async (search: string, page: number, limit: number) => {
@@ -181,16 +182,20 @@ export default function AdminPage() {
     [router, toast, t]
   );
 
-  // Initial load
+  // Initial load once (avoid refetch when NextAuth refreshes the session object)
   useEffect(() => {
     if (sessionStatus === "loading") return;
     if (!session?.user || session.user.email !== ADMIN_EMAIL) {
-      router.push("/dashboard");
+      if (sessionStatus === "authenticated") {
+        router.push("/dashboard");
+      }
       return;
     }
+    if (initialFetchDone.current) return;
+    initialFetchDone.current = true;
     fetchUsers(searchQuery, currentPage, pageSize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, sessionStatus, router]);
+  }, [sessionStatus, session?.user?.email, router]);
 
   // Debounced search: reset to page 1 on search change
   const handleSearchChange = (value: string) => {
