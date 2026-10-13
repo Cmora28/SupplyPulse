@@ -43,33 +43,92 @@ function buildPrompt(supplier: Supplier, locale: string = "en"): string {
 
   prompt += `
 
-Please analyze and report on the following areas:
+Write a weekly supply chain risk report using **exactly** the markdown section headers below (same numbering and titles, translated to the report language if not English). Do not skip sections; if there is nothing to report, state that explicitly.
 
-## 1. Current Disruptions (Past 7 Days)
-- Recent events affecting ${supplier.country} and the ${supplier.category} industry
-- Port and logistics issues specific to the region
-- Natural disasters, strikes, or political instability
-- Regulatory changes or tariff updates
+---
 
-## 2. Risk Assessment
-- Financial health trends for suppliers in ${supplier.country}
-- Capacity constraints in the ${supplier.category} category
-- Alternative supplier availability in the region
-- Market price trends and volatility
+## 1. Executive Summary
 
-## 3. Upcoming Risks (Next 30 Days)
-- Predicted weather events
-- Known capacity issues
-- Scheduled port maintenance
-- Political or regulatory changes on the horizon
+Keep this section concise (roughly one printed page). It must stand alone for a busy executive.
 
-## 4. Recommendations
-- Immediate action items if critical risks exist
-- Risk mitigation strategies specific to this supplier
-- Alternative suppliers to consider
-- Recommended inventory buffer adjustments
+- **Overall priority this week:** P1 (act now), P2 (plan this week), or P3 (monitor) for ${supplier.name}, with one sentence justification tied to ${supplier.cogsPercentage}% COGS exposure.
+- **Summary table** (markdown table) with columns: **Priority** | **Finding** | **Evidence** | **Impact** | **Action this week**
+  - Include 3–6 rows maximum, ordered P1 first.
+  - **Evidence:** cite specific dates, figures, or events; reference sources that will appear in citations (e.g. "Reuters, 3 Oct 2026").
+  - **Impact:** operational + supply/financial effect for this supplier (lead time ${supplier.leadTimeDays} days, COGS ${supplier.cogsPercentage}%).
+  - **Action:** one concrete step per row (owner role optional, e.g. "Procurement", "Logistics").
 
-Please provide specific dates, concrete percentages where possible, and actionable intelligence for supply chain managers. Format your response with clear markdown headers and bullet points.${langInstruction}`;
+---
+
+## 2. Confirmed Risks (Past 7 Days)
+
+Events that **already occurred** or are **officially confirmed** (regulatory filings, government notices, verified news). Each bullet must include **date** and **why it is confirmed**. If none: write "No confirmed disruptive events identified for this supplier and lane this week."
+
+Do **not** put forecasts or speculation here.
+
+---
+
+## 3. Watch Signals (Early Indicators)
+
+Leading indicators, rumors with partial corroboration, trend shifts, or metrics to monitor. Label each as **Watch** — not yet confirmed impact on ${supplier.name}. Include what would escalate a signal to P1.
+
+If none: say so briefly.
+
+---
+
+## 4. Scenarios (Hypothetical — Next 30 Days)
+
+**What-if** outcomes only. Prefix each bullet with **Scenario:** and state assumptions clearly (e.g. "If port X closes for 2 weeks…"). Include qualitative likelihood (Low / Medium / High) and suggested trigger to revisit.
+
+Never present scenarios as facts.
+
+---
+
+## 5. Supply Alternatives
+
+If ${supplier.name} or this lane fails, identify **actionable** options. Search in this order and reflect what you found:
+
+1. **Direct / functional substitutes** — companies or products plausibly comparable to ${supplier.name} or its stated category (**${supplier.category}**).
+2. **Category peers** — real manufacturers or authorized distributors that actively sell **${supplier.category}** from **${supplier.country}** or comparable export regions (Asia–Europe/US), even without customer BOM data.
+3. Do **not** use this section for long RFQ process essays — those belong briefly in §6 only if needed.
+
+Start with one short paragraph (max 3 sentences): what you searched for and whether MPN-level match was possible without specs.
+
+Then a **markdown table** (0–5 data rows; never more than 5):
+
+| Company | Product / offering found | Country | Website (URL) | Match grade | Verified | Compatibility & limitations | Confidence |
+
+Column rules:
+- **Match grade:** \`Exact\` | \`Functional equivalent\` | \`Category peer\` | \`Logistics-only\` (route/port — max 1 such row if relevant to ${supplier.shippingRoute || "the lane"}).
+- **Verified:** \`Yes\` (public source confirms company sells this category) | \`Partial\` | \`Not confirmed\` — state what could not be verified (specs, certs, interchangeability with ${supplier.name}).
+- **Website:** official company or distributor URL only from search/citations — **no invented emails or phone numbers**.
+- **Compatibility & limitations:** vs ${supplier.name} — lead time vs ${supplier.leadTimeDays} days, MOQ, cert gaps, partial vs full substitute, re-qualification effort.
+- **Confidence:** High | Medium | Low — each row must be defensible from citations; Low is acceptable for category peers.
+
+**Every company row must be a real organization** supported by your sources. Prefer listing 2–4 **category peers** with Medium/Low confidence over an empty table.
+
+**If no company rows are justified after searching:** do not fill the table with a single "Insufficient public data" row. Instead, under the table write **"Data needed to continue"** as a bullet list (max 6 bullets): e.g. manufacturer part numbers, electrical/mechanical specs, certifications, annual volume, approved equivalents, target price/lead time. Add at most **3 short bullets** on suggested RFQ next steps (max 80 words total). Do not invent company names.
+
+---
+
+## 6. Recommendations & Mitigations
+
+- Inventory buffer, dual sourcing, route changes (use shipping context if relevant)
+- Contract/commercial actions
+- Cross-reference priorities from the Executive Summary
+
+---
+
+## 7. Supporting Detail (Optional)
+
+Deeper context: financial/industry trends, capacity, pricing — only if it adds evidence not already covered above.
+
+---
+
+Formatting rules:
+- Use markdown headers (##, ###) and bullet lists.
+- Prefer specific dates, numbers, and percentages.
+- Separate **confirmed facts**, **watch signals**, and **scenarios** — never merge them.${langInstruction}`;
 
   return prompt;
 }
@@ -148,10 +207,13 @@ export async function generateSupplierReport(
   console.log(`[Perplexity] Using model: ${model}, language: ${lang}`);
   const prompt = buildPrompt(supplier, locale);
 
+  const calibrationRules =
+    "Calibration rules: (1) Confirmed risks require verifiable events in the past 7 days with dates. (2) Watch signals are not confirmed disruptions. (3) Scenarios are hypothetical and must use conditional language. (4) Do not upgrade a scenario or watch signal to confirmed without evidence. (5) Supply Alternatives: prefer verified category peers with clear Match grade and Verified status over an empty table; never invent companies, contacts, or SKUs; every listed company must trace to search evidence. (6) The Executive Summary must reflect only what is supported in the body sections.";
+
   const systemPrompt =
     locale !== "en"
-      ? `You are an expert supply chain risk analyst providing detailed, actionable reports with cited sources. Always include specific dates, numbers, and percentages when available. You MUST write your entire response in ${lang}.`
-      : "You are an expert supply chain risk analyst providing detailed, actionable reports with cited sources. Always include specific dates, numbers, and percentages when available.";
+      ? `You are an expert supply chain risk analyst. Produce executive-ready weekly reports with cited sources, clear priority (P1/P2/P3), and honest uncertainty separation. Always include specific dates, numbers, and percentages when available. ${calibrationRules} You MUST write your entire response in ${lang}.`
+      : `You are an expert supply chain risk analyst. Produce executive-ready weekly reports with cited sources, clear priority (P1/P2/P3), and honest uncertainty separation. Always include specific dates, numbers, and percentages when available. ${calibrationRules}`;
 
   const response = await fetchWithRetry(
     "https://api.perplexity.ai/chat/completions",
