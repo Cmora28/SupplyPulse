@@ -60,16 +60,19 @@ async function main() {
   );
 
   const outDir = path.join(process.cwd(), "public");
-  const pdfPath = path.join(outDir, "supply-chain-report-sample-generated.pdf");
+  const generatedPath = path.join(outDir, "supply-chain-report-sample-generated.pdf");
+  const landingPath = path.join(outDir, "supply-chain-report-example.pdf");
   const mdPath = path.join(outDir, "sample-report-content.md");
 
-  fs.writeFileSync(pdfPath, pdf);
+  fs.writeFileSync(generatedPath, pdf);
+  fs.writeFileSync(landingPath, pdf);
   fs.writeFileSync(
     mdPath,
     `# Sample report markdown\n\n${content}\n\n## Citations\n\n${citations.map((c, i) => `${i + 1}. ${c}`).join("\n")}\n`
   );
 
-  console.log(`PDF: ${pdfPath} (${pdf.length} bytes)`);
+  console.log(`PDF (generated): ${generatedPath} (${pdf.length} bytes)`);
+  console.log(`PDF (landing): ${landingPath}`);
   console.log(`Markdown: ${mdPath}`);
 }
 
