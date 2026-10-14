@@ -726,11 +726,16 @@ const pt: TranslationType = {
     privacyThirdParty1: "As informações dos seus fornecedores (nome, país, categoria) são enviadas para o nosso fornecedor de IA para gerar relatórios de análise de risco. Nenhum dado pessoal (nome, e-mail) é partilhado com o fornecedor de IA.",
     privacyThirdParty2: "O seu endereço de e-mail e nome são usados pela Resend para entregar e-mails de relatórios, redefinição de palavra-passe e confirmações de suporte.",
     privacyThirdParty3: "O seu e-mail e detalhes de subscrição são processados pela Polar para gerir pagamentos e subscrições.",
+    privacyThirdParty4:
+      "Se aceitar cookies no nosso banner, a Meta (Facebook) pode receber dados de visitas e dispositivo via Meta Pixel para medir anúncios. Não enviamos o seu e-mail de conta nem dados de fornecedores à Meta através do pixel.",
     privacySection4Title: "4. Cookies",
-    privacyCookiesIntro: "Usamos apenas cookies essenciais e funcionais:",
+    privacyCookiesIntro: "Usamos cookies essenciais e funcionais, e cookies de marketing opcionais apenas após aceitação:",
     privacyCookie1: "Cookie de sessão essencial para autenticação (expira após 7 dias)",
     privacyCookie2: "Cookie funcional para lembrar a sua preferência de idioma (expira após 1 ano)",
-    privacyCookiesNoTracking: "Não usamos cookies de rastreamento, publicidade ou análise.",
+    privacyCookie3:
+      "Cookies do Meta Pixel (ex.: _fbp), carregados apenas após aceitar o banner, para medir campanhas de marketing",
+    privacyCookiesNoTracking:
+      "O Meta Pixel só é carregado depois de aceitar o banner. Pode recusar fechando sem aceitar; cookies essenciais mantêm-se para utilizadores com sessão iniciada.",
     privacySection5Title: "5. Retenção de Dados",
     privacyRetention: "Os dados da sua conta são mantidos enquanto a sua conta estiver ativa. Quando elimina a sua conta (disponível nas Configurações), todos os dados pessoais, informações de fornecedores e histórico de relatórios são permanentemente eliminados.",
     privacySection6Title: "6. Os Seus Direitos",
@@ -782,7 +787,8 @@ const pt: TranslationType = {
     cookiesSection1Title: "1. O que São Cookies",
     cookiesWhat: "Cookies são pequenos ficheiros de texto armazenados no seu dispositivo pelo seu navegador web quando visita um website. São usados para lembrar as suas preferências e fornecer funcionalidade essencial.",
     cookiesSection2Title: "2. Cookies que Usamos",
-    cookiesWeUseIntro: "O Supply Pulse usa apenas dois cookies, ambos essenciais para o funcionamento básico da plataforma:",
+    cookiesWeUseIntro:
+      "O Supply Pulse usa cookies essenciais. Após aceitar o banner, a Meta (Facebook) pode definir cookies para medição de anúncios:",
     cookiesTableName: "Nome do Cookie",
     cookiesTableType: "Tipo",
     cookiesTableDuration: "Duração",
@@ -793,15 +799,21 @@ const pt: TranslationType = {
     cookies1Year: "1 ano",
     cookiesSessionDesc: "Mantém a sua sessão iniciada",
     cookiesLocaleDesc: "Lembra o seu idioma preferido",
-    cookiesSection3Title: "3. Sem Cookies de Rastreamento ou Publicidade",
-    cookiesNoTracking: "Não usamos cookies de rastreamento de terceiros, cookies de publicidade, cookies de análise ou cookies de redes sociais. Não rastreamos o seu comportamento de navegação entre websites.",
+    cookiesTypeMarketing: "Marketing (com consentimento)",
+    cookiesMetaDuration: "Até 90 dias",
+    cookiesMetaPurpose:
+      "Meta Pixel — mede visitas e conversões de anúncios (só após aceitar o banner de cookies)",
+    cookiesSection3Title: "3. Meta Pixel (medição de marketing)",
+    cookiesNoTracking:
+      "O Meta Pixel (ID 2376866906420943) só carrega após clicar Aceitar no banner. Ajuda a perceber se os anúncios levam a visitas ao site. A Meta pode usar estes dados nos termos da sua política de privacidade. Não usamos outros cookies de publicidade ou análise de terceiros.",
     cookiesSection4Title: "4. Gestão de Cookies",
     cookiesManage: "Pode gerir ou eliminar cookies através das configurações do seu navegador. Note que desativar o cookie de sessão impedirá que inicie sessão na sua conta.",
     cookiesSection5Title: "5. Questões",
     cookiesContact: "Se tiver questões sobre o nosso uso de cookies, contacte-nos em",
-    cookieBannerText: "Usamos cookies essenciais para autenticação e preferências de idioma. Sem cookies de rastreamento.",
+    cookieBannerText:
+      "Usamos cookies essenciais para sessão e idioma. Se aceitar, também carregamos o Meta Pixel para medir o nosso marketing.",
     cookieBannerLink: "Saber mais",
-    cookieBannerAccept: "Entendido",
+    cookieBannerAccept: "Aceitar",
   },
 
   upgradeSuccess: {

@@ -80,6 +80,7 @@ export default function PrivacyPolicyPage() {
               <li><strong>AI Research Provider</strong> — {t("legal.privacyThirdParty1")}</li>
               <li><strong>Resend</strong> — {t("legal.privacyThirdParty2")}</li>
               <li><strong>Polar</strong> — {t("legal.privacyThirdParty3")}</li>
+              <li><strong>Meta (Facebook)</strong> — {t("legal.privacyThirdParty4")}</li>
             </ul>
           </section>
 
@@ -90,6 +91,7 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc pl-6 space-y-1 text-muted-foreground text-sm">
               <li><code className="text-xs bg-muted px-1 py-0.5 rounded">next-auth.session-token</code> — {t("legal.privacyCookie1")}</li>
               <li><code className="text-xs bg-muted px-1 py-0.5 rounded">locale</code> — {t("legal.privacyCookie2")}</li>
+              <li>{t("legal.privacyCookie3")}</li>
             </ul>
             <p className="text-muted-foreground text-sm mt-2">{t("legal.privacyCookiesNoTracking")}</p>
           </section>

@@ -67,6 +67,12 @@ export default function CookiePolicyPage() {
                     <td className="py-2 pr-4">{t("legal.cookies1Year")}</td>
                     <td className="py-2">{t("legal.cookiesLocaleDesc")}</td>
                   </tr>
+                  <tr className="border-b">
+                    <td className="py-2 pr-4"><code className="text-xs bg-muted px-1 py-0.5 rounded">_fbp, _fbc</code></td>
+                    <td className="py-2 pr-4">{t("legal.cookiesTypeMarketing")}</td>
+                    <td className="py-2 pr-4">{t("legal.cookiesMetaDuration")}</td>
+                    <td className="py-2">{t("legal.cookiesMetaPurpose")}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>

@@ -728,12 +728,17 @@ const en = {
     privacyThirdParty1: "Your supplier information (name, country, category) is sent to our AI research provider to generate risk analysis reports. No personal data (name, email) is shared with the AI provider.",
     privacyThirdParty2: "Your email address and name are used by Resend to deliver report emails, password reset emails, and support confirmations.",
     privacyThirdParty3: "Your email and subscription details are processed by Polar to manage payments and subscriptions.",
+    privacyThirdParty4:
+      "If you accept cookies in our banner, Meta (Facebook) may receive page-view and device data via the Meta Pixel to measure ad performance. We do not send your account email or supplier data to Meta through the pixel.",
 
     privacySection4Title: "4. Cookies",
-    privacyCookiesIntro: "We use only essential and functional cookies:",
+    privacyCookiesIntro: "We use essential and functional cookies, and optional marketing cookies only after you accept:",
     privacyCookie1: "Essential session cookie for authentication (expires after 7 days)",
     privacyCookie2: "Functional cookie to remember your language preference (expires after 1 year)",
-    privacyCookiesNoTracking: "We do not use any tracking, advertising, or analytics cookies.",
+    privacyCookie3:
+      "Meta Pixel cookies (e.g. _fbp), loaded only after you accept the cookie banner, to measure marketing campaigns",
+    privacyCookiesNoTracking:
+      "We do not load the Meta Pixel until you accept the cookie banner. You can decline by closing the banner without accepting; essential cookies still apply for signed-in users.",
 
     privacySection5Title: "5. Data Retention",
     privacyRetention: "Your account data is retained as long as your account is active. When you delete your account (available in Settings), all personal data, supplier information, and report history are permanently deleted. IP addresses used for rate limiting are held in memory only and are not persisted.",
@@ -806,7 +811,8 @@ const en = {
     cookiesWhat: "Cookies are small text files stored on your device by your web browser when you visit a website. They are used to remember your preferences and provide essential functionality.",
 
     cookiesSection2Title: "2. Cookies We Use",
-    cookiesWeUseIntro: "Supply Pulse uses only two cookies, both essential for the basic operation of the platform:",
+    cookiesWeUseIntro:
+      "Supply Pulse uses essential cookies for the platform. After you accept the cookie banner, Meta (Facebook) may set cookies for ad measurement:",
     cookiesTableName: "Cookie Name",
     cookiesTableType: "Type",
     cookiesTableDuration: "Duration",
@@ -817,9 +823,14 @@ const en = {
     cookies1Year: "1 year",
     cookiesSessionDesc: "Keeps you signed in to your account",
     cookiesLocaleDesc: "Remembers your preferred language",
+    cookiesTypeMarketing: "Marketing (with consent)",
+    cookiesMetaDuration: "Up to 90 days",
+    cookiesMetaPurpose:
+      "Meta Pixel — measures visits and ad conversions (loaded only after you accept the cookie banner)",
 
-    cookiesSection3Title: "3. No Tracking or Advertising Cookies",
-    cookiesNoTracking: "We do not use any third-party tracking cookies, advertising cookies, analytics cookies, or social media cookies. We do not track your browsing behavior across websites. We do not share cookie data with advertisers or data brokers.",
+    cookiesSection3Title: "3. Meta Pixel (marketing measurement)",
+    cookiesNoTracking:
+      "The Meta Pixel (ID 2376866906420943) loads only after you click Accept on the cookie banner. It helps us understand whether ads lead to site visits. Meta may use this data under its own privacy policy. We do not use other third-party ad or analytics cookies.",
 
     cookiesSection4Title: "4. Managing Cookies",
     cookiesManage: "You can manage or delete cookies through your browser settings. Please note that disabling the session cookie will prevent you from signing in to your account. Disabling the locale cookie will reset your language preference to the browser default on each visit.",
@@ -828,9 +839,10 @@ const en = {
     cookiesContact: "If you have questions about our use of cookies, contact us at",
 
     // Cookie Banner
-    cookieBannerText: "We use essential cookies for authentication and language preferences. No tracking cookies.",
+    cookieBannerText:
+      "We use essential cookies for sign-in and language. If you accept, we also load the Meta Pixel to measure our marketing.",
     cookieBannerLink: "Learn more",
-    cookieBannerAccept: "Got it",
+    cookieBannerAccept: "Accept",
   },
 
   upgradeSuccess: {

@@ -732,11 +732,16 @@ const de: TranslationType = {
     privacyThirdParty1: "Ihre Lieferanteninformationen (Name, Land, Kategorie) werden an unseren KI-Forschungsanbieter gesendet, um Risikoanalyseberichte zu erstellen. Keine persönlichen Daten (Name, E-Mail) werden mit dem KI-Anbieter geteilt.",
     privacyThirdParty2: "Ihre E-Mail-Adresse und Ihr Name werden von Resend verwendet, um Berichts-E-Mails, Passwort-Zurücksetzungs-E-Mails und Support-Bestätigungen zuzustellen.",
     privacyThirdParty3: "Ihre E-Mail und Abonnementdetails werden von Polar verarbeitet, um Zahlungen und Abonnements zu verwalten.",
+    privacyThirdParty4:
+      "Wenn Sie Cookies in unserem Banner akzeptieren, kann Meta (Facebook) Seitenaufruf- und Gerätedaten über den Meta Pixel erhalten, um Anzeigen zu messen. Wir senden weder Ihre Konto-E-Mail noch Lieferantendaten über den Pixel an Meta.",
     privacySection4Title: "4. Cookies",
-    privacyCookiesIntro: "Wir verwenden nur essenzielle und funktionale Cookies:",
+    privacyCookiesIntro: "Wir verwenden essenzielle und funktionale Cookies sowie optionale Marketing-Cookies nur nach Ihrer Zustimmung:",
     privacyCookie1: "Essenzieller Sitzungscookie für die Authentifizierung (läuft nach 7 Tagen ab)",
     privacyCookie2: "Funktionaler Cookie zum Speichern Ihrer Spracheinstellung (läuft nach 1 Jahr ab)",
-    privacyCookiesNoTracking: "Wir verwenden keine Tracking-, Werbe- oder Analyse-Cookies.",
+    privacyCookie3:
+      "Meta-Pixel-Cookies (z. B. _fbp), geladen nur nach Banner-Zustimmung, zur Messung von Marketingkampagnen",
+    privacyCookiesNoTracking:
+      "Der Meta Pixel wird erst nach Klick auf Akzeptieren geladen. Sie können ablehnen, indem Sie schließen ohne zu akzeptieren; essenzielle Cookies gelten weiter für angemeldete Nutzer.",
     privacySection5Title: "5. Datenspeicherung",
     privacyRetention: "Ihre Kontodaten werden aufbewahrt, solange Ihr Konto aktiv ist. Wenn Sie Ihr Konto löschen (in den Einstellungen verfügbar), werden alle persönlichen Daten, Lieferanteninformationen und der Berichtsverlauf dauerhaft gelöscht.",
     privacySection6Title: "6. Ihre Rechte",
@@ -788,7 +793,8 @@ const de: TranslationType = {
     cookiesSection1Title: "1. Was Sind Cookies",
     cookiesWhat: "Cookies sind kleine Textdateien, die von Ihrem Webbrowser auf Ihrem Gerät gespeichert werden, wenn Sie eine Website besuchen. Sie werden verwendet, um Ihre Einstellungen zu speichern und wesentliche Funktionalität bereitzustellen.",
     cookiesSection2Title: "2. Cookies, die Wir Verwenden",
-    cookiesWeUseIntro: "Supply Pulse verwendet nur zwei Cookies, beide sind für den grundlegenden Betrieb der Plattform unerlässlich:",
+    cookiesWeUseIntro:
+      "Supply Pulse verwendet essenzielle Cookies. Nach Banner-Zustimmung kann Meta (Facebook) Cookies für Anzeigenmessung setzen:",
     cookiesTableName: "Cookie-Name",
     cookiesTableType: "Typ",
     cookiesTableDuration: "Dauer",
@@ -799,15 +805,21 @@ const de: TranslationType = {
     cookies1Year: "1 Jahr",
     cookiesSessionDesc: "Hält Sie in Ihrem Konto angemeldet",
     cookiesLocaleDesc: "Speichert Ihre bevorzugte Sprache",
-    cookiesSection3Title: "3. Keine Tracking- oder Werbe-Cookies",
-    cookiesNoTracking: "Wir verwenden keine Tracking-Cookies von Drittanbietern, Werbe-Cookies, Analyse-Cookies oder Social-Media-Cookies. Wir verfolgen Ihr Browsing-Verhalten nicht über Websites hinweg.",
+    cookiesTypeMarketing: "Marketing (mit Einwilligung)",
+    cookiesMetaDuration: "Bis zu 90 Tage",
+    cookiesMetaPurpose:
+      "Meta Pixel — misst Besuche und Anzeigen-Conversions (nur nach Banner-Zustimmung)",
+    cookiesSection3Title: "3. Meta Pixel (Marketing-Messung)",
+    cookiesNoTracking:
+      "Der Meta Pixel (ID 2376866906420943) wird nur nach Klick auf Akzeptieren geladen. Er hilft zu erkennen, ob Anzeigen zu Besuchen führen. Meta kann diese Daten gemäß eigener Datenschutzrichtlinie nutzen. Wir verwenden keine weiteren Werbe- oder Analyse-Cookies Dritter.",
     cookiesSection4Title: "4. Cookies Verwalten",
     cookiesManage: "Sie können Cookies über Ihre Browsereinstellungen verwalten oder löschen. Bitte beachten Sie, dass das Deaktivieren des Sitzungscookies Sie daran hindert, sich in Ihr Konto einzuloggen.",
     cookiesSection5Title: "5. Fragen",
     cookiesContact: "Wenn Sie Fragen zur Verwendung von Cookies haben, kontaktieren Sie uns unter",
-    cookieBannerText: "Wir verwenden essenzielle Cookies für Authentifizierung und Spracheinstellungen. Keine Tracking-Cookies.",
+    cookieBannerText:
+      "Wir verwenden essenzielle Cookies für Anmeldung und Sprache. Bei Akzeptieren laden wir auch den Meta Pixel zur Marketing-Messung.",
     cookieBannerLink: "Mehr erfahren",
-    cookieBannerAccept: "Verstanden",
+    cookieBannerAccept: "Akzeptieren",
   },
 
   upgradeSuccess: {

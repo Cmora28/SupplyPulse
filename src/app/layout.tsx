@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import { CookieBanner } from "@/components/cookie-banner";
+import { MetaPixel } from "@/components/meta-pixel";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -108,6 +109,7 @@ export default function RootLayout({
           {children}
           <Toaster />
           <CookieBanner />
+          <MetaPixel />
         </Providers>
       </body>
     </html>

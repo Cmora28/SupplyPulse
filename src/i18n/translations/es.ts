@@ -726,11 +726,16 @@ const es: TranslationType = {
     privacyThirdParty1: "La información de sus proveedores (nombre, país, categoría) se envía a nuestro proveedor de IA para generar informes de análisis de riesgo. No se comparten datos personales (nombre, email) con el proveedor de IA.",
     privacyThirdParty2: "Su dirección de correo electrónico y nombre son utilizados por Resend para entregar correos de informes, restablecimiento de contraseña y confirmaciones de soporte.",
     privacyThirdParty3: "Su correo electrónico y detalles de suscripción son procesados por Polar para gestionar pagos y suscripciones.",
+    privacyThirdParty4:
+      "Si acepta cookies en nuestro banner, Meta (Facebook) puede recibir datos de visitas y dispositivo mediante el Meta Pixel para medir anuncios. No enviamos su email de cuenta ni datos de proveedores a Meta a través del pixel.",
     privacySection4Title: "4. Cookies",
-    privacyCookiesIntro: "Solo usamos cookies esenciales y funcionales:",
+    privacyCookiesIntro: "Usamos cookies esenciales y funcionales, y cookies de marketing opcionales solo tras su aceptación:",
     privacyCookie1: "Cookie de sesión esencial para autenticación (expira después de 7 días)",
     privacyCookie2: "Cookie funcional para recordar su preferencia de idioma (expira después de 1 año)",
-    privacyCookiesNoTracking: "No usamos cookies de seguimiento, publicidad o análisis.",
+    privacyCookie3:
+      "Cookies del Meta Pixel (p. ej. _fbp), cargadas solo tras aceptar el banner, para medir campañas de marketing",
+    privacyCookiesNoTracking:
+      "El Meta Pixel solo se carga después de aceptar el banner. Puede rechazar cerrando sin aceptar; las cookies esenciales siguen aplicando a usuarios con sesión iniciada.",
     privacySection5Title: "5. Retención de Datos",
     privacyRetention: "Los datos de su cuenta se retienen mientras su cuenta esté activa. Cuando elimina su cuenta (disponible en Configuración), todos los datos personales, información de proveedores e historial de informes se eliminan permanentemente.",
     privacySection6Title: "6. Sus Derechos",
@@ -782,7 +787,8 @@ const es: TranslationType = {
     cookiesSection1Title: "1. Qué Son las Cookies",
     cookiesWhat: "Las cookies son pequeños archivos de texto almacenados en su dispositivo por su navegador web cuando visita un sitio web. Se utilizan para recordar sus preferencias y proporcionar funcionalidad esencial.",
     cookiesSection2Title: "2. Cookies que Usamos",
-    cookiesWeUseIntro: "Supply Pulse solo usa dos cookies, ambas esenciales para el funcionamiento básico de la plataforma:",
+    cookiesWeUseIntro:
+      "Supply Pulse usa cookies esenciales. Tras aceptar el banner, Meta (Facebook) puede establecer cookies para medición de anuncios:",
     cookiesTableName: "Nombre",
     cookiesTableType: "Tipo",
     cookiesTableDuration: "Duración",
@@ -793,15 +799,21 @@ const es: TranslationType = {
     cookies1Year: "1 año",
     cookiesSessionDesc: "Mantiene su sesión iniciada",
     cookiesLocaleDesc: "Recuerda su idioma preferido",
-    cookiesSection3Title: "3. Sin Cookies de Seguimiento o Publicidad",
-    cookiesNoTracking: "No usamos cookies de seguimiento de terceros, cookies publicitarias, cookies de análisis ni cookies de redes sociales. No rastreamos su comportamiento de navegación entre sitios web.",
+    cookiesTypeMarketing: "Marketing (con consentimiento)",
+    cookiesMetaDuration: "Hasta 90 días",
+    cookiesMetaPurpose:
+      "Meta Pixel — mide visitas y conversiones de anuncios (solo tras aceptar el banner de cookies)",
+    cookiesSection3Title: "3. Meta Pixel (medición de marketing)",
+    cookiesNoTracking:
+      "El Meta Pixel (ID 2376866906420943) solo se carga al pulsar Aceptar en el banner. Ayuda a saber si los anuncios generan visitas. Meta puede usar estos datos según su política de privacidad. No usamos otras cookies publicitarias o de análisis de terceros.",
     cookiesSection4Title: "4. Gestión de Cookies",
     cookiesManage: "Puede gestionar o eliminar cookies a través de la configuración de su navegador. Tenga en cuenta que deshabilitar la cookie de sesión le impedirá iniciar sesión en su cuenta.",
     cookiesSection5Title: "5. Preguntas",
     cookiesContact: "Si tiene preguntas sobre nuestro uso de cookies, contáctenos en",
-    cookieBannerText: "Usamos cookies esenciales para autenticación y preferencias de idioma. Sin cookies de seguimiento.",
+    cookieBannerText:
+      "Usamos cookies esenciales para inicio de sesión e idioma. Si acepta, también cargamos el Meta Pixel para medir nuestro marketing.",
     cookieBannerLink: "Más información",
-    cookieBannerAccept: "Entendido",
+    cookieBannerAccept: "Aceptar",
   },
 
   upgradeSuccess: {
