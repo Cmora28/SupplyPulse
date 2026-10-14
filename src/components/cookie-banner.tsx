@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
-
-const COOKIE_CONSENT_KEY = "cookie-consent-dismissed";
+import {
+  COOKIE_CONSENT_KEY,
+  grantCookieConsent,
+} from "@/lib/cookie-consent";
 
 export function CookieBanner() {
   const { t } = useTranslation();
@@ -19,7 +21,7 @@ export function CookieBanner() {
   }, []);
 
   const handleDismiss = () => {
-    localStorage.setItem(COOKIE_CONSENT_KEY, "true");
+    grantCookieConsent();
     setVisible(false);
   };
 
