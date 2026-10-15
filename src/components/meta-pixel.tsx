@@ -7,6 +7,9 @@ import { hasCookieConsent } from "@/lib/cookie-consent";
 const META_PIXEL_ID =
   process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "2376866906420943";
 
+/** Facebook Pixel — official snippet (loads after cookie banner accept). */
+const FACEBOOK_PIXEL_SCRIPT = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${META_PIXEL_ID}');fbq('track','PageView');`;
+
 export function MetaPixel() {
   const [enabled, setEnabled] = useState(false);
 
@@ -21,27 +24,14 @@ export function MetaPixel() {
 
   return (
     <>
-      <Script id="meta-pixel" strategy="afterInteractive">
-        {`
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '${META_PIXEL_ID}');
-fbq('track', 'PageView');
-        `}
+      <Script id="facebook-pixel" strategy="afterInteractive">
+        {FACEBOOK_PIXEL_SCRIPT}
       </Script>
       <noscript>
-        {/* Meta Pixel noscript fallback — must be a raw img, not next/image */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           height="1"
           width="1"
-          style={{ display: "none" }}
           alt=""
           src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
         />
