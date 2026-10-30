@@ -1,4 +1,5 @@
 import type { Supplier } from "@prisma/client";
+import { extractRiskAssessment, type RiskAssessment } from "@/lib/risk-score";
 
 interface PerplexityResponse {
   choices: Array<{
@@ -17,7 +18,7 @@ const LANGUAGE_NAMES: Record<string, string> = {
   de: "German",
 };
 
-function buildPrompt(supplier: Supplier, locale: string = "en"): string {
+export function buildPrompt(supplier: Supplier, locale: string = "en"): string {
   const lang = LANGUAGE_NAMES[locale] || "English";
   const langInstruction =
     locale !== "en"
@@ -125,6 +126,16 @@ Deeper context: financial/industry trends, capacity, pricing — only if it adds
 
 ---
 
+## 8. Machine-readable risk score (required)
+
+After every other section, end the response with a fenced block in exactly this shape and nothing after it. \`priority\` is the **overall** priority from section 1 (P1, P2, or P3), not a single table row that is higher than that overall call. \`riskScore\` is an integer from 0 to 100 using these bands: P1 = 67–100, P2 = 34–66, P3 = 0–33. \`riskFactors\` is 1 to 3 short phrases for the top drivers, in the same language as the report, with no line breaks inside a phrase. Score this supplier; do not copy the sample numbers.
+
+\`\`\`risk-score
+{"priority":"P2","riskScore":48,"riskFactors":["specific driver","specific driver"]}
+\`\`\`
+
+---
+
 Formatting rules:
 - Use markdown headers (##, ###) and bullet lists.
 - Prefer specific dates, numbers, and percentages.
@@ -197,7 +208,7 @@ export async function generateSupplierReport(
   supplier: Supplier,
   model: string = "sonar-pro",
   locale: string = "en"
-): Promise<{ content: string; citations: string[] }> {
+): Promise<{ content: string; citations: string[]; risk: RiskAssessment | null }> {
   const apiKey = process.env.PERPLEXITY_API_KEY;
   if (!apiKey) {
     throw new Error("PERPLEXITY_API_KEY environment variable is not set");
@@ -208,7 +219,7 @@ export async function generateSupplierReport(
   const prompt = buildPrompt(supplier, locale);
 
   const calibrationRules =
-    "Calibration rules: (1) Confirmed risks require verifiable events in the past 7 days with dates. (2) Watch signals are not confirmed disruptions. (3) Scenarios are hypothetical and must use conditional language. (4) Do not upgrade a scenario or watch signal to confirmed without evidence. (5) Supply Alternatives: prefer verified category peers with clear Match grade and Verified status over an empty table; never invent companies, contacts, or SKUs; every listed company must trace to search evidence. (6) The Executive Summary must reflect only what is supported in the body sections.";
+    "Calibration rules: (1) Confirmed risks require verifiable events in the past 7 days with dates. (2) Watch signals are not confirmed disruptions. (3) Scenarios are hypothetical and must use conditional language. (4) Do not upgrade a scenario or watch signal to confirmed without evidence. (5) Supply Alternatives: prefer verified category peers with clear Match grade and Verified status over an empty table; never invent companies, contacts, or SKUs; every listed company must trace to search evidence. (6) The Executive Summary must reflect only what is supported in the body sections. (7) End every report with the risk-score JSON fence, and its priority must match the overall priority in the executive summary.";
 
   const systemPrompt =
     locale !== "en"
@@ -244,12 +255,31 @@ export async function generateSupplierReport(
 
   const data: PerplexityResponse = await response.json();
 
-  const content = data.choices?.[0]?.message?.content || "";
+  const rawContent = data.choices?.[0]?.message?.content || "";
   const citations = data.citations || [];
 
-  if (!content) {
+  if (!rawContent) {
     throw new Error("Empty response from Perplexity API");
   }
 
-  return { content, citations };
+  let content = rawContent;
+  let risk: RiskAssessment | null = null;
+  try {
+    const extracted = extractRiskAssessment(rawContent);
+    content = extracted.content;
+    risk = extracted.assessment;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`[Perplexity] Risk extraction failed: ${message}`);
+  }
+
+  if (risk) {
+    console.log(
+      `[Perplexity] Risk score ${risk.riskScore} (${risk.priority}) for ${supplier.name}`
+    );
+  } else {
+    console.warn(`[Perplexity] No structured risk score extracted for ${supplier.name}`);
+  }
+
+  return { content, citations, risk };
 }

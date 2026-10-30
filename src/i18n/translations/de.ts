@@ -141,6 +141,11 @@ const de: TranslationType = {
     validationFailed: "Lieferantenprofil muss angepasst werden",
     validationUnavailable:
       "Lieferantendaten konnten nicht verifiziert werden. Bitte versuchen Sie es gleich erneut.",
+    riskScoreValue: "{score}/100",
+    vsLastWeek: "{delta} zur Vorwoche",
+    vsLastWeekSame: "Keine Änderung zur Vorwoche",
+    wasPriority: "zuvor {priority}",
+    riskNotScored: "Der letzte Bericht hat keinen Risikowert",
   },
 
   reports: {
@@ -217,6 +222,11 @@ const de: TranslationType = {
     emailNotifications: "E-Mail-Benachrichtigungen",
     emailNotificationsDesc:
       "Wöchentliche Lieferketten-Risikoberichte per E-Mail erhalten.",
+    p1AlertEmails: "Sofortige P1-Hinweise",
+    p1AlertEmailsDesc:
+      "E-Mail senden, sobald ein Lieferantenbericht Priorität P1 hat, ohne auf das wöchentliche PDF zu warten.",
+    p1AlertsEnabledDesc: "Sie erhalten eine E-Mail, sobald ein Lieferant Priorität P1 hat.",
+    p1AlertsDisabledDesc: "Sofortige P1-Hinweis-E-Mails wurden deaktiviert.",
     dangerZone: "Gefahrenzone",
     dangerZoneDesc: "Unwiderrufliche Aktionen, die Ihr Konto betreffen.",
     deleteAccount: "Konto löschen",
@@ -636,6 +646,22 @@ const de: TranslationType = {
       footerDashboard: "Dashboard",
       subject: "Wöchentlicher Lieferkettenbericht - {weekLabel}",
     },
+    p1Alert: {
+      subject: "P1-Hinweis: {supplier} - Woche vom {weekLabel}",
+      subtitle: "Kritisches Lieferantenrisiko",
+      greeting: "Hallo {name},",
+      intro: "{supplier} hat für die Woche vom {weekLabel} die Priorität P1.",
+      escalated: "{supplier} ist für die Woche vom {weekLabel} von {previous} auf P1 eskaliert.",
+      remains: "{supplier} bleibt für die Woche vom {weekLabel} auf Priorität P1.",
+      score: "Risikowert: {score}/100",
+      scoreChange: "Veränderung zur Vorwoche: {delta}",
+      scoreUnchanged: "Keine Veränderung zur Vorwoche.",
+      factorsTitle: "Wichtigste Risikofaktoren",
+      action: "Dieser Hinweis wird gesendet, sobald der Bericht fertig ist, damit Sie nicht auf das wöchentliche PDF warten müssen.",
+      viewDashboard: "Lieferant ansehen",
+      footer: "Sie erhalten diese E-Mail, weil sofortige P1-Hinweise aktiviert sind.",
+      settings: "Benachrichtigungen verwalten",
+    },
     passwordReset: {
       subtitle: "Passwort zurücksetzen",
       greeting: "Hallo {name},",
@@ -665,6 +691,9 @@ const de: TranslationType = {
     shippingRoute: "Versandroute",
     dependencies: "Abhängigkeiten",
     sources: "Quellen",
+    riskScore: "Risikowert",
+    riskScoreValue: "{score}/100",
+    riskFactors: "Wichtigste Risikofaktoren",
     generated: "Erstellt {date}",
     page: "Seite {num}",
   },

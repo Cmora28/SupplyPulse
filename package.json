@@ -8,6 +8,7 @@
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
+    "test": "tsx --test src/lib/*.test.ts",
     "worker": "npx tsx watch src/worker.ts",
     "worker:start": "npx tsx src/worker.ts",
     "db:push": "npx prisma db push",

@@ -139,6 +139,11 @@ const fr: TranslationType = {
     validationFailed: "Le profil fournisseur doit être corrigé",
     validationUnavailable:
       "Impossible de vérifier les données fournisseur. Réessayez dans un instant.",
+    riskScoreValue: "{score}/100",
+    vsLastWeek: "{delta} vs la semaine dernière",
+    vsLastWeekSame: "Aucun changement par rapport à la semaine dernière",
+    wasPriority: "était {priority}",
+    riskNotScored: "Le dernier rapport n'a pas de score de risque",
   },
 
   reports: {
@@ -214,6 +219,11 @@ const fr: TranslationType = {
     emailNotifications: "Notifications par e-mail",
     emailNotificationsDesc:
       "Recevez les rapports hebdomadaires de risques de la chaîne d'approvisionnement par e-mail.",
+    p1AlertEmails: "Alertes P1 immédiates",
+    p1AlertEmailsDesc:
+      "M'envoyer un e-mail dès qu'un rapport fournisseur est en priorité P1, sans attendre le PDF hebdomadaire.",
+    p1AlertsEnabledDesc: "Vous recevrez un e-mail dès qu'un fournisseur est en priorité P1.",
+    p1AlertsDisabledDesc: "Les e-mails d'alerte P1 immédiate ont été désactivés.",
     dangerZone: "Zone de danger",
     dangerZoneDesc: "Actions irréversibles affectant votre compte.",
     deleteAccount: "Supprimer le compte",
@@ -630,6 +640,22 @@ const fr: TranslationType = {
       footerDashboard: "tableau de bord",
       subject: "Rapport Hebdomadaire Chaîne d'Approvisionnement - {weekLabel}",
     },
+    p1Alert: {
+      subject: "Alerte P1 : {supplier} - semaine du {weekLabel}",
+      subtitle: "Risque fournisseur critique",
+      greeting: "Bonjour {name},",
+      intro: "{supplier} est en priorité P1 pour la semaine du {weekLabel}.",
+      escalated: "{supplier} est passé en P1 (auparavant {previous}) pour la semaine du {weekLabel}.",
+      remains: "{supplier} reste en priorité P1 pour la semaine du {weekLabel}.",
+      score: "Score de risque : {score}/100",
+      scoreChange: "Évolution par rapport à la semaine précédente : {delta}",
+      scoreUnchanged: "Aucun changement par rapport à la semaine précédente.",
+      factorsTitle: "Principaux facteurs de risque",
+      action: "Cette alerte est envoyée dès que le rapport est prêt, afin de ne pas attendre le PDF hebdomadaire.",
+      viewDashboard: "Voir le fournisseur",
+      footer: "Vous recevez cet e-mail car les alertes P1 immédiates sont activées.",
+      settings: "Gérer les notifications",
+    },
     passwordReset: {
       subtitle: "Réinitialisation du Mot de Passe",
       greeting: "Bonjour {name},",
@@ -659,6 +685,9 @@ const fr: TranslationType = {
     shippingRoute: "Itinéraire d'Expédition",
     dependencies: "Dépendances",
     sources: "Sources",
+    riskScore: "Score de risque",
+    riskScoreValue: "{score}/100",
+    riskFactors: "Principaux facteurs de risque",
     generated: "Généré {date}",
     page: "Page {num}",
   },

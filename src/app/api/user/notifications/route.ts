@@ -27,12 +27,21 @@ export async function PUT(request: Request) {
 
     const before = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { emailNotifications: true },
+      select: { emailNotifications: true, p1AlertEmails: true },
     });
 
-    await prisma.user.update({
+    const data: { emailNotifications?: boolean; p1AlertEmails?: boolean } = {};
+    if (validated.data.emailNotifications !== undefined) {
+      data.emailNotifications = validated.data.emailNotifications;
+    }
+    if (validated.data.p1AlertEmails !== undefined) {
+      data.p1AlertEmails = validated.data.p1AlertEmails;
+    }
+
+    const updated = await prisma.user.update({
       where: { id: session.user.id },
-      data: { emailNotifications: validated.data.emailNotifications },
+      data,
+      select: { emailNotifications: true, p1AlertEmails: true },
     });
 
     void logAudit({
@@ -42,15 +51,27 @@ export async function PUT(request: Request) {
       request,
       metadata: {
         changes: {
-          emailNotifications: {
-            from: before?.emailNotifications,
-            to: validated.data.emailNotifications,
-          },
+          ...(data.emailNotifications !== undefined
+            ? {
+                emailNotifications: {
+                  from: before?.emailNotifications,
+                  to: data.emailNotifications,
+                },
+              }
+            : {}),
+          ...(data.p1AlertEmails !== undefined
+            ? {
+                p1AlertEmails: {
+                  from: before?.p1AlertEmails,
+                  to: data.p1AlertEmails,
+                },
+              }
+            : {}),
         },
       },
     });
 
-    return NextResponse.json({ emailNotifications: validated.data.emailNotifications });
+    return NextResponse.json(updated);
   } catch (error) {
     console.error("Notification update error:", error);
     return NextResponse.json(

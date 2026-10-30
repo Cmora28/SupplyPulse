@@ -65,9 +65,15 @@ export const changePasswordSchema = z.object({
   newPassword: passwordSchema,
 });
 
-export const notificationSchema = z.object({
-  emailNotifications: z.boolean(),
-});
+export const notificationSchema = z
+  .object({
+    emailNotifications: z.boolean().optional(),
+    p1AlertEmails: z.boolean().optional(),
+  })
+  .refine(
+    (data) => data.emailNotifications !== undefined || data.p1AlertEmails !== undefined,
+    { message: "No notification preferences provided" }
+  );
 
 // Route param validation
 export const cuidSchema = z.string().regex(/^c[a-z0-9]{24}$/, "Invalid ID format");

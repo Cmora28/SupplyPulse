@@ -51,6 +51,7 @@ export default function SettingsPage() {
   const [savingPassword, setSavingPassword] = useState(false);
 
   const [emailNotifications, setEmailNotifications] = useState(true);
+  const [p1AlertEmails, setP1AlertEmails] = useState(true);
   const [savingNotifications, setSavingNotifications] = useState(false);
 
   const [deleting, setDeleting] = useState(false);
@@ -67,6 +68,7 @@ export default function SettingsPage() {
           const data = await res.json();
           setName(data.name);
           setEmailNotifications(data.emailNotifications);
+          setP1AlertEmails(data.p1AlertEmails ?? true);
           if (data.reportDay !== undefined) setReportDay(data.reportDay);
           if (data.reportHour !== undefined) setReportHour(data.reportHour);
         }
@@ -157,19 +159,28 @@ export default function SettingsPage() {
     }
   };
 
-  const handleToggleNotifications = async (checked: boolean) => {
-    setEmailNotifications(checked);
+  const handleToggleNotifications = async (
+    field: "emailNotifications" | "p1AlertEmails",
+    checked: boolean
+  ) => {
+    if (field === "emailNotifications") setEmailNotifications(checked);
+    else setP1AlertEmails(checked);
     setSavingNotifications(true);
+
+    const revert = () => {
+      if (field === "emailNotifications") setEmailNotifications(!checked);
+      else setP1AlertEmails(!checked);
+    };
 
     try {
       const res = await fetch("/api/user/notifications", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ emailNotifications: checked }),
+        body: JSON.stringify({ [field]: checked }),
       });
 
       if (!res.ok) {
-        setEmailNotifications(!checked);
+        revert();
         toast({
           title: t("common.error"),
           description: t("settings.failedToUpdateNotifications"),
@@ -178,14 +189,21 @@ export default function SettingsPage() {
         return;
       }
 
+      const description =
+        field === "p1AlertEmails"
+          ? checked
+            ? t("settings.p1AlertsEnabledDesc")
+            : t("settings.p1AlertsDisabledDesc")
+          : checked
+            ? t("settings.notificationsEnabledDesc")
+            : t("settings.notificationsDisabledDesc");
+
       toast({
         title: t("settings.notificationsUpdated"),
-        description: checked
-          ? t("settings.notificationsEnabledDesc")
-          : t("settings.notificationsDisabledDesc"),
+        description,
       });
     } catch {
-      setEmailNotifications(!checked);
+      revert();
     } finally {
       setSavingNotifications(false);
     }
@@ -387,8 +405,8 @@ export default function SettingsPage() {
             {t("settings.notificationsDesc")}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
             <div>
               <p className="font-medium text-sm">{t("settings.emailNotifications")}</p>
               <p className="text-sm text-muted-foreground">
@@ -397,7 +415,24 @@ export default function SettingsPage() {
             </div>
             <Switch
               checked={emailNotifications}
-              onCheckedChange={handleToggleNotifications}
+              onCheckedChange={(checked) =>
+                handleToggleNotifications("emailNotifications", checked)
+              }
+              disabled={savingNotifications}
+            />
+          </div>
+          <div className="flex items-center justify-between gap-4 border-t pt-4">
+            <div>
+              <p className="font-medium text-sm">{t("settings.p1AlertEmails")}</p>
+              <p className="text-sm text-muted-foreground">
+                {t("settings.p1AlertEmailsDesc")}
+              </p>
+            </div>
+            <Switch
+              checked={p1AlertEmails}
+              onCheckedChange={(checked) =>
+                handleToggleNotifications("p1AlertEmails", checked)
+              }
               disabled={savingNotifications}
             />
           </div>

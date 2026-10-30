@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Supplier } from "@prisma/client";
+import { riskDelta } from "@/lib/risk-score";
 import {
   Card,
   CardContent,
@@ -25,10 +26,87 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslation } from "@/i18n/client";
 import { AddSupplierDialog } from "@/components/add-supplier-dialog";
-import { MapPin, Package, Clock, Percent, Pencil, Trash2 } from "lucide-react";
+import { MapPin, Package, Clock, Percent, Pencil, Trash2, TrendingDown, TrendingUp } from "lucide-react";
+
+export type SupplierRiskSnapshot = {
+  riskScore: number | null;
+  priority: "P1" | "P2" | "P3" | null;
+  riskFactors: string[];
+};
+
+export type SupplierCardData = Supplier & {
+  latestRisk: SupplierRiskSnapshot | null;
+  previousRisk: Pick<SupplierRiskSnapshot, "riskScore" | "priority"> | null;
+};
 
 interface SupplierCardProps {
-  supplier: Supplier;
+  supplier: SupplierCardData;
+}
+
+const PRIORITY_STYLES: Record<"P1" | "P2" | "P3", string> = {
+  P1: "bg-red-100 text-red-700 border-red-200",
+  P2: "bg-amber-100 text-amber-800 border-amber-200",
+  P3: "bg-emerald-100 text-emerald-700 border-emerald-200",
+};
+
+function SupplierRiskLine({
+  latest,
+  previous,
+}: {
+  latest: SupplierRiskSnapshot | null;
+  previous: SupplierCardData["previousRisk"];
+}) {
+  const { t } = useTranslation();
+  if (!latest) return null;
+
+  if (!latest.priority || latest.riskScore == null) {
+    return (
+      <p className="text-xs text-muted-foreground pt-1">{t("suppliers.riskNotScored")}</p>
+    );
+  }
+
+  const delta = riskDelta(latest.riskScore, previous?.riskScore);
+  const priorityChanged =
+    previous?.priority != null && previous.priority !== latest.priority;
+
+  return (
+    <div className="space-y-1 border-t pt-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge variant="outline" className={PRIORITY_STYLES[latest.priority]}>
+          {latest.priority}
+        </Badge>
+        <span className="text-sm font-semibold tabular-nums">
+          {t("suppliers.riskScoreValue", { score: latest.riskScore })}
+        </span>
+      </div>
+      {delta != null && (
+        <p
+          className={`flex items-center gap-1 text-xs ${
+            delta > 0 ? "text-red-600" : delta < 0 ? "text-emerald-600" : "text-muted-foreground"
+          }`}
+        >
+          {delta > 0 ? (
+            <TrendingUp className="h-3.5 w-3.5" />
+          ) : delta < 0 ? (
+            <TrendingDown className="h-3.5 w-3.5" />
+          ) : null}
+          <span>
+            {delta === 0
+              ? t("suppliers.vsLastWeekSame")
+              : t("suppliers.vsLastWeek", {
+                  delta: delta > 0 ? `+${delta}` : String(delta),
+                })}
+            {priorityChanged ? ` · ${t("suppliers.wasPriority", { priority: previous?.priority ?? "" })}` : ""}
+          </span>
+        </p>
+      )}
+      {latest.riskFactors.length > 0 && (
+        <p className="text-xs text-muted-foreground line-clamp-2" title={latest.riskFactors.join(" · ")}>
+          {latest.riskFactors.slice(0, 3).join(" · ")}
+        </p>
+      )}
+    </div>
+  );
 }
 
 export function SupplierCard({ supplier }: SupplierCardProps) {
@@ -144,6 +222,10 @@ export function SupplierCard({ supplier }: SupplierCardProps) {
               {supplier.shippingRoute}
             </Badge>
           )}
+          <SupplierRiskLine
+            latest={supplier.latestRisk}
+            previous={supplier.previousRisk}
+          />
         </CardContent>
       </Card>
 
