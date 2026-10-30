@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import type { Supplier } from "@prisma/client";
 import { Input } from "@/components/ui/input";
-import { SupplierCard } from "@/components/supplier-card";
+import { SupplierCard, type SupplierCardData } from "@/components/supplier-card";
 import { useTranslation } from "@/i18n/client";
 import { Search } from "lucide-react";
 
 interface SupplierSearchProps {
-  suppliers: Supplier[];
+  suppliers: SupplierCardData[];
 }
 
 export function SupplierSearch({ suppliers }: SupplierSearchProps) {

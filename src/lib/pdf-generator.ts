@@ -392,6 +392,63 @@ function renderBlock(doc: PDFKit.PDFDocument, block: Block) {
   }
 }
 
+function drawRiskBanner(
+  doc: PDFKit.PDFDocument,
+  report: Pick<SupplierReport, "priority" | "riskScore" | "riskFactors">,
+  t: (key: string, params?: Record<string, string | number>) => string
+) {
+  if (!report.priority || report.riskScore == null) return;
+
+  const factors = (report.riskFactors ?? []).map((factor) => factor.trim()).filter(Boolean).slice(0, 3);
+  const factorLine = factors.length
+    ? `${t("pdf.riskFactors")}: ${factors.join(" · ")}`
+    : "";
+  const innerWidth = CONTENT_WIDTH - 28;
+  doc.font("Helvetica").fontSize(9);
+  const factorHeight = factorLine
+    ? doc.heightOfString(factorLine, { width: innerWidth })
+    : 0;
+  const bannerHeight = factorLine ? 38 + factorHeight : 32;
+
+  if (doc.y + bannerHeight > PAGE_HEIGHT - MARGIN - 20) {
+    doc.addPage();
+    drawHeader(doc);
+    doc.y = HEADER_HEIGHT + 20;
+  }
+
+  const top = doc.y;
+  const color =
+    report.priority === "P1"
+      ? COLORS.danger
+      : report.priority === "P2"
+        ? COLORS.warning
+        : COLORS.success;
+
+  doc.save();
+  doc.roundedRect(MARGIN, top, CONTENT_WIDTH, bannerHeight, 6).fillAndStroke(COLORS.bgLight, COLORS.border);
+  doc.rect(MARGIN, top, 4, bannerHeight).fill(color);
+  doc.restore();
+
+  doc
+    .fontSize(11)
+    .font("Helvetica-Bold")
+    .fillColor(color)
+    .text(
+      `${report.priority}    ${t("pdf.riskScore")}: ${t("pdf.riskScoreValue", { score: report.riskScore })}`,
+      MARGIN + 14,
+      top + 10,
+      { width: innerWidth }
+    );
+
+  if (factorLine) {
+    doc.fontSize(9).font("Helvetica").fillColor(COLORS.text).text(factorLine, MARGIN + 14, top + 28, {
+      width: innerWidth,
+    });
+  }
+
+  doc.y = top + bannerHeight + 14;
+}
+
 // ---- Main Generator ----
 
 export async function generateReportPDF(
@@ -531,6 +588,8 @@ export async function generateReportPDF(
            .text(`${sr.supplier.cogsPercentage}%`, MARGIN + colWidth * 3 + 20, valY, { width: colWidth - 20, lineBreak: false });
 
         doc.y = startCardY + 90;
+
+        drawRiskBanner(doc, sr.report, t);
 
         // Content
         const blocks = parseContentToBlocks(sr.report.content);

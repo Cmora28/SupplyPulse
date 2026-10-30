@@ -31,12 +31,40 @@ export default async function SuppliersPage() {
     prisma.supplier.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      include: {
+        reports: {
+          orderBy: { weekOf: "desc" },
+          take: 2,
+          select: {
+            riskScore: true,
+            priority: true,
+            riskFactors: true,
+          },
+        },
+      },
     }),
   ]);
   const tier = dbUser?.subscriptionTier || session.user.subscriptionTier;
 
   const supplierLimit = TIER_LIMITS[tier];
   const limitReached = suppliers.length >= supplierLimit;
+  const cardSuppliers = suppliers.map(({ reports, ...supplier }) => {
+    const latest = reports[0];
+    const previous = reports[1];
+    return {
+      ...supplier,
+      latestRisk: latest
+        ? {
+            riskScore: latest.riskScore,
+            priority: latest.priority,
+            riskFactors: latest.riskFactors,
+          }
+        : null,
+      previousRisk: previous
+        ? { riskScore: previous.riskScore, priority: previous.priority }
+        : null,
+    };
+  });
   const limitDisplay = supplierLimit === Infinity ? t("common.unlimited") : String(supplierLimit);
 
   return (
@@ -45,7 +73,7 @@ export default async function SuppliersPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{t("suppliers.title")}</h1>
           <p className="text-muted-foreground">
-            {t("suppliers.count", { count: suppliers.length, limit: limitDisplay })}
+            {t("suppliers.count", { count: cardSuppliers.length, limit: limitDisplay })}
           </p>
         </div>
         <AddSupplierDialog disabled={limitReached} />
@@ -72,7 +100,7 @@ export default async function SuppliersPage() {
         </Card>
       )}
 
-      {suppliers.length === 0 ? (
+      {cardSuppliers.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Factory className="h-12 w-12 text-muted-foreground mb-4" />
@@ -84,7 +112,7 @@ export default async function SuppliersPage() {
           </CardContent>
         </Card>
       ) : (
-        <SupplierSearch suppliers={suppliers} />
+        <SupplierSearch suppliers={cardSuppliers} />
       )}
     </div>
   );

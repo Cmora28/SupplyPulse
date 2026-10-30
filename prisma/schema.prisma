@@ -30,6 +30,12 @@ enum RunItemStatus {
   FAILED
 }
 
+enum ReportPriority {
+  P1
+  P2
+  P3
+}
+
 enum AuditAction {
   LOGIN_SUCCESS
   LOGIN_FAILURE
@@ -71,6 +77,8 @@ model User {
   reportHour          Int              @default(8)    // 0-23 UTC
   nextReportAt        DateTime?                       // Pre-calculated next run time
   emailNotifications  Boolean          @default(true)
+  // Immediate email when a supplier report is P1. Independent of the weekly digest.
+  p1AlertEmails       Boolean          @default(true)
   resetToken          String?          @unique
   resetTokenExpiry    DateTime?
   createdAt           DateTime         @default(now())
@@ -107,10 +115,16 @@ model Supplier {
 model SupplierReport {
   id          String   @id @default(cuid())
   supplierId  String
-  content     String   @db.Text
+  content     String          @db.Text
   citations   String[]
+  // Null on reports generated before structured scoring. Do not backfill from prose.
+  riskScore   Int?
+  priority    ReportPriority?
+  riskFactors String[]        @default([])
+  // Set only after an immediate P1 alert is accepted by the mailer. Blocks duplicates.
+  p1AlertSentAt DateTime?
   weekOf      DateTime
-  generatedAt DateTime @default(now())
+  generatedAt DateTime        @default(now())
   supplier    Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
   @@unique([supplierId, weekOf])

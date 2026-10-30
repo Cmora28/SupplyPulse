@@ -30,7 +30,7 @@ async function main() {
   const model = process.env.SAMPLE_REPORT_MODEL || "sonar-deep-research";
 
   console.log(`Generating AI report (${model}, locale=${locale})...`);
-  const { content, citations } = await generateSupplierReport(
+  const { content, citations, risk } = await generateSupplierReport(
     sampleSupplier,
     model,
     locale
@@ -52,6 +52,10 @@ async function main() {
           citations,
           weekOf,
           generatedAt: new Date(),
+          riskScore: risk?.riskScore ?? null,
+          priority: risk?.priority ?? null,
+          riskFactors: risk?.riskFactors ?? [],
+          p1AlertSentAt: null,
         },
       },
     ],

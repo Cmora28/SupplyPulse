@@ -5,6 +5,7 @@ import { startOfWeek } from "date-fns";
 import { generateSupplierReport } from "./lib/perplexity";
 import { generateReportPDF } from "./lib/pdf-generator";
 import { sendWeeklyReport } from "./lib/email";
+import { notifyP1IfNeeded } from "./lib/p1-alert";
 import { TIER_MODEL } from "./lib/tier-limits";
 import { calculateNextReportAt } from "./lib/schedule";
 import { AuditAction, type SubscriptionTier } from "@prisma/client";
@@ -152,17 +153,19 @@ const reportWorker = new Worker(
       data: { status: "PROCESSING" },
     });
 
+    let savedReportId: string | null = null;
+    const userLocale = item.reportRun.user.locale || "en";
+
     try {
       // Select AI model based on user's subscription tier
       const userTier = item.reportRun.user.subscriptionTier as SubscriptionTier;
       const model = TIER_MODEL[userTier] || "sonar-pro";
-      const userLocale = (item.reportRun.user as unknown as { locale?: string }).locale || "en";
       console.log(`[ReportWorker] User tier: ${userTier}, model: ${model}, locale: ${userLocale}`);
 
-      const { content, citations } = await generateSupplierReport(item.supplier, model, userLocale);
+      const { content, citations, risk } = await generateSupplierReport(item.supplier, model, userLocale);
       const weekOf = item.reportRun.weekOf;
 
-      await prisma.supplierReport.upsert({
+      const savedReport = await prisma.supplierReport.upsert({
         where: {
           supplierId_weekOf: {
             supplierId: item.supplierId,
@@ -174,13 +177,20 @@ const reportWorker = new Worker(
           content,
           citations,
           weekOf,
+          riskScore: risk?.riskScore ?? null,
+          priority: risk?.priority ?? null,
+          riskFactors: risk?.riskFactors ?? [],
         },
         update: {
           content,
           citations,
           generatedAt: new Date(),
+          riskScore: risk?.riskScore ?? null,
+          priority: risk?.priority ?? null,
+          riskFactors: risk?.riskFactors ?? [],
         },
       });
+      savedReportId = savedReport.id;
 
       await prisma.reportRunItem.update({
         where: { id: item.id },
@@ -206,6 +216,20 @@ const reportWorker = new Worker(
       console.error(
         `[ReportWorker] FAILED for supplier "${item.supplier.name}": ${errorMessage}`
       );
+    }
+
+    if (savedReportId) {
+      await notifyP1IfNeeded({
+        reportId: savedReportId,
+        supplierName: item.supplier.name,
+        user: {
+          id: item.reportRun.user.id,
+          email: item.reportRun.user.email,
+          name: item.reportRun.user.name,
+          locale: userLocale,
+          p1AlertEmails: item.reportRun.user.p1AlertEmails,
+        },
+      });
     }
 
     // ---- Completion Check ----

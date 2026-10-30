@@ -26,6 +26,7 @@ export async function GET() {
         reportDay: true,
         reportHour: true,
         emailNotifications: true,
+        p1AlertEmails: true,
         createdAt: true,
       },
     });

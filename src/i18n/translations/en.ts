@@ -137,6 +137,11 @@ const en = {
     validationFailed: "Supplier profile needs changes",
     validationUnavailable:
       "Could not verify supplier data. Please try again in a moment.",
+    riskScoreValue: "{score}/100",
+    vsLastWeek: "{delta} vs last week",
+    vsLastWeekSame: "No change vs last week",
+    wasPriority: "was {priority}",
+    riskNotScored: "Latest report has no risk score",
   },
 
   reports: {
@@ -212,6 +217,11 @@ const en = {
     emailNotifications: "Email Notifications",
     emailNotificationsDesc:
       "Receive weekly supply chain risk reports via email.",
+    p1AlertEmails: "Immediate P1 alerts",
+    p1AlertEmailsDesc:
+      "Email me as soon as a supplier report is priority P1, instead of waiting for the weekly PDF.",
+    p1AlertsEnabledDesc: "You will receive an email as soon as a supplier is priority P1.",
+    p1AlertsDisabledDesc: "Immediate P1 alert emails have been turned off.",
     dangerZone: "Danger Zone",
     dangerZoneDesc: "Irreversible actions that affect your account.",
     deleteAccount: "Delete Account",
@@ -627,6 +637,22 @@ const en = {
       footerDashboard: "dashboard",
       subject: "Weekly Supply Chain Report - {weekLabel}",
     },
+    p1Alert: {
+      subject: "P1 alert: {supplier} - week of {weekLabel}",
+      subtitle: "Critical supplier risk",
+      greeting: "Hi {name},",
+      intro: "{supplier} is priority P1 for the week of {weekLabel}.",
+      escalated: "{supplier} escalated to P1 from {previous} for the week of {weekLabel}.",
+      remains: "{supplier} is still priority P1 for the week of {weekLabel}.",
+      score: "Risk score: {score}/100",
+      scoreChange: "Change vs the previous week: {delta}",
+      scoreUnchanged: "No change vs the previous week.",
+      factorsTitle: "Top risk factors",
+      action: "This alert is sent as soon as the report is ready so you do not have to wait for the weekly PDF.",
+      viewDashboard: "View supplier",
+      footer: "You received this because immediate P1 alerts are turned on.",
+      settings: "Manage notification settings",
+    },
     passwordReset: {
       subtitle: "Password Reset",
       greeting: "Hi {name},",
@@ -656,6 +682,9 @@ const en = {
     shippingRoute: "Shipping Route",
     dependencies: "Dependencies",
     sources: "Sources",
+    riskScore: "Risk score",
+    riskScoreValue: "{score}/100",
+    riskFactors: "Top risk factors",
     generated: "Generated {date}",
     page: "Page {num}",
   },

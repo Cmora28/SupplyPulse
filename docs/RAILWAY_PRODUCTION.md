@@ -109,3 +109,19 @@ Redeploy the app after changing variables so it uses the production DB and Redis
 | Next.js app| **Vercel**     | Same `DATABASE_URL`, `REDIS_URL`, NextAuth, Polar, Resend, etc. |
 
 Create **PostgreSQL and Redis on Railway first**, copy their **public** URLs, add them to **Vercel** and to the **Railway worker** service, then deploy the worker.
+
+---
+
+## 5. Schema changes
+
+The worker build command runs `prisma generate` only. It does **not** apply SQL. Apply schema changes to Railway Postgres **before** deploying app code that reads the new columns (the Next.js app selects every `User` and `SupplierReport` field).
+
+From a machine with production `DATABASE_URL`:
+
+```bash
+npx prisma migrate deploy
+```
+
+This repo’s first migration only adds nullable risk columns on `SupplierReport`, an empty `riskFactors` array, and `User.p1AlertEmails` (default **on**). Existing report rows stay unscored. If this database was created with `prisma db push` and has no `_prisma_migrations` history, `migrate deploy` still applies that additive SQL; it does not recreate tables.
+
+Redeploy **both** the Vercel app and the Railway worker after the migration. The worker start command stays `npm run worker:start`. Old reports are not backfilled; the next generation writes the score and can send a P1 alert.
