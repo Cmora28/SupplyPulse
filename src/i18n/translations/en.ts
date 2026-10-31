@@ -70,6 +70,19 @@ const en = {
     latestReportRun: "Latest Report Run",
     weekOf: "Week of {date}",
     viewAllReports: "View all reports",
+    nextReportAt: "Next report: {when} ({timezone})",
+    reportTitle: "Report for the week of {date}",
+    generated: "Generated",
+    supplierCoverage: "{count} of {total} suppliers",
+    openReport: "Open report",
+    downloadPdf: "Download PDF",
+    riskHigh: "High risk",
+    riskMedium: "Medium risk",
+    riskLow: "Low risk",
+    noAlerts: "No relevant alerts",
+    itemPending: "Waiting to be analyzed",
+    itemProcessing: "Analysis in progress",
+    itemFailed: "Analysis failed",
   },
 
   suppliers: {
@@ -84,6 +97,8 @@ const en = {
     noSearchResults: "No suppliers match your search.",
     addSupplier: "Add Supplier",
     editSupplier: "Edit Supplier",
+    editNamed: "Edit {name}",
+    deleteNamed: "Delete {name}",
     addDialogDesc: "Add a new supplier to monitor in your weekly reports.",
     editDialogDesc: "Update your supplier information.",
     nameLabel: "Supplier Name",
@@ -150,9 +165,9 @@ const en = {
     statusPending: "Pending",
     statusProcessing: "Processing",
     statusReady: "Ready",
-    statusEmailed: "Emailed",
+    statusEmailed: "Sent by email",
     statusFailed: "Failed",
-    statusSuccess: "Success",
+    statusSuccess: "Completed",
     pdf: "PDF",
     generatedCount:
       "{count} of {total} supplier reports generated successfully",
@@ -850,6 +865,13 @@ const en = {
     title: "Plan upgraded successfully!",
     description:
       "Your subscription has been activated. You can now add more suppliers.",
+  },
+
+  errorPage: {
+    title: "Something went wrong",
+    description:
+      "An unexpected error occurred. Please try again or contact support if the problem persists.",
+    tryAgain: "Try again",
   },
 } as const;
 

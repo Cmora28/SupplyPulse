@@ -82,12 +82,12 @@ export default function ForgotPasswordPage() {
               </p>
             </CardContent>
             <CardFooter className="flex flex-col space-y-3">
-              <Link href="/login" className="w-full">
-                <Button variant="outline" className="w-full">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
+              <Button variant="outline" asChild className="w-full">
+                <Link href="/login">
+                  <ArrowLeft className="mr-2 h-4 w-4" aria-hidden />
                   {t("auth.backToSignIn")}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </CardFooter>
           </>
         ) : (

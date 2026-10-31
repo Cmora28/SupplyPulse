@@ -174,19 +174,19 @@ export default function PricingPage() {
             {session ? (
               <>
                 <PublicLanguageSwitcher />
-                <Link href="/dashboard">
-                  <Button variant="outline">{t("common.dashboard")}</Button>
-                </Link>
+                <Button variant="outline" asChild>
+                  <Link href="/dashboard">{t("common.dashboard")}</Link>
+                </Button>
               </>
             ) : (
               <>
-                <Link href="/login">
-                  <Button variant="ghost">{t("common.signIn")}</Button>
-                </Link>
+                <Button variant="ghost" asChild>
+                  <Link href="/login">{t("common.signIn")}</Link>
+                </Button>
                 <PublicLanguageSwitcher />
-                <Link href="/register">
-                  <Button>{t("common.getStarted")}</Button>
-                </Link>
+                <Button asChild>
+                  <Link href="/register">{t("common.getStarted")}</Link>
+                </Button>
               </>
             )}
           </div>

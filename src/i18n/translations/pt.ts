@@ -30,7 +30,7 @@ const pt: TranslationType = {
     standard: "Standard",
     plus: "Plus",
     premium: "Premium",
-    enterprise: "Enterprise",
+    enterprise: "Empresarial",
     mostPopular: "Mais Popular",
     deepResearch: "Deep Research",
     contactSales: "Fale com Vendas",
@@ -72,6 +72,19 @@ const pt: TranslationType = {
     latestReportRun: "Última Execução de Relatório",
     weekOf: "Semana de {date}",
     viewAllReports: "Ver todos os relatórios",
+    nextReportAt: "Próximo relatório: {when} ({timezone})",
+    reportTitle: "Relatório da semana de {date}",
+    generated: "Gerado a",
+    supplierCoverage: "{count} de {total} fornecedores",
+    openReport: "Abrir relatório",
+    downloadPdf: "Descarregar PDF",
+    riskHigh: "Risco alto",
+    riskMedium: "Risco médio",
+    riskLow: "Risco baixo",
+    noAlerts: "Sem alertas relevantes",
+    itemPending: "À espera de análise",
+    itemProcessing: "Análise em curso",
+    itemFailed: "A análise falhou",
   },
 
   suppliers: {
@@ -86,6 +99,8 @@ const pt: TranslationType = {
     noSearchResults: "Nenhum fornecedor corresponde à sua pesquisa.",
     addSupplier: "Adicionar Fornecedor",
     editSupplier: "Editar Fornecedor",
+    editNamed: "Editar {name}",
+    deleteNamed: "Apagar {name}",
     addDialogDesc: "Adicione um novo fornecedor para monitorar nos seus relatórios semanais.",
     editDialogDesc: "Atualize as informações do seu fornecedor.",
     nameLabel: "Nome do Fornecedor",
@@ -150,11 +165,11 @@ const pt: TranslationType = {
     manageSuppliers: "Gerenciar Fornecedores",
     weekOf: "Semana de {date}",
     statusPending: "Pendente",
-    statusProcessing: "Processando",
+    statusProcessing: "Em processamento",
     statusReady: "Pronto",
-    statusEmailed: "Enviado por E-mail",
+    statusEmailed: "Enviado por e-mail",
     statusFailed: "Falhou",
-    statusSuccess: "Sucesso",
+    statusSuccess: "Concluído",
     pdf: "PDF",
     generatedCount:
       "{count} de {total} relatórios de fornecedores gerados com sucesso",
@@ -821,6 +836,13 @@ const pt: TranslationType = {
     title: "Upgrade do plano realizado com sucesso!",
     description:
       "Sua assinatura foi ativada. Agora você pode adicionar mais fornecedores.",
+  },
+
+  errorPage: {
+    title: "Algo deu errado",
+    description:
+      "Ocorreu um erro inesperado. Tente novamente ou contacte o suporte se o problema continuar.",
+    tryAgain: "Tentar novamente",
   },
 } as const;
 

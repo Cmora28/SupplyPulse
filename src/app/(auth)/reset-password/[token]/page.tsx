@@ -96,9 +96,9 @@ export default function ResetPasswordPage({
             </CardDescription>
           </CardHeader>
           <CardFooter>
-            <Link href="/login" className="w-full">
-              <Button className="w-full">{t("common.signIn")}</Button>
-            </Link>
+            <Button asChild className="w-full">
+              <Link href="/login">{t("common.signIn")}</Link>
+            </Button>
           </CardFooter>
         </Card>
       </div>

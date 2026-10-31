@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { cookies, headers } from "next/headers";
 import { createTranslator, getServerLocale } from "@/i18n";
-import { format } from "date-fns";
+import { formatUtcDate } from "@/lib/date-locale";
 import {
   Card,
   CardContent,
@@ -12,8 +12,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/status-badge";
+import { LocalDateTime } from "@/components/local-date";
 import { FileText, Download, Clock } from "lucide-react";
 import Link from "next/link";
 import { DeleteReportButton } from "@/components/delete-report-button";
@@ -49,15 +50,6 @@ export default async function ReportsPage() {
     },
   });
 
-  const statusConfig: Record<string, { key: string; className: string }> = {
-    PENDING: { key: "reports.statusPending", className: "bg-yellow-100 text-yellow-700 border-yellow-200" },
-    PROCESSING: { key: "reports.statusProcessing", className: "bg-blue-100 text-blue-700 border-blue-200" },
-    READY: { key: "reports.statusReady", className: "bg-green-100 text-green-700 border-green-200" },
-    EMAILED: { key: "reports.statusEmailed", className: "bg-green-100 text-green-700 border-green-200" },
-    FAILED: { key: "reports.statusFailed", className: "bg-red-100 text-red-700 border-red-200" },
-    SUCCESS: { key: "reports.statusSuccess", className: "bg-green-100 text-green-700 border-green-200" },
-  };
-
   return (
     <div className="space-y-6">
       <div>
@@ -75,15 +67,14 @@ export default async function ReportsPage() {
             <p className="text-muted-foreground text-sm text-center max-w-md">
               {t("reports.noReportsDesc")}
             </p>
-            <Link href="/dashboard/suppliers" className="mt-4">
-              <Button variant="outline">{t("reports.manageSuppliers")}</Button>
-            </Link>
+            <Button variant="outline" asChild className="mt-4">
+              <Link href="/dashboard/suppliers">{t("reports.manageSuppliers")}</Link>
+            </Button>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-4">
           {reportRuns.map((run, index) => {
-            const status = statusConfig[run.status] || statusConfig.PENDING;
             const successCount = run.items.filter(
               (i) => i.status === "SUCCESS"
             ).length;
@@ -98,24 +89,22 @@ export default async function ReportsPage() {
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div>
                       <CardTitle className="text-base">
-                        {t("reports.weekOf", { date: format(run.weekOf, "MMMM d, yyyy") })}
+                        {t("reports.weekOf", { date: formatUtcDate(run.weekOf, "PPP", locale) })}
                       </CardTitle>
                       <CardDescription className="flex items-center gap-1 mt-1">
-                        <Clock className="h-3 w-3" />
-                        {format(run.createdAt, "MMM d, yyyy 'at' h:mm a")}
+                        <Clock className="h-3 w-3" aria-hidden />
+                        <LocalDateTime iso={run.createdAt.toISOString()} preset="dateTime" />
                       </CardDescription>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className={status.className}>
-                        {t(status.key)}
-                      </Badge>
+                      <StatusBadge status={run.status} />
                       {canDownload && (
-                        <a href={`/api/reports/${run.id}/pdf`}>
-                          <Button size="sm" variant="outline">
-                            <Download className="mr-1 h-3 w-3" />
+                        <Button size="sm" variant="outline" asChild>
+                          <a href={`/api/reports/${run.id}/pdf`}>
+                            <Download className="mr-1 h-3 w-3" aria-hidden />
                             {t("reports.pdf")}
-                          </Button>
-                        </a>
+                          </a>
+                        </Button>
                       )}
                       {run.status === "FAILED" && (
                         <DeleteReportButton reportRunId={run.id} />
@@ -125,24 +114,15 @@ export default async function ReportsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    {run.items.map((item) => {
-                      const itemStatus =
-                        statusConfig[item.status] || statusConfig.PENDING;
-                      return (
+                    {run.items.map((item) => (
                         <div
                           key={item.id}
                           className="flex items-center justify-between py-1.5 border-b last:border-0"
                         >
                           <span className="text-sm">{item.supplier.name}</span>
-                          <Badge
-                            variant="outline"
-                            className={`text-xs ${itemStatus.className}`}
-                          >
-                            {t(itemStatus.key)}
-                          </Badge>
+                          <StatusBadge status={item.status} />
                         </div>
-                      );
-                    })}
+                      ))}
                   </div>
                   {successCount > 0 && (
                     <p className="text-xs text-muted-foreground mt-3">

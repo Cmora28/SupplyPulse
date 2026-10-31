@@ -72,6 +72,19 @@ const fr: TranslationType = {
     latestReportRun: "Dernière exécution de rapport",
     weekOf: "Semaine du {date}",
     viewAllReports: "Voir tous les rapports",
+    nextReportAt: "Prochain rapport : {when} ({timezone})",
+    reportTitle: "Rapport de la semaine du {date}",
+    generated: "Généré le",
+    supplierCoverage: "{count} sur {total} fournisseurs",
+    openReport: "Ouvrir le rapport",
+    downloadPdf: "Télécharger le PDF",
+    riskHigh: "Risque élevé",
+    riskMedium: "Risque moyen",
+    riskLow: "Risque faible",
+    noAlerts: "Aucune alerte pertinente",
+    itemPending: "En attente d'analyse",
+    itemProcessing: "Analyse en cours",
+    itemFailed: "L'analyse a échoué",
   },
 
   suppliers: {
@@ -86,6 +99,8 @@ const fr: TranslationType = {
     noSearchResults: "Aucun fournisseur ne correspond à votre recherche.",
     addSupplier: "Ajouter un fournisseur",
     editSupplier: "Modifier le fournisseur",
+    editNamed: "Modifier {name}",
+    deleteNamed: "Supprimer {name}",
     addDialogDesc: "Ajoutez un nouveau fournisseur à surveiller dans vos rapports hebdomadaires.",
     editDialogDesc: "Mettez à jour les informations de votre fournisseur.",
     nameLabel: "Nom du fournisseur",
@@ -154,7 +169,7 @@ const fr: TranslationType = {
     statusReady: "Prêt",
     statusEmailed: "Envoyé par e-mail",
     statusFailed: "Échoué",
-    statusSuccess: "Réussi",
+    statusSuccess: "Terminé",
     pdf: "PDF",
     generatedCount:
       "{count} sur {total} rapports de fournisseurs générés avec succès",
@@ -821,6 +836,13 @@ const fr: TranslationType = {
     title: "Plan mis à niveau avec succès !",
     description:
       "Votre abonnement a été activé. Vous pouvez maintenant ajouter plus de fournisseurs.",
+  },
+
+  errorPage: {
+    title: "Une erreur s'est produite",
+    description:
+      "Une erreur inattendue s'est produite. Réessayez ou contactez le support si le problème persiste.",
+    tryAgain: "Réessayer",
   },
 } as const;
 
