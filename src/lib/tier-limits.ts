@@ -41,6 +41,7 @@ export const TIER_FEATURES: Record<SubscriptionTier, string[]> = {
     "PDF downloads with full citations",
     "Priority email support",
     "Consolidated multi-supplier PDF",
+    "Mid-week disruption alerts between weekly reports",
   ],
   PREMIUM: [
     "Monitor up to 15 suppliers",
@@ -50,6 +51,7 @@ export const TIER_FEATURES: Record<SubscriptionTier, string[]> = {
     "PDF downloads with full citations",
     "Priority email support",
     "Consolidated multi-supplier PDF",
+    "Daily disruption alerts between weekly reports",
   ],
   ENTERPRISE: [
     "Custom number of suppliers",
@@ -60,6 +62,7 @@ export const TIER_FEATURES: Record<SubscriptionTier, string[]> = {
     "PDF downloads with full citations",
     "Priority email support",
     "Consolidated multi-supplier PDF",
+    "Daily disruption alerts between weekly reports",
   ],
 };
 
@@ -71,6 +74,38 @@ export const TIER_MODEL: Record<SubscriptionTier, string> = {
   PREMIUM: "sonar-deep-research",
   ENTERPRISE: "sonar-deep-research",
 };
+
+/**
+ * Interim disruption alerts between weekly reports.
+ * Free and Standard stay on the weekly report only.
+ * Plus sends once mid-week (three days after the user's report weekday, UTC).
+ * Premium and Enterprise send every day a new severe item is waiting.
+ */
+export type AlertCadence = "none" | "midweek" | "daily";
+
+export const TIER_ALERT_CADENCE: Record<SubscriptionTier, AlertCadence> = {
+  FREE: "none",
+  STANDARD: "none",
+  PLUS: "midweek",
+  PREMIUM: "daily",
+  ENTERPRISE: "daily",
+};
+
+/** Large model used when a JEV score is high enough to escalate. */
+export const ESCALATION_MODEL = "sonar-deep-research";
+
+export function isInterimAlertDay(
+  tier: SubscriptionTier,
+  reportDay: number,
+  now: Date
+): boolean {
+  const cadence = TIER_ALERT_CADENCE[tier];
+  if (cadence === "none") return false;
+  if (cadence === "daily") return true;
+  const weekday = ((reportDay % 7) + 7) % 7;
+  const midweek = (weekday + 3) % 7;
+  return now.getUTCDay() === midweek;
+}
 
 export function getSupplierLimit(tier: SubscriptionTier): number {
   return TIER_LIMITS[tier];

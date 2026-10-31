@@ -3,7 +3,13 @@ import { format } from "date-fns";
 import { escapeHtml } from "@/lib/security";
 import { createTranslator } from "@/i18n";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResend(): Resend {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) {
+    throw new Error("RESEND_API_KEY environment variable is not set");
+  }
+  return new Resend(key);
+}
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 // Use your verified domain in Resend. Set EMAIL_FROM to override (e.g. "Supply Pulse <reports@supplypulse.net>").
@@ -204,7 +210,7 @@ export async function sendPasswordResetEmail(
 </body>
 </html>`;
 
-  const { error } = await resend.emails.send({
+  const { error } = await getResend().emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: t("email.passwordReset.subject"),
@@ -228,7 +234,7 @@ export async function sendWeeklyReport(
   const weekLabel = format(weekOf, "MMMM d, yyyy");
   const filename = `supply-chain-report-${format(weekOf, "yyyy-MM-dd")}.pdf`;
 
-  const { error } = await resend.emails.send({
+  const { error } = await getResend().emails.send({
     from: FROM_EMAIL,
     to: user.email,
     subject: t("email.weeklyReport.subject", { weekLabel }),
@@ -244,5 +250,131 @@ export async function sendWeeklyReport(
   if (error) {
     console.error("Resend email error:", error);
     throw new Error(`Failed to send email: ${error.message}`);
+  }
+}
+
+export interface SupplierAlertEmailItem {
+  supplierName: string;
+  summary: string;
+  title: string;
+  url: string;
+  source: string | null;
+  jevP: number;
+}
+
+function safeHttpUrl(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return null;
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
+function buildAlertEmailHtml(
+  userName: string,
+  items: SupplierAlertEmailItem[],
+  locale: string
+): string {
+  const t = createTranslator(locale);
+  const rows = items
+    .map((item) => {
+      const href = safeHttpUrl(item.url);
+      const source = item.source ? ` (${escapeHtml(item.source)})` : "";
+      const link = href
+        ? `<a href="${escapeHtml(href)}" style="color:#b45309;font-size:13px;">${t("email.supplierAlert.readSource")}</a>`
+        : "";
+      return `
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#fffbeb;border-radius:8px;margin:0 0 16px;">
+          <tr>
+            <td style="padding:16px;">
+              <p style="font-size:14px;font-weight:700;color:#111827;margin:0 0 6px;">
+                ${escapeHtml(item.supplierName)}
+              </p>
+              <p style="font-size:12px;font-weight:600;color:#b45309;margin:0 0 8px;">
+                ${t("email.supplierAlert.score", { score: item.jevP.toFixed(2) })}
+              </p>
+              <p style="font-size:13px;color:#374151;line-height:1.5;margin:0 0 8px;">
+                ${escapeHtml(item.title)}${source}
+              </p>
+              <p style="font-size:13px;color:#374151;line-height:1.5;margin:0 0 8px;">
+                ${escapeHtml(item.summary)}
+              </p>
+              ${link}
+            </td>
+          </tr>
+        </table>`;
+    })
+    .join("");
+
+  return `
+<!DOCTYPE html>
+<html lang="${locale}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background-color:#f4f4f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;background-color:#ffffff;">
+    <tr>
+      <td style="background-color:#b45309;padding:32px 24px;text-align:center;">
+        <h1 style="color:#ffffff;font-size:24px;margin:0;font-weight:700;">Supply Pulse</h1>
+        <p style="color:#ffedd5;font-size:14px;margin:8px 0 0;">${t("email.supplierAlert.subtitle")}</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:32px 24px;">
+        <p style="font-size:16px;color:#111827;margin:0 0 16px;">
+          ${t("email.supplierAlert.greeting", { name: escapeHtml(userName || "there") })}
+        </p>
+        <p style="font-size:14px;color:#374151;line-height:1.6;margin:0 0 24px;">
+          ${t("email.supplierAlert.intro", { count: String(items.length) })}
+        </p>
+        ${rows}
+        <p style="font-size:13px;color:#6b7280;line-height:1.6;margin:0 0 24px;">
+          ${t("email.supplierAlert.weeklyNote")}
+        </p>
+        <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
+          <tr>
+            <td style="background-color:#b45309;border-radius:6px;">
+              <a href="${APP_URL}/dashboard/reports"
+                 style="display:inline-block;padding:12px 24px;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;">
+                ${t("email.supplierAlert.viewDashboard")}
+              </a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:24px;border-top:1px solid #e5e7eb;">
+        <p style="font-size:12px;color:#9ca3af;margin:0;text-align:center;">
+          ${t("email.supplierAlert.footer")}
+        </p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendSupplierAlertsEmail(input: {
+  user: { name: string; email: string };
+  locale: string;
+  items: SupplierAlertEmailItem[];
+}): Promise<void> {
+  if (input.items.length === 0) return;
+  const t = createTranslator(input.locale);
+  const { error } = await getResend().emails.send({
+    from: FROM_EMAIL,
+    to: input.user.email,
+    subject: t("email.supplierAlert.subject", { count: String(input.items.length) }),
+    html: buildAlertEmailHtml(input.user.name, input.items, input.locale),
+  });
+
+  if (error) {
+    console.error("Resend alert email error:", error);
+    throw new Error(`Failed to send alert email: ${error.message}`);
   }
 }

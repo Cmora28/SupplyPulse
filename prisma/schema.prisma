@@ -100,6 +100,7 @@ model Supplier {
   user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   reports        SupplierReport[]
   reportRunItems ReportRunItem[]
+  alerts         SupplierAlert[]
 
   @@index([userId])
 }
@@ -148,6 +149,50 @@ model ReportRunItem {
   // Finalizer: count remaining items by run + status (hot path)
   @@index([reportRunId, status])
   @@index([supplierId])
+}
+
+// Shared news cache. supplierKey is a normalized name|country token, not a
+// foreign key, so the same supplier is fetched and classified once for every
+// customer. Rows with jevP >= 0.6 are kept; the daily job deletes older rows.
+model NewsItem {
+  id            String          @id @default(cuid())
+  supplierKey   String
+  urlHash       String          @db.Char(64)
+  title         String
+  url           String          @db.Text
+  source        String?
+  publishedAt   DateTime
+  fetchedAt     DateTime        @default(now())
+  raw           Json            @db.JsonB
+  jevP          Float?
+  promptVersion String?
+  // JEV model id (jev-latest). Stored so a later prompt/model change can be
+  // told apart from rows already scored.
+  model         String?
+  status        String          @default("new")
+  alerts        SupplierAlert[]
+
+  @@unique([supplierKey, urlHash])
+  @@index([supplierKey, publishedAt(sort: Desc)])
+  @@index([fetchedAt])
+  @@index([jevP])
+}
+
+// Sent (or pending) disruption alerts. Not purged with NewsItem.
+model SupplierAlert {
+  id         String    @id @default(cuid())
+  newsItemId String
+  supplierId String
+  severity   String
+  summary    String    @db.Text
+  sentAt     DateTime?
+  createdAt  DateTime  @default(now())
+  newsItem   NewsItem  @relation(fields: [newsItemId], references: [id], onDelete: Restrict)
+  supplier   Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@unique([newsItemId, supplierId])
+  @@index([supplierId])
+  @@index([sentAt])
 }
 
 model AuditEvent {
