@@ -46,6 +46,10 @@ function mapAlert(row: SupplierAlert & { newsItem?: NewsItem | null }): StoredAl
     supplierId: row.supplierId,
     severity: row.severity,
     summary: row.summary,
+    summarySource: row.summarySource,
+    summaryError: row.summaryError,
+    emailStatus: row.emailStatus,
+    emailError: row.emailError,
     sentAt: row.sentAt,
     news,
   };
@@ -116,6 +120,7 @@ export function createPrismaDailyNewsStore(prisma: PrismaClient): DailyNewsStore
           source: row.source,
           publishedAt: row.publishedAt,
           raw: row.raw,
+          runId: row.runId ?? null,
           status: "new",
         })),
         skipDuplicates: true,
@@ -187,6 +192,9 @@ export function createPrismaDailyNewsStore(prisma: PrismaClient): DailyNewsStore
             supplierId: row.supplierId,
             severity: row.severity,
             summary: row.summary,
+            summarySource: row.summarySource ?? null,
+            summaryError: row.summaryError ?? null,
+            emailStatus: "pending",
           },
           include: { newsItem: true },
         });
@@ -212,7 +220,15 @@ export function createPrismaDailyNewsStore(prisma: PrismaClient): DailyNewsStore
       if (ids.length === 0) return;
       await prisma.supplierAlert.updateMany({
         where: { id: { in: ids } },
-        data: { sentAt },
+        data: { sentAt, emailStatus: "sent", emailError: null },
+      });
+    },
+
+    async markAlertsEmailFailed(ids: string[], message: string): Promise<void> {
+      if (ids.length === 0) return;
+      await prisma.supplierAlert.updateMany({
+        where: { id: { in: ids } },
+        data: { emailStatus: "failed", emailError: message.slice(0, 2000) },
       });
     },
 

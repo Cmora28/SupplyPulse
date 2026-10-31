@@ -24,6 +24,7 @@ import {
   MessageSquare,
   Shield,
   ClipboardList,
+  Newspaper,
 } from "lucide-react";
 import { ADMIN_EMAIL } from "@/lib/admin-config";
 
@@ -110,6 +111,19 @@ export function MobileNav() {
                 >
                   <ClipboardList className="h-4 w-4" />
                   {t("nav.adminAudit")}
+                </Link>
+                <Link
+                  href="/dashboard/admin/news"
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    pathname.startsWith("/dashboard/admin/news")
+                      ? "bg-danger-bg text-danger"
+                      : "text-danger hover:bg-danger-bg"
+                  )}
+                >
+                  <Newspaper className="h-4 w-4" />
+                  {t("nav.adminNews")}
                 </Link>
               </>
             )}
