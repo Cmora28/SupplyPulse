@@ -2,7 +2,10 @@
 
 import Script from "next/script";
 import { useEffect, useState } from "react";
-import { hasCookieConsent } from "@/lib/cookie-consent";
+import {
+  COOKIE_CONSENT_CHANGED_EVENT,
+  shouldLoadMetaPixel,
+} from "@/lib/cookie-consent";
 
 const META_PIXEL_ID =
   process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "2376866906420943";
@@ -14,10 +17,23 @@ export function MetaPixel() {
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
-    const sync = () => setEnabled(hasCookieConsent());
+    const sync = () => {
+      const allowed = shouldLoadMetaPixel();
+      setEnabled(allowed);
+      if (!allowed) {
+        document.getElementById("facebook-pixel")?.remove();
+        document
+          .querySelectorAll('script[src*="connect.facebook.net"]')
+          .forEach((node) => node.remove());
+      }
+    };
     sync();
+    window.addEventListener(COOKIE_CONSENT_CHANGED_EVENT, sync);
     window.addEventListener("cookie-consent-granted", sync);
-    return () => window.removeEventListener("cookie-consent-granted", sync);
+    return () => {
+      window.removeEventListener(COOKIE_CONSENT_CHANGED_EVENT, sync);
+      window.removeEventListener("cookie-consent-granted", sync);
+    };
   }, []);
 
   if (!enabled) return null;

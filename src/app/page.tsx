@@ -26,6 +26,7 @@ import {
 import type { Metadata } from "next";
 import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { CookiePreferencesButton } from "@/components/cookie-preferences-button";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://supplypulse.net";
 
@@ -547,6 +548,13 @@ export default async function LandingPage() {
               <Link href="/terms" className="hover:text-foreground transition-colors">
                 {t("legal.termsTitle")}
               </Link>
+              <Link href="/cookies" className="hover:text-foreground transition-colors">
+                {t("legal.cookiesTitle")}
+              </Link>
+              <CookiePreferencesButton
+                label={t("legal.cookiePreferences")}
+                className="text-sm text-muted-foreground"
+              />
             </div>
 
             <a

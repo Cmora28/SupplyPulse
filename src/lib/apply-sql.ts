@@ -6,13 +6,14 @@ const execFileAsync = promisify(execFile);
 
 /**
  * Idempotent scripts applied by the worker before it accepts jobs and again
- * before the daily job runs. Keep news tables first; the admin column is
- * independent and must stay on this list so production gets `User.isAdmin`.
+ * before the daily job runs. Keep news tables first. The admin column and the
+ * nullable terms-acceptance columns are independent and must stay on this list.
  */
 export const STARTUP_SQL_FILES = [
   "prisma/sql/20261031_news_items_supplier_alerts.sql",
   "prisma/sql/20261031_news_pipeline_audit.sql",
   "prisma/sql/20261031_user_is_admin.sql",
+  "prisma/sql/20261031_user_terms_consent.sql",
 ] as const;
 
 function prismaExecuteArgs(file: string): string[] {

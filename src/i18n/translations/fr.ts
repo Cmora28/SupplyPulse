@@ -278,6 +278,13 @@ const fr: TranslationType = {
     confirmPasswordPlaceholder: "Confirmez votre mot de passe",
     creatingAccount: "Création du compte...",
     createAccountBtn: "Créer un compte",
+    termsConsentBefore: "J'ai lu et j'accepte les ",
+    termsConsentTerms: "Conditions",
+    termsConsentMiddle: " et la ",
+    termsConsentPrivacy: "Politique de confidentialité",
+    termsConsentAfter: "",
+    termsRequired:
+      "Vous devez confirmer que vous avez lu et acceptez les Conditions et la Politique de confidentialité.",
     hasAccount: "Vous avez déjà un compte ?",
     passwordsDoNotMatch: "Les mots de passe ne correspondent pas",
     passwordTooShort: "Le mot de passe doit contenir au moins 8 caractères",
@@ -828,6 +835,7 @@ const fr: TranslationType = {
 
   legal: {
     lastUpdated: "Dernière mise à jour : {date}",
+    updatedDate: "31 octobre 2026",
     privacyTitle: "Politique de Confidentialité",
     privacyIntro: "Supply Pulse (\"nous\", \"notre\") s'engage à protéger votre vie privée. Cette Politique de Confidentialité explique comment nous collectons, utilisons, divulguons et protégeons vos informations lorsque vous utilisez notre application web et nos services.",
     privacySection1Title: "1. Informations que Nous Collectons",
@@ -850,11 +858,18 @@ const fr: TranslationType = {
     privacyUse5: "Pour répondre aux demandes de support",
     privacySection3Title: "3. Services Tiers",
     privacyThirdPartyIntro: "Nous partageons des données limitées avec les services tiers suivants pour faire fonctionner notre plateforme :",
-    privacyThirdParty1: "Les informations de vos fournisseurs (nom, pays, catégorie) sont envoyées à notre fournisseur d'IA pour générer des rapports d'analyse de risque. Aucune donnée personnelle (nom, e-mail) n'est partagée avec le fournisseur d'IA.",
+    privacyThirdParty1:
+      "Produit les rapports d'analyse de risque. Perplexity ne reçoit aucune donnée personnelle : nous n'envoyons pas votre nom, votre e-mail ni vos identifiants de compte. Les informations commerciales sur les fournisseurs que vous saisissez (nom, pays et catégorie) peuvent être envoyées pour produire le rapport.",
     privacyThirdParty2: "Votre adresse e-mail et votre nom sont utilisés par Resend pour envoyer les e-mails de rapports, de réinitialisation de mot de passe et de confirmation de support.",
     privacyThirdParty3: "Votre e-mail et vos détails d'abonnement sont traités par Polar pour gérer les paiements et abonnements.",
     privacyThirdParty4:
       "Si vous acceptez les cookies dans notre bannière, Meta (Facebook) peut recevoir des données de visite et d'appareil via le Meta Pixel pour mesurer les publicités. Nous n'envoyons pas votre e-mail de compte ni vos données fournisseurs à Meta via le pixel.",
+    privacyThirdParty5: "Héberge le site web et l'application.",
+    privacyThirdParty6: "Fournit la base de données, Redis et le worker d'arrière-plan qui génère les rapports.",
+    privacyThirdParty7: "Fournit Turnstile, la vérification qu'une demande d'inscription provient d'une personne.",
+    processorHosting: "hébergement",
+    processorData: "base de données, Redis, worker",
+    processorTurnstile: "Turnstile",
     privacySection4Title: "4. Cookies",
     privacyCookiesIntro: "Nous utilisons des cookies essentiels et fonctionnels, et des cookies marketing optionnels uniquement après acceptation :",
     privacyCookie1: "Cookie de session essentiel pour l'authentification (expire après 7 jours)",
@@ -862,7 +877,7 @@ const fr: TranslationType = {
     privacyCookie3:
       "Cookies Meta Pixel (ex. _fbp), chargés uniquement après acceptation de la bannière, pour mesurer les campagnes marketing",
     privacyCookiesNoTracking:
-      "Le Meta Pixel n'est chargé qu'après acceptation de la bannière. Vous pouvez refuser en fermant sans accepter ; les cookies essentiels restent actifs pour les utilisateurs connectés.",
+      "Le Meta Pixel n'est chargé qu'après un clic sur Accepter. Si vous cliquez sur Refuser, le Meta Pixel n'est pas chargé. Les cookies essentiels restent actifs pour les utilisateurs connectés.",
     privacySection5Title: "5. Conservation des Données",
     privacyRetention: "Les données de votre compte sont conservées tant que votre compte est actif. Lorsque vous supprimez votre compte (disponible dans les Paramètres), toutes les données personnelles, informations fournisseurs et historique de rapports sont définitivement supprimés.",
     privacySection6Title: "6. Vos Droits",
@@ -871,11 +886,14 @@ const fr: TranslationType = {
     privacyRight2: "Droit de rectification — mettre à jour les informations inexactes dans les paramètres de votre compte",
     privacyRight3: "Droit à l'effacement — supprimer votre compte et toutes les données associées",
     privacyRight4: "Droit à la portabilité — demander vos données dans un format lisible par machine",
+    privacyRight5:
+      "Droit d'introduire une réclamation auprès de la CNPD (Comissão Nacional de Proteção de Dados), l'autorité portugaise de protection des données",
     privacyRightsDelete: "Vous pouvez supprimer votre compte à tout moment depuis la page Paramètres. Pour exercer d'autres droits, contactez-nous à support@supplypulse.net.",
     privacySection7Title: "7. Sécurité des Données",
     privacySecurity: "Nous mettons en œuvre des mesures de sécurité standard de l'industrie, notamment le hachage des mots de passe (bcrypt), le chiffrement HTTPS, les en-têtes de politique de sécurité du contenu, la limitation de débit et la validation des entrées.",
     privacySection8Title: "8. Transferts Internationaux de Données",
-    privacyInternational: "Nos services sont hébergés sur une infrastructure qui peut traiter des données dans différentes régions géographiques. En utilisant Supply Pulse, vous consentez au transfert et au traitement de vos informations dans ces emplacements.",
+    privacyInternational:
+      "Certains de nos sous-traitants sont situés aux États-Unis. Les transferts de données personnelles vers les États-Unis sont effectués dans le cadre de l'EU-US Data Privacy Framework et des Standard Contractual Clauses.",
     privacySection9Title: "9. Modifications de Cette Politique",
     privacyChanges: "Nous pouvons mettre à jour cette Politique de Confidentialité périodiquement. Nous vous informerons des changements significatifs par e-mail ou par un avis sur notre site web.",
     privacySection10Title: "10. Nous Contacter",
@@ -883,6 +901,8 @@ const fr: TranslationType = {
     termsTitle: "Conditions d'Utilisation",
     termsSection1Title: "1. Acceptation des Conditions",
     termsAcceptance: "En accédant ou en utilisant Supply Pulse (\"le Service\"), vous acceptez ces Conditions d'Utilisation. Si vous n'êtes pas d'accord, n'utilisez pas le Service.",
+    termsBusinessOnly:
+      "Le Service est exclusivement destiné aux entreprises et aux professionnels, et non aux consommateurs. Toute personne qui s'inscrit déclare agir en cette qualité.",
     termsSection2Title: "2. Description du Service",
     termsServiceDesc: "Supply Pulse est une plateforme de surveillance des risques de la chaîne d'approvisionnement alimentée par l'IA. Nous générons des rapports hebdomadaires d'évaluation des risques pour les fournisseurs que vous ajoutez à la plateforme.",
     termsSection3Title: "3. Responsabilités du Compte",
@@ -901,13 +921,15 @@ const fr: TranslationType = {
     termsSection6Title: "6. Propriété Intellectuelle",
     termsIP: "Vous conservez la propriété de toutes les données fournisseurs que vous saisissez sur la plateforme. Supply Pulse conserve la propriété de la plateforme, de son logiciel, de son design et de sa marque.",
     termsSection7Title: "7. Limitation de Responsabilité",
-    termsLiability: "Dans la mesure maximale autorisée par la loi, Supply Pulse ne sera pas responsable des dommages indirects, accessoires, spéciaux, consécutifs ou punitifs résultant de votre utilisation du Service ou de la confiance accordée aux rapports générés par IA.",
+    termsLiability:
+      "Dans la mesure maximale autorisée par la loi, Supply Pulse ne sera pas responsable des dommages indirects, accessoires, spéciaux, consécutifs ou punitifs résultant de votre utilisation du Service ou de la confiance accordée aux rapports générés par IA. La limitation ci-dessus s'applique sauf dol ou faute grave.",
     termsSection8Title: "8. Résiliation",
     termsTermination: "Chaque partie peut résilier cet accord à tout moment. Vous pouvez supprimer votre compte depuis la page Paramètres. Nous nous réservons le droit de suspendre ou résilier les comptes qui violent ces conditions.",
     termsSection9Title: "9. Modifications des Conditions",
     termsChanges: "Nous pouvons modifier ces Conditions d'Utilisation à tout moment. Nous vous informerons des changements importants par e-mail ou via le Service.",
     termsSection10Title: "10. Droit Applicable",
-    termsGoverning: "Ces Conditions d'Utilisation seront régies et interprétées conformément au droit applicable. Tout litige sera résolu par négociation de bonne foi.",
+    termsGoverning:
+      "Régis par la loi portugaise ; for de la circonscription judiciaire de Lisbonne (comarca de Lisboa).",
     termsSection11Title: "11. Nous Contacter",
     termsContact: "Si vous avez des questions concernant ces Conditions d'Utilisation, contactez-nous à",
     cookiesTitle: "Politique de Cookies",
@@ -932,7 +954,7 @@ const fr: TranslationType = {
       "Meta Pixel — mesure les visites et conversions publicitaires (uniquement après acceptation de la bannière)",
     cookiesSection3Title: "3. Meta Pixel (mesure marketing)",
     cookiesNoTracking:
-      "Le Meta Pixel (ID 2376866906420943) se charge uniquement après clic sur Accepter. Il aide à comprendre si les publicités mènent à des visites. Meta peut utiliser ces données selon sa politique de confidentialité. Nous n'utilisons pas d'autres cookies publicitaires ou d'analyse tiers.",
+      "Le Meta Pixel (ID 2376866906420943) se charge uniquement après clic sur Accepter. Si vous cliquez sur Refuser, le Meta Pixel n'est pas chargé. Il aide à comprendre si les publicités mènent à des visites. Meta peut utiliser ces données selon sa politique de confidentialité. Nous n'utilisons pas d'autres cookies publicitaires ou d'analyse tiers.",
     cookiesSection4Title: "4. Gestion des Cookies",
     cookiesManage: "Vous pouvez gérer ou supprimer les cookies via les paramètres de votre navigateur. Notez que la désactivation du cookie de session vous empêchera de vous connecter à votre compte.",
     cookiesSection5Title: "5. Questions",
@@ -941,6 +963,8 @@ const fr: TranslationType = {
       "Nous utilisons des cookies essentiels pour la connexion et la langue. Si vous acceptez, nous chargeons aussi le Meta Pixel pour mesurer notre marketing.",
     cookieBannerLink: "En savoir plus",
     cookieBannerAccept: "Accepter",
+    cookieBannerReject: "Refuser",
+    cookiePreferences: "Préférences de cookies",
   },
 
   upgradeSuccess: {

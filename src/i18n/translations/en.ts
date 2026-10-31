@@ -275,6 +275,13 @@ const en = {
     confirmPasswordPlaceholder: "Confirm your password",
     creatingAccount: "Creating account...",
     createAccountBtn: "Create account",
+    termsConsentBefore: "I have read and accept the ",
+    termsConsentTerms: "Terms",
+    termsConsentMiddle: " and the ",
+    termsConsentPrivacy: "Privacy Policy",
+    termsConsentAfter: "",
+    termsRequired:
+      "You must confirm that you have read and accept the Terms and the Privacy Policy.",
     hasAccount: "Already have an account?",
     passwordsDoNotMatch: "Passwords do not match",
     passwordTooShort: "Password must be at least 8 characters",
@@ -825,6 +832,7 @@ const en = {
 
   legal: {
     lastUpdated: "Last updated: {date}",
+    updatedDate: "31 October 2026",
 
     // Privacy Policy
     privacyTitle: "Privacy Policy",
@@ -852,11 +860,18 @@ const en = {
 
     privacySection3Title: "3. Third-Party Services",
     privacyThirdPartyIntro: "We share limited data with the following third-party services to operate our platform:",
-    privacyThirdParty1: "Your supplier information (name, country, category) is sent to our AI research provider to generate risk analysis reports. No personal data (name, email) is shared with the AI provider.",
+    privacyThirdParty1:
+      "Generates risk-analysis reports. Perplexity receives no personal data: we do not send your name, email address, or account identifiers. Supplier business details you enter (such as supplier name, country, and category) may be sent so the report can be produced.",
     privacyThirdParty2: "Your email address and name are used by Resend to deliver report emails, password reset emails, and support confirmations.",
     privacyThirdParty3: "Your email and subscription details are processed by Polar to manage payments and subscriptions.",
     privacyThirdParty4:
       "If you accept cookies in our banner, Meta (Facebook) may receive page-view and device data via the Meta Pixel to measure ad performance. We do not send your account email or supplier data to Meta through the pixel.",
+    privacyThirdParty5: "Hosts the website and application.",
+    privacyThirdParty6: "Provides the database, Redis, and the background worker that generates reports.",
+    privacyThirdParty7: "Provides Turnstile, the check that a registration request comes from a person.",
+    processorHosting: "hosting",
+    processorData: "database, Redis, worker",
+    processorTurnstile: "Turnstile",
 
     privacySection4Title: "4. Cookies",
     privacyCookiesIntro: "We use essential and functional cookies, and optional marketing cookies only after you accept:",
@@ -865,7 +880,7 @@ const en = {
     privacyCookie3:
       "Meta Pixel cookies (e.g. _fbp), loaded only after you accept the cookie banner, to measure marketing campaigns",
     privacyCookiesNoTracking:
-      "We do not load the Meta Pixel until you accept the cookie banner. You can decline by closing the banner without accepting; essential cookies still apply for signed-in users.",
+      "The Meta Pixel loads only after you click Accept. If you click Reject, the Meta Pixel is not loaded. Essential cookies still apply for signed-in users.",
 
     privacySection5Title: "5. Data Retention",
     privacyRetention: "Your account data is retained as long as your account is active. When you delete your account (available in Settings), all personal data, supplier information, and report history are permanently deleted. IP addresses used for rate limiting are held in memory only and are not persisted.",
@@ -876,13 +891,16 @@ const en = {
     privacyRight2: "Right to correction — update inaccurate information in your account settings",
     privacyRight3: "Right to deletion — delete your account and all associated data",
     privacyRight4: "Right to data portability — request your data in a machine-readable format",
+    privacyRight5:
+      "Right to lodge a complaint with the CNPD (Comissão Nacional de Proteção de Dados), the Portuguese data protection authority",
     privacyRightsDelete: "You can delete your account at any time from the Settings page in your dashboard. To exercise other rights, contact us at support@supplypulse.net.",
 
     privacySection7Title: "7. Data Security",
     privacySecurity: "We implement industry-standard security measures including password hashing (bcrypt), HTTPS encryption, Content Security Policy headers, rate limiting, and input validation. However, no method of transmission or storage is 100% secure, and we cannot guarantee absolute security.",
 
     privacySection8Title: "8. International Data Transfers",
-    privacyInternational: "Our services are hosted on infrastructure that may process data in different geographic regions. By using Supply Pulse, you consent to the transfer and processing of your information in these locations.",
+    privacyInternational:
+      "Some of our processors are located in the United States. Transfers of personal data to the United States are made under the EU-US Data Privacy Framework and Standard Contractual Clauses.",
 
     privacySection9Title: "9. Changes to This Policy",
     privacyChanges: "We may update this Privacy Policy from time to time. We will notify you of significant changes by email or through a notice on our website. Your continued use of the service after changes constitutes acceptance of the updated policy.",
@@ -894,6 +912,8 @@ const en = {
     termsTitle: "Terms of Service",
     termsSection1Title: "1. Acceptance of Terms",
     termsAcceptance: "By accessing or using Supply Pulse (\"the Service\"), you agree to be bound by these Terms of Service. If you do not agree to these terms, do not use the Service. These terms constitute a legally binding agreement between you and Supply Pulse.",
+    termsBusinessOnly:
+      "The Service is exclusively for businesses and professionals, not consumers. Whoever registers declares that they are acting in that capacity.",
 
     termsSection2Title: "2. Service Description",
     termsServiceDesc: "Supply Pulse is an AI-powered supply chain risk monitoring platform. We generate weekly risk assessment reports for suppliers you add to the platform, using artificial intelligence to analyze publicly available information. Reports are delivered via email as PDF documents.",
@@ -918,7 +938,8 @@ const en = {
     termsIP: "You retain ownership of all supplier data you enter into the platform. Supply Pulse retains ownership of the platform, its software, design, and branding. The AI-generated report content is provided to you for your use, but the underlying technology and methodology remain our intellectual property.",
 
     termsSection7Title: "7. Limitation of Liability",
-    termsLiability: "To the maximum extent permitted by law, Supply Pulse shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, business opportunities, or goodwill, arising from your use of the Service or reliance on AI-generated reports. Our total liability shall not exceed the amount you paid us in the 12 months preceding the claim.",
+    termsLiability:
+      "To the maximum extent permitted by law, Supply Pulse shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, business opportunities, or goodwill, arising from your use of the Service or reliance on AI-generated reports. Our total liability shall not exceed the amount you paid us in the 12 months preceding the claim. The above limitation applies except in cases of willful misconduct or gross negligence.",
 
     termsSection8Title: "8. Termination",
     termsTermination: "Either party may terminate this agreement at any time. You can delete your account from the Settings page. We reserve the right to suspend or terminate accounts that violate these terms, engage in abusive behavior, or misuse the platform. Upon termination, your data will be deleted in accordance with our Privacy Policy.",
@@ -927,7 +948,8 @@ const en = {
     termsChanges: "We may modify these Terms of Service at any time. We will provide notice of material changes via email or through the Service. Your continued use of the Service after changes take effect constitutes acceptance of the modified terms.",
 
     termsSection10Title: "10. Governing Law",
-    termsGoverning: "These Terms of Service shall be governed by and construed in accordance with applicable law. Any disputes arising from these terms or your use of the Service shall be resolved through good-faith negotiation, and if necessary, through binding arbitration or the courts of competent jurisdiction.",
+    termsGoverning:
+      "Governed by Portuguese law; jurisdiction of the judicial district of Lisbon (comarca de Lisboa).",
 
     termsSection11Title: "11. Contact Us",
     termsContact: "If you have questions about these Terms of Service, contact us at",
@@ -957,7 +979,7 @@ const en = {
 
     cookiesSection3Title: "3. Meta Pixel (marketing measurement)",
     cookiesNoTracking:
-      "The Meta Pixel (ID 2376866906420943) loads only after you click Accept on the cookie banner. It helps us understand whether ads lead to site visits. Meta may use this data under its own privacy policy. We do not use other third-party ad or analytics cookies.",
+      "The Meta Pixel (ID 2376866906420943) loads only after you click Accept on the cookie banner. If you click Reject, the Meta Pixel is not loaded. It helps us understand whether ads lead to site visits. Meta may use this data under its own privacy policy. We do not use other third-party ad or analytics cookies.",
 
     cookiesSection4Title: "4. Managing Cookies",
     cookiesManage: "You can manage or delete cookies through your browser settings. Please note that disabling the session cookie will prevent you from signing in to your account. Disabling the locale cookie will reset your language preference to the browser default on each visit.",
@@ -970,6 +992,8 @@ const en = {
       "We use essential cookies for sign-in and language. If you accept, we also load the Meta Pixel to measure our marketing.",
     cookieBannerLink: "Learn more",
     cookieBannerAccept: "Accept",
+    cookieBannerReject: "Reject",
+    cookiePreferences: "Cookie preferences",
   },
 
   upgradeSuccess: {
