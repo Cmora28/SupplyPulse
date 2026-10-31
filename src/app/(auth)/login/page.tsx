@@ -18,6 +18,7 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { useTranslation } from "@/i18n/client";
 import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
 
 export default function LoginPage() {
@@ -55,7 +56,8 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4 relative">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex items-center gap-1">
+        <ThemeToggle />
         <PublicLanguageSwitcher />
       </div>
       <div className="w-full max-w-md space-y-4">

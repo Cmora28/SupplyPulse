@@ -349,8 +349,8 @@ export default function AdminPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-red-100 flex items-center justify-center">
-            <Shield className="h-5 w-5 text-red-600" />
+          <div className="h-10 w-10 rounded-lg bg-red-100 dark:bg-red-950 flex items-center justify-center">
+            <Shield className="h-5 w-5 text-red-600 dark:text-red-400" />
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">
@@ -488,7 +488,7 @@ export default function AdminPage() {
                           {!user.emailNotifications && (
                             <Badge
                               variant="outline"
-                              className="bg-orange-50 text-orange-600 border-orange-200 text-xs"
+                              className="bg-orange-50 text-orange-600 border-orange-200 text-xs dark:bg-orange-950/50 dark:text-orange-300 dark:border-orange-800"
                             >
                               {t("admin.emailsOff")}
                             </Badge>
@@ -622,7 +622,7 @@ export default function AdminPage() {
                                         handleResendEmail(run.id)
                                       }
                                       disabled={resendingEmail === run.id}
-                                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
+                                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-950/40 dark:border-blue-800"
                                     >
                                       {resendingEmail === run.id ? (
                                         <Loader2 className="mr-1 h-3 w-3 animate-spin" />

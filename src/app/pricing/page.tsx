@@ -16,6 +16,7 @@ import { Check } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "@/i18n/client";
 import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
 
 export default function PricingPage() {
@@ -176,6 +177,7 @@ export default function PricingPage() {
           <div className="flex items-center gap-2">
             {session ? (
               <>
+                <ThemeToggle />
                 <PublicLanguageSwitcher />
                 <Button variant="outline" asChild>
                   <Link href="/dashboard">{t("common.dashboard")}</Link>
@@ -186,6 +188,7 @@ export default function PricingPage() {
                 <Button variant="ghost" asChild>
                   <Link href="/login">{t("common.signIn")}</Link>
                 </Button>
+                <ThemeToggle />
                 <PublicLanguageSwitcher />
                 <Button asChild>
                   <Link href="/register">{t("common.getStarted")}</Link>
@@ -217,7 +220,7 @@ export default function PricingPage() {
                   plan.popular
                     ? "border-primary shadow-lg"
                     : plan.tier === "PREMIUM" || plan.tier === "PLUS"
-                    ? "border-amber-500 shadow-lg shadow-amber-100"
+                    ? "border-amber-500 shadow-lg shadow-amber-100 dark:shadow-amber-950/40"
                     : ""
                 }`}
               >
@@ -250,8 +253,8 @@ export default function PricingPage() {
                     )}
                   </div>
                   {plan.highlight && (
-                    <div className="mb-4 rounded-md bg-amber-50 border border-amber-200 p-3">
-                      <p className="text-xs font-medium text-amber-800">
+                    <div className="mb-4 rounded-md bg-amber-50 border border-amber-200 p-3 dark:bg-amber-950/40 dark:border-amber-800">
+                      <p className="text-xs font-medium text-amber-800 dark:text-amber-200">
                         {plan.highlight}
                       </p>
                     </div>
