@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/status-badge";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Shield,
@@ -91,23 +92,6 @@ interface StatsInfo {
   totalSuppliers: number;
   totalReportRuns: number;
 }
-
-const statusColors: Record<string, string> = {
-  PENDING: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  PROCESSING: "bg-blue-100 text-blue-700 border-blue-200",
-  READY: "bg-green-100 text-green-700 border-green-200",
-  EMAILED: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  FAILED: "bg-red-100 text-red-700 border-red-200",
-  SUCCESS: "bg-green-100 text-green-700 border-green-200",
-};
-
-const tierColors: Record<string, string> = {
-  FREE: "bg-gray-100 text-gray-700 border-gray-200",
-  STANDARD: "bg-blue-100 text-blue-700 border-blue-200",
-  PLUS: "bg-indigo-100 text-indigo-700 border-indigo-200",
-  PREMIUM: "bg-amber-100 text-amber-700 border-amber-200",
-  ENTERPRISE: "bg-purple-100 text-purple-700 border-purple-200",
-};
 
 export default function AdminPage() {
   const { data: session, status: sessionStatus } = useSession();
@@ -500,14 +484,7 @@ export default function AdminPage() {
                       <div>
                         <CardTitle className="text-base flex items-center gap-2">
                           {user.name}
-                          <Badge
-                            variant="outline"
-                            className={
-                              tierColors[user.subscriptionTier] || ""
-                            }
-                          >
-                            {user.subscriptionTier}
-                          </Badge>
+                          <StatusBadge tier={user.subscriptionTier} />
                           {!user.emailNotifications && (
                             <Badge
                               variant="outline"
@@ -636,14 +613,7 @@ export default function AdminPage() {
                                   </p>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <Badge
-                                    variant="outline"
-                                    className={
-                                      statusColors[run.status] || ""
-                                    }
-                                  >
-                                    {run.status}
-                                  </Badge>
+                                  <StatusBadge status={run.status} />
                                   {canResendEmail && hasSuccessItems && (
                                     <Button
                                       size="sm"
@@ -667,15 +637,10 @@ export default function AdminPage() {
                               {/* Items breakdown */}
                               <div className="flex flex-wrap gap-1.5">
                                 {run.items.map((item) => (
-                                  <Badge
-                                    key={item.id}
-                                    variant="outline"
-                                    className={`text-xs ${
-                                      statusColors[item.status] || ""
-                                    }`}
-                                  >
-                                    {item.supplier.name}: {item.status}
-                                  </Badge>
+                                  <span key={item.id} className="inline-flex items-center gap-1.5 text-xs">
+                                    <span>{item.supplier.name}</span>
+                                    <StatusBadge status={item.status} />
+                                  </span>
                                 ))}
                               </div>
                             </div>

@@ -79,23 +79,25 @@ export function SupplierCard({ supplier }: SupplierCardProps) {
             <CardTitle className="text-base font-semibold line-clamp-1">
               {supplier.name}
             </CardTitle>
-            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex shrink-0 gap-1 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7"
+                className="h-10 w-10"
+                aria-label={t("suppliers.editNamed", { name: supplier.name })}
                 onClick={() => setEditOpen(true)}
               >
-                <Pencil className="h-3.5 w-3.5" />
+                <Pencil className="h-4 w-4" aria-hidden />
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-7 w-7 text-destructive hover:text-destructive"
+                    className="h-10 w-10 text-destructive hover:text-destructive"
+                    aria-label={t("suppliers.deleteNamed", { name: supplier.name })}
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Trash2 className="h-4 w-4" aria-hidden />
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>

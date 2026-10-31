@@ -76,11 +76,17 @@ function persistLocale(loc: Locale) {
   document.documentElement.lang = loc;
 }
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
+export function LanguageProvider({
+  children,
+  initialLocale = DEFAULT_LOCALE,
+}: {
+  children: ReactNode;
+  initialLocale?: Locale;
+}) {
   const { data: session } = useSession();
-  const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
+  const [locale, setLocaleState] = useState<Locale>(initialLocale);
   const [translations, setTranslations] = useState<TranslationType>(
-    getTranslations(DEFAULT_LOCALE)
+    getTranslations(initialLocale)
   );
   const [syncedFromSession, setSyncedFromSession] = useState(false);
 

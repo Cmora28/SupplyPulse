@@ -20,22 +20,23 @@ export function RequestDemoSection({ t }: { t: Translator }) {
         </h2>
         <p className="text-slate-300 text-lg leading-relaxed mb-8">{t("landing.demoSubtitle")}</p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center">
-          <a href={DEMO_MAIL} className="inline-flex">
-            <Button size="lg" className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700">
+          <Button size="lg" asChild className="w-full bg-blue-600 hover:bg-blue-700 sm:w-auto">
+            <a href={DEMO_MAIL}>
               <Mail className="mr-2 h-4 w-4" aria-hidden />
               {t("landing.requestDemo")}
-            </Button>
-          </a>
-          <Link href="/register" className="inline-flex">
-            <Button
-              size="lg"
-              variant="outline"
-              className="w-full sm:w-auto border-slate-600 bg-transparent text-white hover:bg-slate-800 hover:text-white"
-            >
+            </a>
+          </Button>
+          <Button
+            size="lg"
+            variant="outline"
+            asChild
+            className="w-full border-slate-600 bg-transparent text-white hover:bg-slate-800 hover:text-white sm:w-auto"
+          >
+            <Link href="/register">
               {t("landing.startFreeMonitoring")}
               <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
         <p className="text-xs text-slate-500 mt-6">{t("landing.demoNote")}</p>
       </div>
