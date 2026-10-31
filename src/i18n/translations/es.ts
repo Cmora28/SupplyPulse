@@ -278,6 +278,13 @@ const es: TranslationType = {
     confirmPasswordPlaceholder: "Confirma tu contraseña",
     creatingAccount: "Creando cuenta...",
     createAccountBtn: "Crear cuenta",
+    termsConsentBefore: "He leído y acepto los ",
+    termsConsentTerms: "Términos",
+    termsConsentMiddle: " y la ",
+    termsConsentPrivacy: "Política de Privacidad",
+    termsConsentAfter: "",
+    termsRequired:
+      "Debe confirmar que ha leído y acepta los Términos y la Política de Privacidad.",
     hasAccount: "¿Ya tienes una cuenta?",
     passwordsDoNotMatch: "Las contraseñas no coinciden",
     passwordTooShort: "La contraseña debe tener al menos 8 caracteres",
@@ -828,6 +835,7 @@ const es: TranslationType = {
 
   legal: {
     lastUpdated: "Última actualización: {date}",
+    updatedDate: "31 de octubre de 2026",
     privacyTitle: "Política de Privacidad",
     privacyIntro: "Supply Pulse (\"nosotros\", \"nos\", \"nuestro\") está comprometido con la protección de su privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos, divulgamos y protegemos su información cuando utiliza nuestra aplicación web y servicios.",
     privacySection1Title: "1. Información que Recopilamos",
@@ -850,11 +858,18 @@ const es: TranslationType = {
     privacyUse5: "Para responder a solicitudes de soporte",
     privacySection3Title: "3. Servicios de Terceros",
     privacyThirdPartyIntro: "Compartimos datos limitados con los siguientes servicios de terceros para operar nuestra plataforma:",
-    privacyThirdParty1: "La información de sus proveedores (nombre, país, categoría) se envía a nuestro proveedor de IA para generar informes de análisis de riesgo. No se comparten datos personales (nombre, email) con el proveedor de IA.",
+    privacyThirdParty1:
+      "Genera informes de análisis de riesgo. Perplexity no recibe datos personales: no enviamos su nombre, email ni identificadores de cuenta. Los datos comerciales de proveedores que usted introduce (nombre, país y categoría) pueden enviarse para elaborar el informe.",
     privacyThirdParty2: "Su dirección de correo electrónico y nombre son utilizados por Resend para entregar correos de informes, restablecimiento de contraseña y confirmaciones de soporte.",
     privacyThirdParty3: "Su correo electrónico y detalles de suscripción son procesados por Polar para gestionar pagos y suscripciones.",
     privacyThirdParty4:
       "Si acepta cookies en nuestro banner, Meta (Facebook) puede recibir datos de visitas y dispositivo mediante el Meta Pixel para medir anuncios. No enviamos su email de cuenta ni datos de proveedores a Meta a través del pixel.",
+    privacyThirdParty5: "Aloja el sitio web y la aplicación.",
+    privacyThirdParty6: "Proporciona la base de datos, Redis y el worker en segundo plano que genera los informes.",
+    privacyThirdParty7: "Proporciona Turnstile, la comprobación de que una solicitud de registro proviene de una persona.",
+    processorHosting: "alojamiento",
+    processorData: "base de datos, Redis, worker",
+    processorTurnstile: "Turnstile",
     privacySection4Title: "4. Cookies",
     privacyCookiesIntro: "Usamos cookies esenciales y funcionales, y cookies de marketing opcionales solo tras su aceptación:",
     privacyCookie1: "Cookie de sesión esencial para autenticación (expira después de 7 días)",
@@ -862,7 +877,7 @@ const es: TranslationType = {
     privacyCookie3:
       "Cookies del Meta Pixel (p. ej. _fbp), cargadas solo tras aceptar el banner, para medir campañas de marketing",
     privacyCookiesNoTracking:
-      "El Meta Pixel solo se carga después de aceptar el banner. Puede rechazar cerrando sin aceptar; las cookies esenciales siguen aplicando a usuarios con sesión iniciada.",
+      "El Meta Pixel solo se carga después de pulsar Aceptar. Si pulsa Rechazar, el Meta Pixel no se carga. Las cookies esenciales siguen aplicando a usuarios con sesión iniciada.",
     privacySection5Title: "5. Retención de Datos",
     privacyRetention: "Los datos de su cuenta se retienen mientras su cuenta esté activa. Cuando elimina su cuenta (disponible en Configuración), todos los datos personales, información de proveedores e historial de informes se eliminan permanentemente.",
     privacySection6Title: "6. Sus Derechos",
@@ -871,11 +886,14 @@ const es: TranslationType = {
     privacyRight2: "Derecho de rectificación — actualizar información inexacta en la configuración de su cuenta",
     privacyRight3: "Derecho de supresión — eliminar su cuenta y todos los datos asociados",
     privacyRight4: "Derecho a la portabilidad — solicitar sus datos en formato legible por máquina",
+    privacyRight5:
+      "Derecho a presentar una reclamación ante la CNPD (Comissão Nacional de Proteção de Dados), la autoridad portuguesa de protección de datos",
     privacyRightsDelete: "Puede eliminar su cuenta en cualquier momento desde la página de Configuración. Para ejercer otros derechos, contáctenos en support@supplypulse.net.",
     privacySection7Title: "7. Seguridad de los Datos",
     privacySecurity: "Implementamos medidas de seguridad estándar de la industria, incluyendo hash de contraseñas (bcrypt), cifrado HTTPS, cabeceras de políticas de seguridad de contenido, limitación de velocidad y validación de entrada.",
     privacySection8Title: "8. Transferencias Internacionales de Datos",
-    privacyInternational: "Nuestros servicios están alojados en infraestructura que puede procesar datos en diferentes regiones geográficas. Al usar Supply Pulse, usted consiente la transferencia y procesamiento de su información en estas ubicaciones.",
+    privacyInternational:
+      "Algunos de nuestros encargados del tratamiento están en Estados Unidos. Las transferencias de datos personales a Estados Unidos se realizan al amparo del EU-US Data Privacy Framework y de las Standard Contractual Clauses.",
     privacySection9Title: "9. Cambios en Esta Política",
     privacyChanges: "Podemos actualizar esta Política de Privacidad periódicamente. Le notificaremos sobre cambios significativos por correo electrónico o mediante un aviso en nuestro sitio web.",
     privacySection10Title: "10. Contáctenos",
@@ -883,6 +901,8 @@ const es: TranslationType = {
     termsTitle: "Términos de Servicio",
     termsSection1Title: "1. Aceptación de los Términos",
     termsAcceptance: "Al acceder o usar Supply Pulse (\"el Servicio\"), usted acepta estos Términos de Servicio. Si no está de acuerdo, no use el Servicio.",
+    termsBusinessOnly:
+      "El Servicio se destina exclusivamente a empresas y profesionales, y no a consumidores. Quien se registra declara que actúa en esa calidad.",
     termsSection2Title: "2. Descripción del Servicio",
     termsServiceDesc: "Supply Pulse es una plataforma de monitoreo de riesgo de cadena de suministro impulsada por IA. Generamos informes semanales de evaluación de riesgo para los proveedores que agrega a la plataforma, utilizando inteligencia artificial para analizar información disponible públicamente.",
     termsSection3Title: "3. Responsabilidades de la Cuenta",
@@ -901,13 +921,15 @@ const es: TranslationType = {
     termsSection6Title: "6. Propiedad Intelectual",
     termsIP: "Usted retiene la propiedad de todos los datos de proveedores que ingresa en la plataforma. Supply Pulse retiene la propiedad de la plataforma, su software, diseño y marca.",
     termsSection7Title: "7. Limitación de Responsabilidad",
-    termsLiability: "En la máxima medida permitida por la ley, Supply Pulse no será responsable de daños indirectos, incidentales, especiales, consecuentes o punitivos derivados de su uso del Servicio o de la confianza en informes generados por IA.",
+    termsLiability:
+      "En la máxima medida permitida por la ley, Supply Pulse no será responsable de daños indirectos, incidentales, especiales, consecuentes o punitivos derivados de su uso del Servicio o de la confianza en informes generados por IA. Lo anterior se aplica salvo dolo o culpa grave.",
     termsSection8Title: "8. Terminación",
     termsTermination: "Cualquiera de las partes puede terminar este acuerdo en cualquier momento. Puede eliminar su cuenta desde la página de Configuración. Nos reservamos el derecho de suspender o terminar cuentas que violen estos términos.",
     termsSection9Title: "9. Cambios en los Términos",
     termsChanges: "Podemos modificar estos Términos de Servicio en cualquier momento. Le notificaremos sobre cambios materiales por correo electrónico o a través del Servicio.",
     termsSection10Title: "10. Ley Aplicable",
-    termsGoverning: "Estos Términos de Servicio se regirán e interpretarán de acuerdo con la ley aplicable. Cualquier disputa se resolverá mediante negociación de buena fe.",
+    termsGoverning:
+      "Regidos por la ley portuguesa; fuero de la comarca de Lisboa.",
     termsSection11Title: "11. Contáctenos",
     termsContact: "Si tiene preguntas sobre estos Términos de Servicio, contáctenos en",
     cookiesTitle: "Política de Cookies",
@@ -932,7 +954,7 @@ const es: TranslationType = {
       "Meta Pixel — mide visitas y conversiones de anuncios (solo tras aceptar el banner de cookies)",
     cookiesSection3Title: "3. Meta Pixel (medición de marketing)",
     cookiesNoTracking:
-      "El Meta Pixel (ID 2376866906420943) solo se carga al pulsar Aceptar en el banner. Ayuda a saber si los anuncios generan visitas. Meta puede usar estos datos según su política de privacidad. No usamos otras cookies publicitarias o de análisis de terceros.",
+      "El Meta Pixel (ID 2376866906420943) solo se carga al pulsar Aceptar en el banner. Si pulsa Rechazar, el Meta Pixel no se carga. Ayuda a saber si los anuncios generan visitas. Meta puede usar estos datos según su política de privacidad. No usamos otras cookies publicitarias o de análisis de terceros.",
     cookiesSection4Title: "4. Gestión de Cookies",
     cookiesManage: "Puede gestionar o eliminar cookies a través de la configuración de su navegador. Tenga en cuenta que deshabilitar la cookie de sesión le impedirá iniciar sesión en su cuenta.",
     cookiesSection5Title: "5. Preguntas",
@@ -941,6 +963,8 @@ const es: TranslationType = {
       "Usamos cookies esenciales para inicio de sesión e idioma. Si acepta, también cargamos el Meta Pixel para medir nuestro marketing.",
     cookieBannerLink: "Más información",
     cookieBannerAccept: "Aceptar",
+    cookieBannerReject: "Rechazar",
+    cookiePreferences: "Preferencias de cookies",
   },
 
   upgradeSuccess: {

@@ -18,6 +18,7 @@ import { useTranslation } from "@/i18n/client";
 import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
+import { CookiePreferencesButton } from "@/components/cookie-preferences-button";
 
 export default function PricingPage() {
   const { data: session } = useSession();
@@ -309,6 +310,11 @@ export default function PricingPage() {
           <Link href="/cookies" className="hover:text-foreground transition-colors">
             {t("legal.cookiesTitle")}
           </Link>
+          <span>·</span>
+          <CookiePreferencesButton
+            label={t("legal.cookiePreferences")}
+            className="text-xs text-muted-foreground"
+          />
         </div>
       </div>
     </div>

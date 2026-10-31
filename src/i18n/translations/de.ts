@@ -284,6 +284,13 @@ const de: TranslationType = {
     confirmPasswordPlaceholder: "Bestätigen Sie Ihr Passwort",
     creatingAccount: "Konto wird erstellt...",
     createAccountBtn: "Konto erstellen",
+    termsConsentBefore: "Ich habe die ",
+    termsConsentTerms: "Nutzungsbedingungen",
+    termsConsentMiddle: " und die ",
+    termsConsentPrivacy: "Datenschutzerklärung",
+    termsConsentAfter: " gelesen und akzeptiere sie",
+    termsRequired:
+      "Sie müssen bestätigen, dass Sie die Nutzungsbedingungen und die Datenschutzerklärung gelesen haben und akzeptieren.",
     hasAccount: "Bereits ein Konto?",
     passwordsDoNotMatch: "Passwörter stimmen nicht überein",
     passwordTooShort: "Passwort muss mindestens 8 Zeichen lang sein",
@@ -834,6 +841,7 @@ const de: TranslationType = {
 
   legal: {
     lastUpdated: "Letzte Aktualisierung: {date}",
+    updatedDate: "31. Oktober 2026",
     privacyTitle: "Datenschutzerklärung",
     privacyIntro: "Supply Pulse (\"wir\", \"uns\", \"unser\") verpflichtet sich zum Schutz Ihrer Privatsphäre. Diese Datenschutzerklärung erläutert, wie wir Ihre Informationen erfassen, verwenden, offenlegen und schützen, wenn Sie unsere Webanwendung und Dienste nutzen.",
     privacySection1Title: "1. Informationen, die Wir Erfassen",
@@ -856,11 +864,18 @@ const de: TranslationType = {
     privacyUse5: "Um auf Supportanfragen zu antworten",
     privacySection3Title: "3. Drittanbieter-Dienste",
     privacyThirdPartyIntro: "Wir teilen begrenzte Daten mit den folgenden Drittanbieter-Diensten, um unsere Plattform zu betreiben:",
-    privacyThirdParty1: "Ihre Lieferanteninformationen (Name, Land, Kategorie) werden an unseren KI-Forschungsanbieter gesendet, um Risikoanalyseberichte zu erstellen. Keine persönlichen Daten (Name, E-Mail) werden mit dem KI-Anbieter geteilt.",
+    privacyThirdParty1:
+      "Erstellt Risikoanalyseberichte. Perplexity erhält keine personenbezogenen Daten: wir senden weder Ihren Namen noch Ihre E-Mail-Adresse oder Kontokennungen. Von Ihnen eingegebene geschäftliche Lieferantendaten (Name, Land und Kategorie) können übermittelt werden, damit der Bericht erstellt werden kann.",
     privacyThirdParty2: "Ihre E-Mail-Adresse und Ihr Name werden von Resend verwendet, um Berichts-E-Mails, Passwort-Zurücksetzungs-E-Mails und Support-Bestätigungen zuzustellen.",
     privacyThirdParty3: "Ihre E-Mail und Abonnementdetails werden von Polar verarbeitet, um Zahlungen und Abonnements zu verwalten.",
     privacyThirdParty4:
       "Wenn Sie Cookies in unserem Banner akzeptieren, kann Meta (Facebook) Seitenaufruf- und Gerätedaten über den Meta Pixel erhalten, um Anzeigen zu messen. Wir senden weder Ihre Konto-E-Mail noch Lieferantendaten über den Pixel an Meta.",
+    privacyThirdParty5: "Hostet die Website und die Anwendung.",
+    privacyThirdParty6: "Stellt die Datenbank, Redis und den Hintergrund-Worker bereit, der Berichte erzeugt.",
+    privacyThirdParty7: "Stellt Turnstile bereit, die Prüfung, dass eine Registrierungsanfrage von einer Person stammt.",
+    processorHosting: "Hosting",
+    processorData: "Datenbank, Redis, Worker",
+    processorTurnstile: "Turnstile",
     privacySection4Title: "4. Cookies",
     privacyCookiesIntro: "Wir verwenden essenzielle und funktionale Cookies sowie optionale Marketing-Cookies nur nach Ihrer Zustimmung:",
     privacyCookie1: "Essenzieller Sitzungscookie für die Authentifizierung (läuft nach 7 Tagen ab)",
@@ -868,7 +883,7 @@ const de: TranslationType = {
     privacyCookie3:
       "Meta-Pixel-Cookies (z. B. _fbp), geladen nur nach Banner-Zustimmung, zur Messung von Marketingkampagnen",
     privacyCookiesNoTracking:
-      "Der Meta Pixel wird erst nach Klick auf Akzeptieren geladen. Sie können ablehnen, indem Sie schließen ohne zu akzeptieren; essenzielle Cookies gelten weiter für angemeldete Nutzer.",
+      "Der Meta Pixel wird erst nach einem Klick auf Akzeptieren geladen. Wenn Sie auf Ablehnen klicken, wird der Meta Pixel nicht geladen. Essenzielle Cookies gelten weiter für angemeldete Nutzer.",
     privacySection5Title: "5. Datenspeicherung",
     privacyRetention: "Ihre Kontodaten werden aufbewahrt, solange Ihr Konto aktiv ist. Wenn Sie Ihr Konto löschen (in den Einstellungen verfügbar), werden alle persönlichen Daten, Lieferanteninformationen und der Berichtsverlauf dauerhaft gelöscht.",
     privacySection6Title: "6. Ihre Rechte",
@@ -877,11 +892,14 @@ const de: TranslationType = {
     privacyRight2: "Recht auf Berichtigung — ungenaue Informationen in Ihren Kontoeinstellungen aktualisieren",
     privacyRight3: "Recht auf Löschung — Ihr Konto und alle zugehörigen Daten löschen",
     privacyRight4: "Recht auf Datenübertragbarkeit — Ihre Daten in einem maschinenlesbaren Format anfordern",
+    privacyRight5:
+      "Recht, Beschwerde bei der CNPD (Comissão Nacional de Proteção de Dados), der portugiesischen Datenschutzbehörde, einzulegen",
     privacyRightsDelete: "Sie können Ihr Konto jederzeit über die Einstellungsseite löschen. Um andere Rechte auszuüben, kontaktieren Sie uns unter support@supplypulse.net.",
     privacySection7Title: "7. Datensicherheit",
     privacySecurity: "Wir setzen branchenübliche Sicherheitsmaßnahmen ein, darunter Passwort-Hashing (bcrypt), HTTPS-Verschlüsselung, Content-Security-Policy-Header, Ratenbegrenzung und Eingabevalidierung.",
     privacySection8Title: "8. Internationale Datenübertragungen",
-    privacyInternational: "Unsere Dienste werden auf Infrastruktur gehostet, die Daten in verschiedenen geografischen Regionen verarbeiten kann. Durch die Nutzung von Supply Pulse stimmen Sie der Übertragung und Verarbeitung Ihrer Informationen an diesen Standorten zu.",
+    privacyInternational:
+      "Einige unserer Auftragsverarbeiter haben ihren Sitz in den Vereinigten Staaten. Übermittlungen personenbezogener Daten in die Vereinigten Staaten erfolgen auf Grundlage des EU-US Data Privacy Framework und der Standard Contractual Clauses.",
     privacySection9Title: "9. Änderungen dieser Richtlinie",
     privacyChanges: "Wir können diese Datenschutzerklärung von Zeit zu Zeit aktualisieren. Wir werden Sie über wesentliche Änderungen per E-Mail oder durch einen Hinweis auf unserer Website informieren.",
     privacySection10Title: "10. Kontaktieren Sie Uns",
@@ -889,6 +907,8 @@ const de: TranslationType = {
     termsTitle: "Nutzungsbedingungen",
     termsSection1Title: "1. Annahme der Bedingungen",
     termsAcceptance: "Durch den Zugriff auf oder die Nutzung von Supply Pulse (\"der Dienst\") stimmen Sie diesen Nutzungsbedingungen zu. Wenn Sie nicht einverstanden sind, nutzen Sie den Dienst nicht.",
+    termsBusinessOnly:
+      "Der Dienst richtet sich ausschließlich an Unternehmen und berufliche Nutzer, nicht an Verbraucher. Wer sich registriert, erklärt, in dieser Eigenschaft zu handeln.",
     termsSection2Title: "2. Dienstbeschreibung",
     termsServiceDesc: "Supply Pulse ist eine KI-gestützte Plattform zur Überwachung von Lieferkettenrisiken. Wir erstellen wöchentliche Risikobewertungsberichte für die Lieferanten, die Sie zur Plattform hinzufügen.",
     termsSection3Title: "3. Kontoverantwortlichkeiten",
@@ -907,13 +927,15 @@ const de: TranslationType = {
     termsSection6Title: "6. Geistiges Eigentum",
     termsIP: "Sie behalten das Eigentum an allen Lieferantendaten, die Sie auf der Plattform eingeben. Supply Pulse behält das Eigentum an der Plattform, ihrer Software, ihrem Design und ihrer Marke.",
     termsSection7Title: "7. Haftungsbeschränkung",
-    termsLiability: "Im maximal gesetzlich zulässigen Umfang haftet Supply Pulse nicht für indirekte, zufällige, besondere, Folge- oder Strafschäden, die sich aus Ihrer Nutzung des Dienstes oder dem Vertrauen auf KI-generierte Berichte ergeben.",
+    termsLiability:
+      "Im maximal gesetzlich zulässigen Umfang haftet Supply Pulse nicht für indirekte, zufällige, besondere, Folge- oder Strafschäden, die sich aus Ihrer Nutzung des Dienstes oder dem Vertrauen auf KI-generierte Berichte ergeben. Die vorstehende Beschränkung gilt außer bei Vorsatz oder grober Fahrlässigkeit.",
     termsSection8Title: "8. Kündigung",
     termsTermination: "Jede Partei kann diese Vereinbarung jederzeit kündigen. Sie können Ihr Konto über die Einstellungsseite löschen. Wir behalten uns das Recht vor, Konten zu sperren oder zu kündigen, die gegen diese Bedingungen verstoßen.",
     termsSection9Title: "9. Änderungen der Bedingungen",
     termsChanges: "Wir können diese Nutzungsbedingungen jederzeit ändern. Wir informieren Sie über wesentliche Änderungen per E-Mail oder über den Dienst.",
     termsSection10Title: "10. Anwendbares Recht",
-    termsGoverning: "Diese Nutzungsbedingungen unterliegen dem anwendbaren Recht und werden nach diesem ausgelegt. Streitigkeiten werden durch gutgläubige Verhandlung beigelegt.",
+    termsGoverning:
+      "Es gilt portugiesisches Recht; Gerichtsstand ist der Gerichtsbezirk Lissabon (Comarca de Lisboa).",
     termsSection11Title: "11. Kontaktieren Sie Uns",
     termsContact: "Wenn Sie Fragen zu diesen Nutzungsbedingungen haben, kontaktieren Sie uns unter",
     cookiesTitle: "Cookie-Richtlinie",
@@ -938,7 +960,7 @@ const de: TranslationType = {
       "Meta Pixel — misst Besuche und Anzeigen-Conversions (nur nach Banner-Zustimmung)",
     cookiesSection3Title: "3. Meta Pixel (Marketing-Messung)",
     cookiesNoTracking:
-      "Der Meta Pixel (ID 2376866906420943) wird nur nach Klick auf Akzeptieren geladen. Er hilft zu erkennen, ob Anzeigen zu Besuchen führen. Meta kann diese Daten gemäß eigener Datenschutzrichtlinie nutzen. Wir verwenden keine weiteren Werbe- oder Analyse-Cookies Dritter.",
+      "Der Meta Pixel (ID 2376866906420943) wird nur nach Klick auf Akzeptieren geladen. Wenn Sie auf Ablehnen klicken, wird der Meta Pixel nicht geladen. Er hilft zu erkennen, ob Anzeigen zu Besuchen führen. Meta kann diese Daten gemäß eigener Datenschutzrichtlinie nutzen. Wir verwenden keine weiteren Werbe- oder Analyse-Cookies Dritter.",
     cookiesSection4Title: "4. Cookies Verwalten",
     cookiesManage: "Sie können Cookies über Ihre Browsereinstellungen verwalten oder löschen. Bitte beachten Sie, dass das Deaktivieren des Sitzungscookies Sie daran hindert, sich in Ihr Konto einzuloggen.",
     cookiesSection5Title: "5. Fragen",
@@ -947,6 +969,8 @@ const de: TranslationType = {
       "Wir verwenden essenzielle Cookies für Anmeldung und Sprache. Bei Akzeptieren laden wir auch den Meta Pixel zur Marketing-Messung.",
     cookieBannerLink: "Mehr erfahren",
     cookieBannerAccept: "Akzeptieren",
+    cookieBannerReject: "Ablehnen",
+    cookiePreferences: "Cookie-Einstellungen",
   },
 
   upgradeSuccess: {
