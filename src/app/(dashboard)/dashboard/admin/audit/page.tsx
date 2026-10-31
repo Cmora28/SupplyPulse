@@ -33,7 +33,6 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslation } from "@/i18n/client";
-import { ADMIN_EMAIL } from "@/lib/admin-config";
 import {
   ArrowLeft,
   ChevronDown,
@@ -102,7 +101,7 @@ export default function AdminAuditPage() {
 
   const fetchAudit = useCallback(
     async (cursor?: string | null, append = false) => {
-      if (!session?.user || session.user.email !== ADMIN_EMAIL) return;
+      if (!session?.user?.isAdmin) return;
 
       if (append) setLoadingMore(true);
       else setLoading(true);
@@ -168,12 +167,12 @@ export default function AdminAuditPage() {
 
   useEffect(() => {
     if (!session?.user) return;
-    if (session.user.email !== ADMIN_EMAIL) {
+    if (!session.user.isAdmin) {
       router.replace("/dashboard");
       return;
     }
     fetchAudit(null, false);
-  }, [session?.user, session?.user?.email, router, fetchAudit]);
+  }, [session?.user, session?.user?.isAdmin, router, fetchAudit]);
 
   const actionLabel = (a: AuditAction) =>
     t(`admin.audit.actions.${a}` as Parameters<typeof t>[0]);

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
-import { ADMIN_EMAIL, rateLimitAsync } from "@/lib/security";
+import { rateLimitAsync } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
 
@@ -11,12 +10,11 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user || session.user.email !== ADMIN_EMAIL) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+    const access = await requireAdmin();
+    if (!access.ok) return access.response;
+    const admin = access.user;
 
-    const rl = await rateLimitAsync(`admin:news:${session.user.id}`, 60, 60 * 1000);
+    const rl = await rateLimitAsync(`admin:news:${admin.id}`, 60, 60 * 1000);
     if (!rl.success) {
       return NextResponse.json(
         { error: "Too many requests" },

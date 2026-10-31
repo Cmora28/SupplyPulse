@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { Queue } from "bullmq";
 import { startOfWeek } from "date-fns";
 import { AuditAction } from "@prisma/client";
 import { logAudit } from "@/lib/audit";
-import { ADMIN_EMAIL, rateLimit } from "@/lib/security";
+import { rateLimit } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
 
@@ -16,18 +15,12 @@ const connection = {
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Only allow the admin user
-    if (session.user.email !== ADMIN_EMAIL) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+    const access = await requireAdmin();
+    if (!access.ok) return access.response;
+    const admin = access.user;
 
     // A04: Rate limit report triggers — 3 per 10 minutes
-    const rl = rateLimit(`report-trigger:${session.user.id}`, 3, 10 * 60 * 1000);
+    const rl = rateLimit(`report-trigger:${admin.id}`, 3, 10 * 60 * 1000);
     if (!rl.success) {
       return NextResponse.json(
         { error: "Too many report triggers. Please wait before trying again." },
@@ -35,7 +28,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const userId = session.user.id;
+    const userId = admin.id;
 
     // Get user's suppliers
     const suppliers = await prisma.supplier.findMany({
@@ -91,8 +84,8 @@ export async function POST(request: Request) {
 
     void logAudit({
       action: AuditAction.REPORT_TRIGGER_MANUAL,
-      actorUserId: session.user.id,
-      actorEmail: session.user.email,
+      actorUserId: admin.id,
+      actorEmail: admin.email,
       request,
       targetType: "ReportRun",
       targetId: reportRun.id,

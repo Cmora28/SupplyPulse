@@ -63,6 +63,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           subscriptionTier: user.subscriptionTier,
           locale: user.locale,
+          isAdmin: user.isAdmin,
         };
       },
     }),
@@ -82,17 +83,22 @@ export const authOptions: NextAuthOptions = {
           user as unknown as { subscriptionTier: SubscriptionTier }
         ).subscriptionTier;
         token.locale = (user as unknown as { locale: string }).locale;
+        token.isAdmin = (user as unknown as { isAdmin?: boolean }).isAdmin === true;
       }
 
-      // Always refresh subscription tier and locale from DB
+      // Always refresh subscription tier, locale, and admin from DB.
+      // isAdmin on the token is a copy of User.isAdmin, not an email compare.
       if (token.id) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { subscriptionTier: true, locale: true },
+          select: { subscriptionTier: true, locale: true, isAdmin: true },
         });
         if (dbUser) {
           token.subscriptionTier = dbUser.subscriptionTier;
           token.locale = dbUser.locale;
+          token.isAdmin = dbUser.isAdmin;
+        } else {
+          token.isAdmin = false;
         }
       }
 
@@ -106,6 +112,7 @@ export const authOptions: NextAuthOptions = {
         ).subscriptionTier = token.subscriptionTier as SubscriptionTier;
         (session.user as unknown as { locale: string }).locale =
           (token.locale as string) || "en";
+        session.user.isAdmin = token.isAdmin === true;
       }
       return session;
     },

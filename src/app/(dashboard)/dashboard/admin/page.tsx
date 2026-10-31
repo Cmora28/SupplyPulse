@@ -43,7 +43,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ADMIN_EMAIL } from "@/lib/admin-config";
 
 const DEFAULT_PAGE_SIZE = 25;
 const PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
@@ -170,7 +169,7 @@ export default function AdminPage() {
   // Initial load once (avoid refetch when NextAuth refreshes the session object)
   useEffect(() => {
     if (sessionStatus === "loading") return;
-    if (!session?.user || session.user.email !== ADMIN_EMAIL) {
+    if (!session?.user?.isAdmin) {
       if (sessionStatus === "authenticated") {
         router.push("/dashboard");
       }
@@ -180,7 +179,7 @@ export default function AdminPage() {
     initialFetchDone.current = true;
     fetchUsers(searchQuery, currentPage, pageSize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionStatus, session?.user?.email, router]);
+  }, [sessionStatus, session?.user?.isAdmin, router]);
 
   // Debounced search: reset to page 1 on search change
   const handleSearchChange = (value: string) => {
