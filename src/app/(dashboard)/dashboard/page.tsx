@@ -24,8 +24,6 @@ import { RunReportButton } from "@/components/run-report-button";
 import { UpgradeSuccess } from "@/components/upgrade-success";
 import { Suspense } from "react";
 
-import { ADMIN_EMAIL } from "@/lib/admin-config";
-
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
@@ -292,7 +290,7 @@ export default async function DashboardPage() {
                   </Link>
                 </Button>
               )}
-              {session.user.email === ADMIN_EMAIL && <RunReportButton />}
+              {session.user.isAdmin && <RunReportButton />}
             </div>
           </CardContent>
         </Card>

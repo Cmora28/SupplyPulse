@@ -2,6 +2,7 @@
 const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ["pdfkit"],
+    instrumentationHook: true,
   },
 
   // OWASP A05: Security Headers

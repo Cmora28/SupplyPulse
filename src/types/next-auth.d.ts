@@ -8,6 +8,7 @@ declare module "next-auth" {
       email: string;
       subscriptionTier: SubscriptionTier;
       locale: string;
+      isAdmin: boolean;
     };
   }
 
@@ -15,6 +16,7 @@ declare module "next-auth" {
     id: string;
     subscriptionTier: SubscriptionTier;
     locale: string;
+    isAdmin: boolean;
   }
 }
 
@@ -23,5 +25,6 @@ declare module "next-auth/jwt" {
     id: string;
     subscriptionTier: SubscriptionTier;
     locale: string;
+    isAdmin: boolean;
   }
 }

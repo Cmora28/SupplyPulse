@@ -71,6 +71,8 @@ model User {
   reportHour          Int              @default(8)    // 0-23 UTC
   nextReportAt        DateTime?                       // Pre-calculated next run time
   emailNotifications  Boolean          @default(true)
+  // Server-side admin flag. Never trust email equality or a public env var.
+  isAdmin             Boolean          @default(false)
   resetToken          String?          @unique
   resetTokenExpiry    DateTime?
   createdAt           DateTime         @default(now())

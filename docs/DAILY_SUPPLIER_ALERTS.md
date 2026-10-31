@@ -27,7 +27,7 @@ Audit writes are caught and logged. A database error on the audit tables does no
 
 `JevCall.newsItemId` uses `ON DELETE SET NULL`, so the 90-day `NewsItem` purge does not fail on that foreign key. `NewsRun`, `JevCall`, and `NewsCandidate` are not part of the news-item purge. The same 90-day cutoff deletes old runs; calls and skipped candidates cascade with the run, and `NewsItem.runId` is set to null. Sent `SupplierAlert` rows are still kept.
 
-Admins open **News audit** at `/dashboard/admin/news` (linked from the admin panel and the sidebar). The page lists runs, inserted items (with JEV status, score, band, latency, alert, and email), and a Skipped tab. A row opens the raw feed, every JEV call, and the alert email outcome. CSV export uses the same filters. The API is `GET /api/admin/news` and `GET /api/admin/news/items/[id]`, with the same admin email check and rate limit as the audit log.
+Admins open **News audit** at `/dashboard/admin/news` (linked from the admin panel and the sidebar). The page lists runs, inserted items (with JEV status, score, band, latency, alert, and email), and a Skipped tab. A row opens the raw feed, every JEV call, and the alert email outcome. CSV export uses the same filters. The API is `GET /api/admin/news` and `GET /api/admin/news/items/[id]`. Both call `requireAdmin()` (`User.isAdmin`) and use the same rate limit as the audit log. See `docs/ADMIN_ACCESS.md`.
 
 ## Who gets an email
 
@@ -59,7 +59,7 @@ npx prisma db execute \
   --schema prisma/schema.prisma
 ```
 
-That adds `NewsRun`, `JevCall`, and `NewsCandidate`, a nullable `NewsItem.runId`, and summary/email columns on `SupplierAlert`. It is safe to re-run. The worker applies both scripts at startup and again at the start of the daily job, so a new deploy creates the tables before it scores news. If `DATABASE_URL` is missing or a script fails, the error is logged and the weekly scheduler still starts.
+That adds `NewsRun`, `JevCall`, and `NewsCandidate`, a nullable `NewsItem.runId`, and summary/email columns on `SupplierAlert`. It is safe to re-run. The worker applies every file in `src/lib/apply-sql.ts` (`STARTUP_SQL_FILES`) synchronously on startup, before it accepts jobs, and again at the start of the daily job. That list includes the news tables, the audit tables, and `prisma/sql/20261031_user_is_admin.sql`. If `DATABASE_URL` is missing or a script fails, the error is logged and the weekly scheduler still starts. Admin access after this column exists is documented in `docs/ADMIN_ACCESS.md`.
 
 Local development can use the same commands, or `npx prisma db push` against a dev database.
 

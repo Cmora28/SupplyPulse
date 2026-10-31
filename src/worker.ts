@@ -7,7 +7,8 @@ import { generateReportPDF } from "./lib/pdf-generator";
 import { sendWeeklyReport } from "./lib/email";
 import { TIER_MODEL } from "./lib/tier-limits";
 import { loadWeeklySignals } from "./lib/collected-signals";
-import { applyStartupSql } from "./lib/apply-sql";
+import { grantConfiguredAdmin } from "./lib/admin-bootstrap";
+import { applyStartupSql, applyStartupSqlSync } from "./lib/apply-sql";
 import { runDailySupplierNews } from "./lib/daily-news";
 import { createPrismaDailyNewsStore } from "./lib/daily-news-store";
 import { createPrismaNewsAudit } from "./lib/news-audit-store";
@@ -21,6 +22,10 @@ const connection = {
 };
 
 const prisma = new PrismaClient();
+
+// Column and other additive SQL must exist before a worker selects User.isAdmin.
+applyStartupSqlSync((message) => console.log(message));
+void grantConfiguredAdmin(prisma);
 
 // ---- Queue Definitions ----
 const supplierReportQueue = new Queue("supplier-report", { connection });
@@ -398,6 +403,7 @@ const dailyNewsWorker = new Worker(
   async () => {
     console.log("[DailyNews] Starting daily supplier collection");
     await applyStartupSql((message) => console.log(message));
+    await grantConfiguredAdmin(prisma, (message) => console.log(message));
     const summary = await runDailySupplierNews({
       store: createPrismaDailyNewsStore(prisma),
       audit: createPrismaNewsAudit(prisma),
@@ -574,9 +580,6 @@ async function recoverStuckRuns() {
 console.log("=== Supply Pulse Worker Process ===");
 console.log(
   "Workers started: scheduler (every 15 min), supplier-report, report-finalizer, daily-supplier-news (06:00 UTC)"
-);
-applyStartupSql((message) => console.log(message)).catch((err) =>
-  console.error("[Setup] SQL apply error:", err)
 );
 setupScheduler().catch(console.error);
 setupDailyNews().catch(console.error);

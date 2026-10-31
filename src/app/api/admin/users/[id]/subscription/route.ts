@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { AuditAction, SubscriptionTier } from "@prisma/client";
 import { z } from "zod";
-import { authOptions } from "@/lib/auth";
+import { requireAdmin } from "@/lib/admin";
 import { logAudit } from "@/lib/audit";
 import { prisma } from "@/lib/prisma";
-import { ADMIN_EMAIL, rateLimitAsync } from "@/lib/security";
+import { rateLimitAsync } from "@/lib/security";
 import { cuidSchema } from "@/lib/validations";
 
 export const dynamic = "force-dynamic";
@@ -19,17 +18,16 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user || session.user.email !== ADMIN_EMAIL) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+    const access = await requireAdmin();
+    if (!access.ok) return access.response;
+    const admin = access.user;
 
     if (!cuidSchema.safeParse(params.id).success) {
       return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
     }
 
     const rl = await rateLimitAsync(
-      `admin:subscription:${session.user.id}`,
+      `admin:subscription:${admin.id}`,
       30,
       60 * 1000
     );
@@ -88,8 +86,8 @@ export async function PATCH(
 
     void logAudit({
       action: AuditAction.SUBSCRIPTION_TIER_CHANGED,
-      actorUserId: session.user.id,
-      actorEmail: session.user.email,
+      actorUserId: admin.id,
+      actorEmail: admin.email,
       request,
       targetType: "User",
       targetId: target.id,
