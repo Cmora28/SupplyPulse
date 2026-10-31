@@ -52,22 +52,22 @@ export default async function SuppliersPage() {
       </div>
 
       {limitReached && (
-        <Card className="border-yellow-200 bg-yellow-50">
+        <Card className="border-warning/30 bg-warning-bg">
           <CardContent className="flex items-center gap-3 py-4">
-            <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0" />
+            <AlertTriangle className="h-5 w-5 text-warning flex-shrink-0" aria-hidden />
             <div className="flex-1">
-              <p className="text-sm font-medium text-yellow-800">
+              <p className="text-sm font-medium text-warning">
                 {t("suppliers.limitReached")}
               </p>
-              <p className="text-sm text-yellow-700">
+              <p className="text-sm text-warning">
                 {t("suppliers.limitReachedDesc")}
               </p>
             </div>
-            <Link href="/dashboard/billing">
-              <Button size="sm" variant="outline">
-                {t("common.upgrade")} <ArrowUpRight className="ml-1 h-3 w-3" />
-              </Button>
-            </Link>
+            <Button size="sm" variant="outline" asChild>
+              <Link href="/dashboard/billing">
+                {t("common.upgrade")} <ArrowUpRight className="ml-1 h-3 w-3" aria-hidden />
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       )}

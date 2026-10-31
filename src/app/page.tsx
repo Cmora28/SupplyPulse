@@ -229,32 +229,26 @@ export default async function LandingPage() {
               <span className="text-lg font-bold">{t("common.appName")}</span>
             </Link>
             <div className="flex items-center gap-1 sm:gap-2">
-              <Link href="/pricing" className="hidden md:block">
-                <Button variant="ghost" size="sm">
-                  {t("common.pricing")}
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button variant="ghost" size="sm">
-                  {t("common.signIn")}
-                </Button>
-              </Link>
+              <Button variant="ghost" size="sm" asChild className="hidden md:inline-flex">
+                <Link href="/pricing">{t("common.pricing")}</Link>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/login">{t("common.signIn")}</Link>
+              </Button>
               <PublicLanguageSwitcher />
-              <Link href="/register">
-                <Button size="sm" className="whitespace-nowrap">
-                  {t("common.getStartedFree")}
-                </Button>
-              </Link>
+              <Button size="sm" asChild className="whitespace-nowrap">
+                <Link href="/register">{t("common.getStartedFree")}</Link>
+              </Button>
             </div>
           </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="relative pt-16 pb-20 md:pt-20 md:pb-28 overflow-hidden bg-slate-950 text-white">
+      <section className="relative pt-16 pb-20 md:pt-20 md:pb-28 overflow-hidden bg-background text-foreground">
         <div className="absolute inset-0 overflow-hidden z-0 opacity-20 pointer-events-none" aria-hidden>
-          <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-blue-600 blur-[100px]" />
-          <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-indigo-900 blur-[120px]" />
+          <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-primary blur-[100px]" />
+          <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-primary blur-[120px]" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -262,42 +256,33 @@ export default async function LandingPage() {
             <div className="max-w-2xl text-center lg:text-left mx-auto lg:mx-0">
               <Badge
                 variant="outline"
-                className="mb-5 px-3 py-1 text-blue-300 border-blue-800 bg-blue-900/30 text-xs sm:text-sm"
+                className="mb-5 border-info/30 bg-info-bg px-3 py-1 text-xs text-info sm:text-sm"
               >
                 {t("landing.heroBadge")}
               </Badge>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold tracking-tight mb-5 leading-[1.12]">
                 {t("landing.heroTitle")}
               </h1>
-              <p className="text-base sm:text-lg md:text-xl text-slate-300 mb-8 leading-relaxed">
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed">
                 {t("landing.heroSubtitle")}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
-                <Link href="/register" className="inline-flex">
-                  <Button
-                    size="lg"
-                    className="w-full sm:w-auto text-base px-8 bg-blue-600 hover:bg-blue-700 border-none h-12"
-                  >
+                <Button size="lg" asChild className="h-12 w-full px-8 text-base sm:w-auto">
+                  <Link href="/register">
                     {t("landing.startFreeMonitoring")}
                     <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
-                  </Button>
-                </Link>
-                <a href="#request-demo" className="inline-flex">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full sm:w-auto text-base px-8 bg-transparent text-white border-slate-600 hover:bg-slate-800 hover:text-white h-12"
-                  >
-                    {t("landing.requestDemo")}
-                  </Button>
-                </a>
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild className="h-12 w-full px-8 text-base sm:w-auto">
+                  <a href="#request-demo">{t("landing.requestDemo")}</a>
+                </Button>
               </div>
-              <p className="text-sm text-slate-400 mt-5">{t("landing.setupTime")}</p>
-              <p className="text-sm text-slate-500 mt-2">{t("landing.noCreditCard")}</p>
+              <p className="text-sm text-muted-foreground mt-5">{t("landing.setupTime")}</p>
+              <p className="text-sm text-muted-foreground mt-2">{t("landing.noCreditCard")}</p>
             </div>
 
             <div className="relative w-full">
-              <div className="rounded-xl border border-slate-800 bg-white shadow-2xl overflow-hidden">
+              <div className="rounded-xl border border-border bg-card shadow-2xl overflow-hidden">
                 <Image
                   src="/landing-hero.jpg"
                   alt={t("landing.heroImageAlt")}
@@ -404,17 +389,17 @@ export default async function LandingPage() {
                 )}
               </ul>
 
-              <a
-                href="/supply-chain-report-example.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="secondary" size="lg" className="group h-12">
+              <Button variant="secondary" size="lg" asChild className="group h-12">
+                <a
+                  href="/supply-chain-report-example.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <FileText className="mr-2 h-4 w-4" aria-hidden />
                   {t("landing.downloadReport")}
                   <ArrowRight className="ml-2 h-4 w-4 opacity-70 group-hover:translate-x-0.5 transition-transform" />
-                </Button>
-              </a>
+                </a>
+              </Button>
               <p className="text-xs text-slate-500 mt-4">{t("landing.sampleReportDesc")}</p>
             </div>
 
@@ -488,11 +473,9 @@ export default async function LandingPage() {
                   </ul>
                 </CardContent>
                 <div className="p-6 pt-0 mt-auto">
-                  <Link href="/register" className="w-full block">
-                    <Button variant={plan.buttonVariant} size="lg" className="w-full">
-                      {plan.buttonText}
-                    </Button>
-                  </Link>
+                  <Button variant={plan.buttonVariant} size="lg" asChild className="w-full">
+                    <Link href="/register">{plan.buttonText}</Link>
+                  </Button>
                 </div>
               </Card>
             ))}

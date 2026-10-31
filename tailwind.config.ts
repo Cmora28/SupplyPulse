@@ -44,6 +44,29 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          bg: "hsl(var(--success-bg))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          bg: "hsl(var(--warning-bg))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          bg: "hsl(var(--info-bg))",
+        },
+        danger: {
+          DEFAULT: "hsl(var(--danger))",
+          bg: "hsl(var(--danger-bg))",
+        },
+        premium: {
+          DEFAULT: "hsl(var(--premium))",
+          bg: "hsl(var(--premium-bg))",
+        },
+        neutral: {
+          DEFAULT: "hsl(var(--neutral))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

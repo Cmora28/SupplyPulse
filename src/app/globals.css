@@ -24,28 +24,18 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    /* Badge text/background pairs meet WCAG AA at 12px. --danger is for text; --destructive stays the button fill. */
+    --success: 142 72% 29%;
+    --success-bg: 142 76% 96%;
+    --warning: 32 95% 33%;
+    --warning-bg: 48 96% 94%;
+    --info: 221.2 83.2% 45%;
+    --info-bg: 214 100% 96%;
+    --danger: 0 72% 45%;
+    --danger-bg: 0 86% 97%;
+    --premium: 273 67% 39%;
+    --premium-bg: 270 100% 98%;
+    --neutral: 215 25% 27%;
   }
 }
 
@@ -56,4 +46,38 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Outside @layer so Tailwind keeps this selector. Inside @layer base, the class dark-mode variant drops a bare .dark rule. */
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 217.2 91.2% 59.8%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 224.3 76.3% 48%;
+  --success: 142 69% 58%;
+  --success-bg: 142 60% 12%;
+  --warning: 43 96% 56%;
+  --warning-bg: 38 70% 12%;
+  --info: 213 94% 68%;
+  --info-bg: 221 60% 15%;
+  --danger: 0 84% 71%;
+  --danger-bg: 0 60% 15%;
+  --premium: 269 97% 85%;
+  --premium-bg: 261 62% 23%;
+  --neutral: 213 27% 84%;
 }
