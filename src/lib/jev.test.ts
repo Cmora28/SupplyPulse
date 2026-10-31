@@ -99,6 +99,60 @@ describe("JEV request", () => {
     }
   });
 
+  it("returns status, latency, and a capped body for success, HTTP errors, and timeouts", async () => {
+    const secret = "super-secret-key";
+    const success = await classifyWithJev(state, {
+      apiKey: secret,
+      fetchImpl: async () =>
+        new Response(
+          JSON.stringify({
+            answers: { p: { noul: 0.5 } },
+            blob: "x".repeat(20_000),
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        ),
+    });
+    assert.equal(success.ok, true);
+    if (success.ok) {
+      assert.equal(success.p, 0.5);
+      assert.equal(success.httpStatus, 200);
+      assert.equal(typeof success.latencyMs, "number");
+      assert.equal(success.attempt, 1);
+      const raw = success.responseRaw as { truncated: boolean; text: string };
+      assert.equal(raw.truncated, true);
+      assert.ok(raw.text.length <= 8192);
+    }
+    assert.equal(JSON.stringify(success).includes(secret), false);
+    assert.equal(JSON.stringify(success.requestBody).includes("Bearer"), false);
+
+    const http = await classifyWithJev(state, {
+      apiKey: secret,
+      fetchImpl: async () => new Response("upstream blew up", { status: 500 }),
+    });
+    assert.equal(http.ok, false);
+    if (!http.ok) {
+      assert.equal(http.reason, "http_error");
+      assert.equal(http.httpStatus, 500);
+      assert.match(JSON.stringify(http.responseRaw), /upstream blew up/);
+    }
+
+    const timeout = await classifyWithJev(state, {
+      apiKey: secret,
+      fetchImpl: async () => {
+        const error = new Error("The operation was aborted due to timeout");
+        error.name = "TimeoutError";
+        throw error;
+      },
+    });
+    assert.equal(timeout.ok, false);
+    if (!timeout.ok) {
+      assert.equal(timeout.reason, "timeout");
+      assert.equal(timeout.httpStatus, null);
+      assert.equal(typeof timeout.latencyMs, "number");
+    }
+    assert.equal(JSON.stringify(timeout).includes(secret), false);
+  });
+
   it("stops cleanly on unauthorized and malformed payloads", async () => {
     const denied = await classifyWithJev(state, {
       apiKey: "bad",

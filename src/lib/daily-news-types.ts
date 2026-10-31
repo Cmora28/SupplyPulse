@@ -21,6 +21,7 @@ export interface NewsInsert {
   url: string;
   source: string | null;
   publishedAt: Date;
+  runId?: string | null;
   raw: {
     title: string;
     link: string;
@@ -68,8 +69,74 @@ export interface StoredAlert {
   supplierId: string;
   severity: string;
   summary: string;
+  summarySource?: string | null;
+  summaryError?: string | null;
+  emailStatus?: string | null;
+  emailError?: string | null;
   sentAt: Date | null;
   news: StoredAlertNews | null;
+}
+
+export type NewsSkipReason = "no_keyword" | "cap" | "bad_url" | "dup_hash" | "dup_title";
+
+export type SummarySource = "perplexity" | "fallback" | "reused";
+
+export interface NewsRunError {
+  scope: string;
+  message: string;
+  supplierKey?: string;
+}
+
+export interface NewsRunFinish {
+  status: "ok" | "failed";
+  finishedAt: Date;
+  supplierKeys: number;
+  fetched: number;
+  keywordHits: number;
+  inserted: number;
+  skipped: number;
+  classified: number;
+  unclassified: number;
+  alerts: number;
+  emails: number;
+  purged: number;
+  errors: NewsRunError[];
+}
+
+export interface NewsCandidateInsert {
+  runId: string | null;
+  supplierKey: string;
+  title: string;
+  url: string;
+  feed: string | null;
+  source: string | null;
+  publishedAt: Date | null;
+  skipReason: NewsSkipReason;
+}
+
+export interface JevCallInsert {
+  runId: string | null;
+  newsItemId: string | null;
+  requestBody: unknown;
+  httpStatus: number | null;
+  ok: boolean;
+  reason: string | null;
+  message: string | null;
+  p: number | null;
+  band: string | null;
+  model: string | null;
+  promptVersion: string | null;
+  latencyMs: number | null;
+  attempt: number;
+  responseRaw: unknown;
+}
+
+export interface NewsAuditSink {
+  startRun(startedAt: Date): Promise<string>;
+  finishRun(id: string, data: NewsRunFinish): Promise<void>;
+  insertCandidates(rows: NewsCandidateInsert[]): Promise<void>;
+  insertJevCall(row: JevCallInsert): Promise<void>;
+  purge(cutoff: Date): Promise<number>;
 }
 
 export interface DailyNewsStore {
@@ -87,7 +154,10 @@ export interface DailyNewsStore {
     supplierId: string;
     severity: string;
     summary: string;
+    summarySource?: string | null;
+    summaryError?: string | null;
   }): Promise<StoredAlert>;
   markAlertsSent(ids: string[], sentAt: Date): Promise<void>;
+  markAlertsEmailFailed(ids: string[], message: string): Promise<void>;
   purge(cutoff: Date): Promise<number>;
 }

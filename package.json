@@ -14,6 +14,7 @@
     "worker:start": "npx tsx src/worker.ts",
     "db:push": "npx prisma db push",
     "db:apply-news-migration": "prisma db execute --file prisma/sql/20261031_news_items_supplier_alerts.sql --schema prisma/schema.prisma",
+    "db:apply-news-audit": "prisma db execute --file prisma/sql/20261031_news_pipeline_audit.sql --schema prisma/schema.prisma",
     "db:studio": "npx prisma studio"
   },
   "dependencies": {
