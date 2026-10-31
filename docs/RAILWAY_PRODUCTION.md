@@ -72,6 +72,7 @@ In **Variables**, set (or **Reference** from other services if you prefer):
 - `REDIS_URL` – from the Redis service (public URL).
 - `PERPLEXITY_API_KEY`
 - `RESEND_API_KEY`
+- `JEV_API_KEY` – TypeSafe classifier for daily supplier alerts. Worker only. If unset, news is still collected and weekly reports still run; mid-week alerts are not sent. See `docs/DAILY_SUPPLIER_ALERTS.md`.
 - `NEXT_PUBLIC_APP_URL` – e.g. `https://supplypulse.net` (used in emails/links).
 - `EMAIL_FROM` – (optional) e.g. `Supply Pulse <reports@supplypulse.net>`
 
@@ -81,7 +82,8 @@ Add any other env vars your worker code reads (e.g. from `.env.example`).
 ### 2.4 Deploy
 
 - Push to the connected branch or click **Deploy**.
-- Check **Deployments** and **Logs** to confirm the worker starts and the scheduler runs (e.g. “Setup Distributed scheduler cron set: every 15 minutes”).
+- Check **Deployments** and **Logs** to confirm the worker starts and the scheduler runs (e.g. “Setup Distributed scheduler cron set: every 15 minutes” and “Daily supplier news cron set: 06:00 UTC”).
+- After this release, apply `prisma/sql/20261031_news_items_supplier_alerts.sql` to Postgres **before** expecting the daily job to succeed, then redeploy the worker. Steps, cadence, and cost notes are in `docs/DAILY_SUPPLIER_ALERTS.md`.
 
 ---
 
@@ -105,7 +107,7 @@ Redeploy the app after changing variables so it uses the production DB and Redis
 |------------|----------------|--------|
 | PostgreSQL | Railway        | Public `DATABASE_URL` |
 | Redis      | Railway        | Public `REDIS_URL` |
-| Worker     | Railway        | `DATABASE_URL`, `REDIS_URL`, Perplexity, Resend, `NEXT_PUBLIC_APP_URL` |
+| Worker     | Railway        | `DATABASE_URL`, `REDIS_URL`, Perplexity, Resend, `JEV_API_KEY`, `NEXT_PUBLIC_APP_URL` |
 | Next.js app| **Vercel**     | Same `DATABASE_URL`, `REDIS_URL`, NextAuth, Polar, Resend, etc. |
 
 Create **PostgreSQL and Redis on Railway first**, copy their **public** URLs, add them to **Vercel** and to the **Railway worker** service, then deploy the worker.

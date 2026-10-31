@@ -196,6 +196,7 @@ export default async function LandingPage() {
         t("landing.fullCitations"),
         t("pricing.plusFeature5"),
         t("pricing.plusFeature6"),
+        t("pricing.plusFeature9"),
       ],
     },
   ];
