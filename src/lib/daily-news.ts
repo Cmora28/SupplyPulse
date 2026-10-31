@@ -1,16 +1,26 @@
 import { JEV_ESCALATE_MIN } from "@/lib/collected-signals";
 import type { JevClassifyResult, JevNewsState } from "@/lib/jev";
-import { classifyWithJev } from "@/lib/jev";
+import { buildJevRequestBody, classifyWithJev } from "@/lib/jev";
 import { fetchSupplierNews } from "@/lib/news-feeds";
 import { newsUrlHash, normalizeNewsUrl } from "@/lib/news-url";
 import { retentionCutoff } from "@/lib/news-retention";
 import { matchesRiskKeyword } from "@/lib/risk-keywords";
 import { normalizeTitleForDedupe, supplierKey } from "@/lib/supplier-key";
 import { isInterimAlertDay, TIER_ALERT_CADENCE } from "@/lib/tier-limits";
-import type { DailyNewsStore, MonitoredSupplier, StoredNewsItem } from "@/lib/daily-news-types";
+import type {
+  DailyNewsStore,
+  JevCallInsert,
+  MonitoredSupplier,
+  NewsAuditSink,
+  NewsCandidateInsert,
+  NewsRunError,
+  NewsSkipReason,
+  StoredNewsItem,
+  SummarySource,
+} from "@/lib/daily-news-types";
 import { generateDisruptionAlert } from "@/lib/perplexity";
 
-const KEYWORD_CAP = 20;
+export const KEYWORD_CAP = 20;
 const CLASSIFY_CAP = 20;
 const SUMMARY_CAP = 25;
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
@@ -27,6 +37,7 @@ export interface AlertEmailItem {
 
 export interface DailyNewsDeps {
   store: DailyNewsStore;
+  audit?: NewsAuditSink;
   fetchImpl?: typeof fetch;
   now?: Date;
   classify?: (input: JevNewsState) => Promise<JevClassifyResult>;
@@ -50,12 +61,24 @@ export interface DailyNewsDeps {
 }
 
 export interface DailyNewsResult {
+  runId: string | null;
   supplierKeys: number;
+  fetched: number;
+  keywordHits: number;
   inserted: number;
+  skipped: number;
   classified: number;
   unclassified: number;
+  alerts: number;
   emails: number;
   purged: number;
+  errors: NewsRunError[];
+}
+
+interface SummaryOutcome {
+  summary: string;
+  summarySource: SummarySource;
+  summaryError: string | null;
 }
 
 export function fallbackAlertSummary(item: {
@@ -74,6 +97,19 @@ function publishedLabel(row: StoredNewsItem): string {
     if (typeof published === "string" && published.trim()) return published;
   }
   return row.publishedAt.toUTCString();
+}
+
+async function auditStep(
+  log: (message: string) => void,
+  label: string,
+  fn: () => Promise<void>
+): Promise<void> {
+  try {
+    await fn();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    log(`Audit ${label} failed: ${message}`);
+  }
 }
 
 async function mapPool<T>(items: T[], limit: number, fn: (item: T) => Promise<void>): Promise<void> {
@@ -99,6 +135,33 @@ function groupSuppliers(suppliers: MonitoredSupplier[]): MonitoredSupplier[][] {
     groups.set(key, list);
   }
   return Array.from(groups.values());
+}
+
+function requestDocument(state: JevNewsState, provided: unknown): unknown {
+  if (provided !== undefined) return provided;
+  try {
+    return JSON.parse(buildJevRequestBody(state)) as unknown;
+  } catch {
+    return { raw: buildJevRequestBody(state).slice(0, 8000) };
+  }
+}
+
+function skippedRow(
+  runId: string | null,
+  supplierKey: string,
+  item: { title: string; url: string; feed: string; source: string | null; publishedAt: Date },
+  skipReason: NewsSkipReason
+): NewsCandidateInsert {
+  return {
+    runId,
+    supplierKey,
+    title: item.title.slice(0, 500),
+    url: item.url.slice(0, 4000),
+    feed: item.feed,
+    source: item.source,
+    publishedAt: item.publishedAt,
+    skipReason,
+  };
 }
 
 export async function runDailySupplierNews(deps: DailyNewsDeps): Promise<DailyNewsResult> {
@@ -130,61 +193,118 @@ export async function runDailySupplierNews(deps: DailyNewsDeps): Promise<DailyNe
     });
 
   const result: DailyNewsResult = {
+    runId: null,
     supplierKeys: 0,
+    fetched: 0,
+    keywordHits: 0,
     inserted: 0,
+    skipped: 0,
     classified: 0,
     unclassified: 0,
+    alerts: 0,
     emails: 0,
     purged: 0,
+    errors: [],
   };
 
-  const suppliers = await deps.store.listSuppliers();
-  const groups = groupSuppliers(suppliers);
-  result.supplierKeys = groups.length;
-  const since = new Date(now.getTime() - WEEK_MS);
+  await auditStep(log, "startRun", async () => {
+    if (!deps.audit) return;
+    result.runId = await deps.audit.startRun(now);
+  });
 
-  await mapPool(groups, POOL, async (members) => {
-    const canonical = members.slice().sort((a, b) => a.id.localeCompare(b.id))[0];
-    const key = supplierKey(canonical.name, canonical.country);
-    try {
-      const stats = await collectSupplierGroup({
-        store: deps.store,
-        canonical,
-        key,
-        now,
-        since,
-        fetchImpl: deps.fetchImpl,
-        classify,
-        log,
+  let fatal: string | null = null;
+  try {
+    const suppliers = await deps.store.listSuppliers();
+    const groups = groupSuppliers(suppliers);
+    result.supplierKeys = groups.length;
+    const since = new Date(now.getTime() - WEEK_MS);
+
+    await mapPool(groups, POOL, async (members) => {
+      const canonical = members.slice().sort((a, b) => a.id.localeCompare(b.id))[0];
+      const key = supplierKey(canonical.name, canonical.country);
+      try {
+        const stats = await collectSupplierGroup({
+          store: deps.store,
+          audit: deps.audit,
+          runId: result.runId,
+          canonical,
+          key,
+          now,
+          since,
+          fetchImpl: deps.fetchImpl,
+          classify,
+          log,
+          errors: result.errors,
+        });
+        result.fetched += stats.fetched;
+        result.keywordHits += stats.keywordHits;
+        result.inserted += stats.inserted;
+        result.skipped += stats.skipped;
+        result.classified += stats.classified;
+        result.unclassified += stats.unclassified;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        result.errors.push({ scope: "collect", supplierKey: key, message });
+        log(`Collection failed for ${key}: ${message}`);
+      }
+    });
+
+    const dispatched = await dispatchAlerts({
+      store: deps.store,
+      suppliers,
+      now,
+      since,
+      summarize,
+      sendEmail,
+      log,
+      errors: result.errors,
+    });
+    result.alerts = dispatched.alerts;
+    result.emails = dispatched.emails;
+
+    result.purged = await deps.store.purge(retentionCutoff(now));
+    await auditStep(log, "purge", async () => {
+      if (!deps.audit) return;
+      const removed = await deps.audit.purge(retentionCutoff(now));
+      if (removed > 0) log(`Audit retention removed ${removed} row(s)`);
+    });
+  } catch (error) {
+    fatal = error instanceof Error ? error.message : String(error);
+    result.errors.push({ scope: "run", message: fatal });
+    log(`Daily run failed: ${fatal}`);
+  } finally {
+    const snapshot = result;
+    await auditStep(log, "finishRun", async () => {
+      if (!deps.audit || !snapshot.runId) return;
+      await deps.audit.finishRun(snapshot.runId, {
+        status: fatal ? "failed" : "ok",
+        finishedAt: new Date(),
+        supplierKeys: snapshot.supplierKeys,
+        fetched: snapshot.fetched,
+        keywordHits: snapshot.keywordHits,
+        inserted: snapshot.inserted,
+        skipped: snapshot.skipped,
+        classified: snapshot.classified,
+        unclassified: snapshot.unclassified,
+        alerts: snapshot.alerts,
+        emails: snapshot.emails,
+        purged: snapshot.purged,
+        errors: snapshot.errors,
       });
-      result.inserted += stats.inserted;
-      result.classified += stats.classified;
-      result.unclassified += stats.unclassified;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      log(`Collection failed for ${key}: ${message}`);
-    }
-  });
+    });
+  }
 
-  result.emails = await dispatchAlerts({
-    store: deps.store,
-    suppliers,
-    now,
-    since,
-    summarize,
-    sendEmail,
-    log,
-  });
-
-  result.purged = await deps.store.purge(retentionCutoff(now));
   log(
-    `Done. keys=${result.supplierKeys} inserted=${result.inserted} classified=${result.classified} unclassified=${result.unclassified} emails=${result.emails} purged=${result.purged}`
+    `Done. keys=${result.supplierKeys} fetched=${result.fetched} keywordHits=${result.keywordHits} inserted=${result.inserted} skipped=${result.skipped} classified=${result.classified} unclassified=${result.unclassified} alerts=${result.alerts} emails=${result.emails} purged=${result.purged}`
   );
+  if (fatal) throw new Error(fatal);
   return result;
 }
 
 async function collectSupplierGroup(input: {
   store: DailyNewsStore;
+  audit?: NewsAuditSink;
+  runId: string | null;
   canonical: MonitoredSupplier;
   key: string;
   now: Date;
@@ -192,7 +312,15 @@ async function collectSupplierGroup(input: {
   fetchImpl?: typeof fetch;
   classify: (state: JevNewsState) => Promise<JevClassifyResult>;
   log: (message: string) => void;
-}): Promise<{ inserted: number; classified: number; unclassified: number }> {
+  errors: NewsRunError[];
+}): Promise<{
+  fetched: number;
+  keywordHits: number;
+  inserted: number;
+  skipped: number;
+  classified: number;
+  unclassified: number;
+}> {
   const fetched = await fetchSupplierNews({
     supplierName: input.canonical.name,
     fetchImpl: input.fetchImpl,
@@ -211,13 +339,26 @@ async function collectSupplierGroup(input: {
     feed: string;
     normalizedTitle: string;
   }> = [];
+  const skipped: NewsCandidateInsert[] = [];
+  let keywordHits = 0;
 
   for (const item of fetched) {
-    if (candidates.length >= KEYWORD_CAP) break;
-    if (!matchesRiskKeyword(`${item.title}\n${item.description}`)) continue;
+    const keyword = matchesRiskKeyword(`${item.title}\n${item.description}`);
+    if (!keyword) {
+      skipped.push(skippedRow(input.runId, input.key, item, "no_keyword"));
+      continue;
+    }
+    keywordHits += 1;
+    if (candidates.length >= KEYWORD_CAP) {
+      skipped.push(skippedRow(input.runId, input.key, item, "cap"));
+      continue;
+    }
     const url = normalizeNewsUrl(item.url);
     const hash = url ? newsUrlHash(url) : null;
-    if (!url || !hash) continue;
+    if (!url || !hash) {
+      skipped.push(skippedRow(input.runId, input.key, item, "bad_url"));
+      continue;
+    }
     candidates.push({
       title: item.title,
       url,
@@ -241,12 +382,23 @@ async function collectSupplierGroup(input: {
 
   const fresh = [];
   for (const item of candidates) {
-    if (existingHashes.has(item.hash)) continue;
-    if (item.normalizedTitle && recentTitles.has(item.normalizedTitle)) continue;
+    if (existingHashes.has(item.hash)) {
+      skipped.push(skippedRow(input.runId, input.key, item, "dup_hash"));
+      continue;
+    }
+    if (item.normalizedTitle && recentTitles.has(item.normalizedTitle)) {
+      skipped.push(skippedRow(input.runId, input.key, item, "dup_title"));
+      continue;
+    }
     existingHashes.add(item.hash);
     if (item.normalizedTitle) recentTitles.add(item.normalizedTitle);
     fresh.push(item);
   }
+
+  await auditStep(input.log, "candidates", async () => {
+    if (!input.audit) return;
+    await input.audit.insertCandidates(skipped);
+  });
 
   await input.store.insertNewsItems(
     fresh.map((item) => ({
@@ -256,6 +408,7 @@ async function collectSupplierGroup(input: {
       url: item.url,
       source: item.source,
       publishedAt: item.publishedAt,
+      runId: input.runId,
       raw: {
         title: item.title,
         link: item.url,
@@ -286,21 +439,24 @@ async function collectSupplierGroup(input: {
       continue;
     }
 
-    const result = await input.classify({
+    const state: JevNewsState = {
       supplierName: input.canonical.name,
       country: input.canonical.country,
       category: input.canonical.category,
       title: row.title,
       source: row.source ?? "",
       published: publishedLabel(row),
-    });
+    };
+    const jev = await input.classify(state);
+    await recordJevCall(input, row.id, state, jev);
 
-    if (!result.ok) {
-      if (result.reason === "missing_key" || result.reason === "unauthorized") {
+    if (!jev.ok) {
+      if (jev.reason === "missing_key" || jev.reason === "unauthorized") {
         blocked = true;
-        input.log(`JEV unavailable (${result.reason}): ${result.message}`);
+        input.errors.push({ scope: "jev", supplierKey: input.key, message: jev.message });
+        input.log(`JEV unavailable (${jev.reason}): ${jev.message}`);
       } else {
-        input.log(`JEV classify failed for ${input.key}: ${result.message}`);
+        input.log(`JEV classify failed for ${input.key}: ${jev.message}`);
       }
       await input.store.saveClassification(row.id, {
         jevP: null,
@@ -313,19 +469,58 @@ async function collectSupplierGroup(input: {
     }
 
     await input.store.saveClassification(row.id, {
-      jevP: result.p,
-      promptVersion: result.promptVersion,
-      model: result.model,
-      status: result.band,
+      jevP: jev.p,
+      promptVersion: jev.promptVersion,
+      model: jev.model,
+      status: jev.band,
     });
     classified += 1;
   }
 
   input.log(
-    `${input.key}: fetched=${fetched.length} keywordHits=${candidates.length} new=${fresh.length} classified=${classified}`
+    `${input.key}: fetched=${fetched.length} keywordHits=${keywordHits} new=${fresh.length} classified=${classified}`
   );
 
-  return { inserted: fresh.length, classified, unclassified };
+  return {
+    fetched: fetched.length,
+    keywordHits,
+    inserted: fresh.length,
+    skipped: skipped.length,
+    classified,
+    unclassified,
+  };
+}
+
+async function recordJevCall(
+  input: {
+    audit?: NewsAuditSink;
+    runId: string | null;
+    log: (message: string) => void;
+  },
+  newsItemId: string,
+  state: JevNewsState,
+  result: JevClassifyResult
+): Promise<void> {
+  await auditStep(input.log, "jevCall", async () => {
+    if (!input.audit) return;
+    const row: JevCallInsert = {
+      runId: input.runId,
+      newsItemId,
+      requestBody: requestDocument(state, result.requestBody),
+      httpStatus: result.httpStatus ?? null,
+      ok: result.ok,
+      reason: result.ok ? null : result.reason,
+      message: result.ok ? null : result.message,
+      p: result.ok ? result.p : null,
+      band: result.ok ? result.band : null,
+      model: result.ok ? result.model : null,
+      promptVersion: result.ok ? result.promptVersion : null,
+      latencyMs: result.latencyMs ?? null,
+      attempt: result.attempt ?? 1,
+      responseRaw: result.responseRaw ?? null,
+    };
+    await input.audit.insertJevCall(row);
+  });
 }
 
 async function dispatchAlerts(input: {
@@ -336,7 +531,8 @@ async function dispatchAlerts(input: {
   summarize: NonNullable<DailyNewsDeps["summarize"]>;
   sendEmail: NonNullable<DailyNewsDeps["sendEmail"]>;
   log: (message: string) => void;
-}): Promise<number> {
+  errors: NewsRunError[];
+}): Promise<{ emails: number; alerts: number }> {
   const byUser = new Map<string, MonitoredSupplier[]>();
   for (const supplier of input.suppliers) {
     const list = byUser.get(supplier.userId) ?? [];
@@ -348,7 +544,7 @@ async function dispatchAlerts(input: {
     const user = members[0];
     return user.emailNotifications && TIER_ALERT_CADENCE[user.subscriptionTier] !== "none";
   });
-  if (eligible.length === 0) return 0;
+  if (eligible.length === 0) return { emails: 0, alerts: 0 };
 
   const supplierIds = eligible.flatMap((members) => members.map((supplier) => supplier.id));
   const keys = Array.from(
@@ -356,9 +552,10 @@ async function dispatchAlerts(input: {
   );
   const escalations = await input.store.listEscalations(keys, input.since);
   const alerts = await input.store.listAlertsForSuppliers(supplierIds);
-  const summaryCache = new Map<string, string>();
+  const summaryCache = new Map<string, SummaryOutcome>();
   let llmCalls = 0;
   let emails = 0;
+  let createdAlerts = 0;
 
   for (const members of eligible) {
     const user = members[0];
@@ -390,13 +587,16 @@ async function dispatchAlerts(input: {
       for (const news of escalations) {
         if (news.supplierKey !== key || news.jevP === null || news.jevP < JEV_ESCALATE_MIN) continue;
         if (mine.some((alert) => alert.newsItemId === news.id)) continue;
-        const summary = await summaryFor(news, supplier);
+        const outcome = await summaryFor(news, supplier);
         const created = await input.store.createAlert({
           newsItemId: news.id,
           supplierId: supplier.id,
           severity: "high",
-          summary,
+          summary: outcome.summary,
+          summarySource: outcome.summarySource,
+          summaryError: outcome.summaryError,
         });
+        createdAlerts += 1;
         queued.push({
           alertId: created.id,
           item: {
@@ -416,6 +616,7 @@ async function dispatchAlerts(input: {
     if (unique.size === 0) continue;
 
     const items = Array.from(unique.entries()).sort((a, b) => b[1].jevP - a[1].jevP);
+    const ids = items.map(([id]) => id);
     try {
       await input.sendEmail({
         to: user.email,
@@ -423,27 +624,36 @@ async function dispatchAlerts(input: {
         locale: user.locale,
         items: items.map(([, item]) => item),
       });
-      await input.store.markAlertsSent(
-        items.map(([id]) => id),
-        input.now
-      );
+      await input.store.markAlertsSent(ids, input.now);
       emails += 1;
       input.log(`Alert email sent to ${user.email} (${items.length} item(s))`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
+      input.errors.push({ scope: "email", message: `${user.email}: ${message}` });
       input.log(`Alert email failed for ${user.email}: ${message}`);
+      try {
+        await input.store.markAlertsEmailFailed(ids, message);
+      } catch (recordError) {
+        const recordMessage = recordError instanceof Error ? recordError.message : String(recordError);
+        input.log(`Audit email outcome failed for ${user.email}: ${recordMessage}`);
+      }
     }
   }
 
-  return emails;
+  return { emails, alerts: createdAlerts };
 
-  async function summaryFor(news: StoredNewsItem, supplier: MonitoredSupplier): Promise<string> {
+  async function summaryFor(news: StoredNewsItem, supplier: MonitoredSupplier): Promise<SummaryOutcome> {
     const cached = summaryCache.get(news.id);
     if (cached) return cached;
     const existing = await input.store.findReusableSummary(news.id);
     if (existing) {
-      summaryCache.set(news.id, existing);
-      return existing;
+      const outcome: SummaryOutcome = {
+        summary: existing,
+        summarySource: "reused",
+        summaryError: null,
+      };
+      summaryCache.set(news.id, outcome);
+      return outcome;
     }
 
     const facts = {
@@ -452,9 +662,13 @@ async function dispatchAlerts(input: {
       url: news.url,
       jevP: news.jevP ?? 0,
     };
-    let summary: string;
+    let outcome: SummaryOutcome;
     if (llmCalls >= SUMMARY_CAP) {
-      summary = fallbackAlertSummary(facts);
+      outcome = {
+        summary: fallbackAlertSummary(facts),
+        summarySource: "fallback",
+        summaryError: null,
+      };
     } else {
       llmCalls += 1;
       try {
@@ -470,14 +684,24 @@ async function dispatchAlerts(input: {
             jevP: news.jevP ?? 0,
           })
         ).trim();
-        summary = text || fallbackAlertSummary(facts);
+        outcome = text
+          ? { summary: text, summarySource: "perplexity", summaryError: null }
+          : {
+              summary: fallbackAlertSummary(facts),
+              summarySource: "fallback",
+              summaryError: "empty summary",
+            };
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         input.log(`Escalation summary failed for ${news.id}: ${message}`);
-        summary = fallbackAlertSummary(facts);
+        outcome = {
+          summary: fallbackAlertSummary(facts),
+          summarySource: "fallback",
+          summaryError: message,
+        };
       }
     }
-    summaryCache.set(news.id, summary);
-    return summary;
+    summaryCache.set(news.id, outcome);
+    return outcome;
   }
 }

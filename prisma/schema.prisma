@@ -170,12 +170,18 @@ model NewsItem {
   // told apart from rows already scored.
   model         String?
   status        String          @default("new")
+  // Daily run that inserted this row. Null for rows collected before the audit.
+  runId         String?
   alerts        SupplierAlert[]
+  jevCalls      JevCall[]
+  run           NewsRun?        @relation(fields: [runId], references: [id], onDelete: SetNull)
 
   @@unique([supplierKey, urlHash])
   @@index([supplierKey, publishedAt(sort: Desc)])
   @@index([fetchedAt])
   @@index([jevP])
+  @@index([runId])
+  @@index([status, fetchedAt(sort: Desc)])
 }
 
 // Sent (or pending) disruption alerts. Not purged with NewsItem.
@@ -183,16 +189,97 @@ model SupplierAlert {
   id         String    @id @default(cuid())
   newsItemId String
   supplierId String
-  severity   String
-  summary    String    @db.Text
-  sentAt     DateTime?
-  createdAt  DateTime  @default(now())
-  newsItem   NewsItem  @relation(fields: [newsItemId], references: [id], onDelete: Restrict)
-  supplier   Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  severity      String
+  summary       String    @db.Text
+  // perplexity, fallback, or reused. Null on alerts created before the audit.
+  summarySource String?
+  summaryError  String?   @db.Text
+  // pending, sent, or failed.
+  emailStatus   String?
+  emailError    String?   @db.Text
+  sentAt        DateTime?
+  createdAt     DateTime  @default(now())
+  newsItem      NewsItem  @relation(fields: [newsItemId], references: [id], onDelete: Restrict)
+  supplier      Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
   @@unique([newsItemId, supplierId])
   @@index([supplierId])
   @@index([sentAt])
+}
+
+// One row per daily supplier-news job. Audit tables have their own 90-day
+// retention. Deleting a run does not delete NewsItem (runId is SET NULL).
+model NewsRun {
+  id            String          @id @default(cuid())
+  startedAt     DateTime        @default(now())
+  finishedAt    DateTime?
+  status        String          @default("running")
+  supplierKeys  Int             @default(0)
+  fetched       Int             @default(0)
+  keywordHits   Int             @default(0)
+  inserted      Int             @default(0)
+  skipped       Int             @default(0)
+  classified    Int             @default(0)
+  unclassified  Int             @default(0)
+  alerts        Int             @default(0)
+  emails        Int             @default(0)
+  purged        Int             @default(0)
+  errors        Json            @default("[]") @db.JsonB
+  items         NewsItem[]
+  jevCalls      JevCall[]
+  candidates    NewsCandidate[]
+
+  @@index([startedAt(sort: Desc)])
+  @@index([status, startedAt(sort: Desc)])
+}
+
+// One row per JEV HTTP attempt. requestBody is the classifier payload only —
+// the API key stays in the Authorization header and is never stored.
+// newsItemId is SET NULL when the news row is purged so the delete can succeed.
+model JevCall {
+  id            String    @id @default(cuid())
+  runId         String?
+  newsItemId    String?
+  requestBody   Json      @db.JsonB
+  httpStatus    Int?
+  ok            Boolean
+  reason        String?
+  message       String?   @db.Text
+  p             Float?
+  band          String?
+  model         String?
+  promptVersion String?
+  latencyMs     Int?
+  attempt       Int       @default(1)
+  responseRaw   Json?     @db.JsonB
+  createdAt     DateTime  @default(now())
+  run           NewsRun?  @relation(fields: [runId], references: [id], onDelete: Cascade)
+  newsItem      NewsItem? @relation(fields: [newsItemId], references: [id], onDelete: SetNull)
+
+  @@index([runId, createdAt(sort: Desc)])
+  @@index([newsItemId, createdAt(sort: Desc)])
+  @@index([createdAt])
+}
+
+// Fetched items that were not inserted. skipReason is one of
+// no_keyword, cap, bad_url, dup_hash, dup_title.
+model NewsCandidate {
+  id          String    @id @default(cuid())
+  runId       String?
+  supplierKey String
+  title       String
+  url         String    @db.Text
+  feed        String?
+  source      String?
+  publishedAt DateTime?
+  skipReason  String
+  createdAt   DateTime  @default(now())
+  run         NewsRun?  @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId, createdAt(sort: Desc)])
+  @@index([supplierKey, createdAt(sort: Desc)])
+  @@index([skipReason, createdAt(sort: Desc)])
+  @@index([createdAt])
 }
 
 model AuditEvent {

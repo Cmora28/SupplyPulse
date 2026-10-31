@@ -7,8 +7,10 @@ import { generateReportPDF } from "./lib/pdf-generator";
 import { sendWeeklyReport } from "./lib/email";
 import { TIER_MODEL } from "./lib/tier-limits";
 import { loadWeeklySignals } from "./lib/collected-signals";
+import { applyStartupSql } from "./lib/apply-sql";
 import { runDailySupplierNews } from "./lib/daily-news";
 import { createPrismaDailyNewsStore } from "./lib/daily-news-store";
+import { createPrismaNewsAudit } from "./lib/news-audit-store";
 import { calculateNextReportAt } from "./lib/schedule";
 import { AuditAction, type SubscriptionTier } from "@prisma/client";
 import { logAudit } from "./lib/audit";
@@ -395,11 +397,14 @@ const dailyNewsWorker = new Worker(
   "daily-supplier-news",
   async () => {
     console.log("[DailyNews] Starting daily supplier collection");
+    await applyStartupSql((message) => console.log(message));
     const summary = await runDailySupplierNews({
       store: createPrismaDailyNewsStore(prisma),
+      audit: createPrismaNewsAudit(prisma),
+      logger: (message) => console.log(`[DailyNews] ${message}`),
     });
     console.log(
-      `[DailyNews] Finished inserted=${summary.inserted} classified=${summary.classified} emails=${summary.emails} purged=${summary.purged}`
+      `[DailyNews] Finished run=${summary.runId ?? "none"} inserted=${summary.inserted} classified=${summary.classified} emails=${summary.emails} purged=${summary.purged}`
     );
   },
   { connection, concurrency: 1 }
@@ -569,6 +574,9 @@ async function recoverStuckRuns() {
 console.log("=== Supply Pulse Worker Process ===");
 console.log(
   "Workers started: scheduler (every 15 min), supplier-report, report-finalizer, daily-supplier-news (06:00 UTC)"
+);
+applyStartupSql((message) => console.log(message)).catch((err) =>
+  console.error("[Setup] SQL apply error:", err)
 );
 setupScheduler().catch(console.error);
 setupDailyNews().catch(console.error);
