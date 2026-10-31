@@ -30,7 +30,7 @@ const es: TranslationType = {
     standard: "Estándar",
     plus: "Plus",
     premium: "Premium",
-    enterprise: "Empresa",
+    enterprise: "Empresarial",
     mostPopular: "Más popular",
     deepResearch: "Investigación profunda",
     contactSales: "Contactar ventas",
@@ -72,6 +72,19 @@ const es: TranslationType = {
     latestReportRun: "Último informe generado",
     weekOf: "Semana del {date}",
     viewAllReports: "Ver todos los informes",
+    nextReportAt: "Próximo informe: {when} ({timezone})",
+    reportTitle: "Informe de la semana del {date}",
+    generated: "Generado el",
+    supplierCoverage: "{count} de {total} proveedores",
+    openReport: "Abrir informe",
+    downloadPdf: "Descargar PDF",
+    riskHigh: "Riesgo alto",
+    riskMedium: "Riesgo medio",
+    riskLow: "Riesgo bajo",
+    noAlerts: "Sin alertas relevantes",
+    itemPending: "Pendiente de análisis",
+    itemProcessing: "Análisis en curso",
+    itemFailed: "El análisis falló",
   },
 
   suppliers: {
@@ -86,6 +99,8 @@ const es: TranslationType = {
     noSearchResults: "Ningún proveedor coincide con tu búsqueda.",
     addSupplier: "Agregar proveedor",
     editSupplier: "Editar proveedor",
+    editNamed: "Editar {name}",
+    deleteNamed: "Eliminar {name}",
     addDialogDesc: "Agrega un nuevo proveedor para monitorear en tus informes semanales.",
     editDialogDesc: "Actualiza la información de tu proveedor.",
     nameLabel: "Nombre del proveedor",
@@ -150,11 +165,11 @@ const es: TranslationType = {
     manageSuppliers: "Gestionar proveedores",
     weekOf: "Semana del {date}",
     statusPending: "Pendiente",
-    statusProcessing: "Procesando",
+    statusProcessing: "En proceso",
     statusReady: "Listo",
-    statusEmailed: "Enviado por correo",
+    statusEmailed: "Enviado por correo electrónico",
     statusFailed: "Fallido",
-    statusSuccess: "Exitoso",
+    statusSuccess: "Completado",
     pdf: "PDF",
     generatedCount:
       "{count} de {total} informes de proveedores generados correctamente",
@@ -821,6 +836,13 @@ const es: TranslationType = {
     title: "¡Plan mejorado exitosamente!",
     description:
       "Tu suscripción ha sido activada. Ahora puedes agregar más proveedores.",
+  },
+
+  errorPage: {
+    title: "Algo salió mal",
+    description:
+      "Ocurrió un error inesperado. Inténtalo de nuevo o contacta con soporte si el problema continúa.",
+    tryAgain: "Intentar de nuevo",
   },
 } as const;
 

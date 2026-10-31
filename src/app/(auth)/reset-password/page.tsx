@@ -46,11 +46,9 @@ function ResetPasswordRedirect() {
         </CardDescription>
       </CardHeader>
       <CardFooter>
-        <Link href="/forgot-password" className="w-full">
-          <Button variant="outline" className="w-full">
-            {t("auth.requestNewLink")}
-          </Button>
-        </Link>
+        <Button variant="outline" asChild className="w-full">
+          <Link href="/forgot-password">{t("auth.requestNewLink")}</Link>
+        </Button>
       </CardFooter>
     </Card>
   );

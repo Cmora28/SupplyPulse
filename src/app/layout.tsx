@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { cookies, headers } from "next/headers";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import { CookieBanner } from "@/components/cookie-banner";
 import { MetaPixel } from "@/components/meta-pixel";
+import { getServerLocale } from "@/i18n";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -89,13 +91,15 @@ const organizationJsonLd = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = getServerLocale(await cookies(), await headers());
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <head>
         <script
           type="application/ld+json"
@@ -105,7 +109,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} antialiased`}>
-        <Providers>
+        <Providers locale={locale}>
           {children}
           <Toaster />
           <CookieBanner />
