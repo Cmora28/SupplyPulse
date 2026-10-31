@@ -1,7 +1,7 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
-import { ADMIN_EMAIL } from "@/lib/admin-config";
+import { sessionIsAdmin } from "@/lib/admin-guard";
 
 export default withAuth(
   function middleware(req) {
@@ -18,10 +18,13 @@ export default withAuth(
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
-    // A01: Protect admin routes at the middleware level
+    // A01: Admin routes use the JWT flag copied from User.isAdmin.
+    // APIs still call requireAdmin() so a stale token cannot read data.
     if (pathname.startsWith("/dashboard/admin") || pathname.startsWith("/api/admin")) {
-      const email = req.nextauth.token?.email;
-      if (email !== ADMIN_EMAIL) {
+      if (!sessionIsAdmin(req.nextauth.token?.isAdmin)) {
+        if (pathname.startsWith("/api/")) {
+          return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
         return NextResponse.redirect(new URL("/dashboard", req.url));
       }
     }
