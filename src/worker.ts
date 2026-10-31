@@ -6,6 +6,9 @@ import { generateSupplierReport } from "./lib/perplexity";
 import { generateReportPDF } from "./lib/pdf-generator";
 import { sendWeeklyReport } from "./lib/email";
 import { TIER_MODEL } from "./lib/tier-limits";
+import { loadWeeklySignals } from "./lib/collected-signals";
+import { runDailySupplierNews } from "./lib/daily-news";
+import { createPrismaDailyNewsStore } from "./lib/daily-news-store";
 import { calculateNextReportAt } from "./lib/schedule";
 import { AuditAction, type SubscriptionTier } from "@prisma/client";
 import { logAudit } from "./lib/audit";
@@ -21,6 +24,7 @@ const prisma = new PrismaClient();
 const supplierReportQueue = new Queue("supplier-report", { connection });
 const finalizerQueue = new Queue("report-finalizer", { connection });
 const schedulerQueue = new Queue("weekly-scheduler", { connection });
+const dailyNewsQueue = new Queue("daily-supplier-news", { connection });
 
 // ---- Utility: Get Monday of current week at midnight UTC ----
 function getCurrentWeekMonday(): Date {
@@ -159,7 +163,22 @@ const reportWorker = new Worker(
       const userLocale = (item.reportRun.user as unknown as { locale?: string }).locale || "en";
       console.log(`[ReportWorker] User tier: ${userTier}, model: ${model}, locale: ${userLocale}`);
 
-      const { content, citations } = await generateSupplierReport(item.supplier, model, userLocale);
+      let signals: Awaited<ReturnType<typeof loadWeeklySignals>> = [];
+      try {
+        signals = await loadWeeklySignals(prisma, item.supplier);
+      } catch (signalError) {
+        const message = signalError instanceof Error ? signalError.message : String(signalError);
+        console.warn(
+          `[ReportWorker] Collected signals unavailable, continuing weekly report: ${message}`
+        );
+      }
+
+      const { content, citations } = await generateSupplierReport(
+        item.supplier,
+        model,
+        userLocale,
+        signals
+      );
       const weekOf = item.reportRun.weekOf;
 
       await prisma.supplierReport.upsert({
@@ -371,6 +390,21 @@ const finalizerWorker = new Worker(
   { connection, concurrency: 2 }
 );
 
+// ---- Worker 4: Daily supplier news (RSS/GDELT + JEV, no weekly-report LLM) ----
+const dailyNewsWorker = new Worker(
+  "daily-supplier-news",
+  async () => {
+    console.log("[DailyNews] Starting daily supplier collection");
+    const summary = await runDailySupplierNews({
+      store: createPrismaDailyNewsStore(prisma),
+    });
+    console.log(
+      `[DailyNews] Finished inserted=${summary.inserted} classified=${summary.classified} emails=${summary.emails} purged=${summary.purged}`
+    );
+  },
+  { connection, concurrency: 1 }
+);
+
 // ---- Setup repeatable cron job (every 15 minutes) ----
 async function setupScheduler() {
   const existing = await schedulerQueue.getRepeatableJobs();
@@ -389,6 +423,28 @@ async function setupScheduler() {
   );
 
   console.log("[Setup] Distributed scheduler cron set: every 15 minutes");
+}
+
+// Daily collection at 06:00 UTC. Alert delivery still follows the plan cadence.
+async function setupDailyNews() {
+  const existing = await dailyNewsQueue.getRepeatableJobs();
+  for (const job of existing) {
+    await dailyNewsQueue.removeRepeatableByKey(job.key);
+  }
+
+  await dailyNewsQueue.add(
+    "daily-supplier-news",
+    {},
+    {
+      attempts: 2,
+      backoff: { type: "fixed", delay: 10 * 60 * 1000 },
+      repeat: {
+        pattern: "0 6 * * *",
+      },
+    }
+  );
+
+  console.log("[Setup] Daily supplier news cron set: 06:00 UTC");
 }
 
 // ---- Backfill: set nextReportAt for legacy users who don't have one ----
@@ -427,6 +483,7 @@ async function shutdown() {
   await schedulerWorker.close();
   await reportWorker.close();
   await finalizerWorker.close();
+  await dailyNewsWorker.close();
   await prisma.$disconnect();
 
   console.log("[Shutdown] All workers closed.");
@@ -447,6 +504,10 @@ reportWorker.on("failed", (job, err) => {
 
 finalizerWorker.on("failed", (job, err) => {
   console.error(`[Finalizer] Job ${job?.id} failed:`, err.message);
+});
+
+dailyNewsWorker.on("failed", (job, err) => {
+  console.error(`[DailyNews] Job ${job?.id} failed:`, err.message);
 });
 
 // ---- Worker ready events ----
@@ -506,8 +567,11 @@ async function recoverStuckRuns() {
 
 // ---- Start ----
 console.log("=== Supply Pulse Worker Process ===");
-console.log("Workers started: scheduler (every 15 min), supplier-report, report-finalizer");
+console.log(
+  "Workers started: scheduler (every 15 min), supplier-report, report-finalizer, daily-supplier-news (06:00 UTC)"
+);
 setupScheduler().catch(console.error);
+setupDailyNews().catch(console.error);
 
 // Give workers time to connect, then backfill schedules and recover stuck runs
 setTimeout(async () => {
