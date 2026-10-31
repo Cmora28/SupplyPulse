@@ -47,6 +47,7 @@ export default function RegisterPage() {
   const [selectedLocale, setSelectedLocale] = useState<Locale>(currentLocale);
   const [reportDay, setReportDay] = useState(1); // Monday default
   const [reportHour, setReportHour] = useState(8); // 8 AM UTC default
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
@@ -77,13 +78,27 @@ export default function RegisterPage() {
       return;
     }
 
+    if (!termsAccepted) {
+      setError(t("auth.termsRequired"));
+      return;
+    }
+
     setLoading(true);
 
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, locale: selectedLocale, reportDay, reportHour, captchaToken: turnstileToken }),
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          locale: selectedLocale,
+          reportDay,
+          reportHour,
+          captchaToken: turnstileToken,
+          termsAccepted,
+        }),
       });
 
       const data = await res.json();
@@ -310,6 +325,46 @@ export default function RegisterPage() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
+              <div className="flex w-full items-start gap-3 text-left">
+                <input
+                  id="termsAccepted"
+                  name="termsAccepted"
+                  type="checkbox"
+                  checked={termsAccepted}
+                  onChange={(e) => setTermsAccepted(e.target.checked)}
+                  required
+                  disabled={loading}
+                  aria-required="true"
+                  className="mt-1 h-4 w-4 shrink-0 rounded border border-input accent-primary"
+                />
+                <p className="text-sm leading-snug text-foreground">
+                  <label htmlFor="termsAccepted" className="cursor-pointer">
+                    {t("auth.termsConsentBefore")}
+                  </label>
+                  <Link
+                    href="/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline font-medium"
+                  >
+                    {t("auth.termsConsentTerms")}
+                  </Link>
+                  <label htmlFor="termsAccepted" className="cursor-pointer">
+                    {t("auth.termsConsentMiddle")}
+                  </label>
+                  <Link
+                    href="/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline font-medium"
+                  >
+                    {t("auth.termsConsentPrivacy")}
+                  </Link>
+                  <label htmlFor="termsAccepted" className="cursor-pointer">
+                    {t("auth.termsConsentAfter")}
+                  </label>
+                </p>
+              </div>
               <Turnstile
                 siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
                 onSuccess={(token) => setTurnstileToken(token)}
@@ -318,7 +373,7 @@ export default function RegisterPage() {
                 options={{ theme: "auto", size: "normal" }}
                 className="mx-auto"
               />
-              <Button type="submit" className="w-full" disabled={loading || !turnstileToken}>
+              <Button type="submit" className="w-full" disabled={loading || !turnstileToken || !termsAccepted}>
                 {loading ? t("auth.creatingAccount") : t("auth.createAccountBtn")}
               </Button>
               <p className="text-sm text-muted-foreground text-center">

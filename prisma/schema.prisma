@@ -73,6 +73,9 @@ model User {
   emailNotifications  Boolean          @default(true)
   // Server-side admin flag. Never trust email equality or a public env var.
   isAdmin             Boolean          @default(false)
+  // Null on accounts created before terms acceptance was recorded.
+  termsAcceptedAt     DateTime?
+  termsVersion        String?
   resetToken          String?          @unique
   resetTokenExpiry    DateTime?
   createdAt           DateTime         @default(now())
