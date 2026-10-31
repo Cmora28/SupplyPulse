@@ -75,8 +75,8 @@ export function Sidebar() {
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                   pathname === "/dashboard/admin"
-                    ? "bg-red-50 text-red-600"
-                    : "text-red-400 hover:bg-red-50 hover:text-red-600"
+                    ? "bg-danger-bg text-danger"
+                    : "text-danger hover:bg-danger-bg"
                 )}
               >
                 <Shield className="h-4 w-4" />
@@ -87,8 +87,8 @@ export function Sidebar() {
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                   pathname.startsWith("/dashboard/admin/audit")
-                    ? "bg-red-50 text-red-600"
-                    : "text-red-400 hover:bg-red-50 hover:text-red-600"
+                    ? "bg-danger-bg text-danger"
+                    : "text-danger hover:bg-danger-bg"
                 )}
               >
                 <ClipboardList className="h-4 w-4" />

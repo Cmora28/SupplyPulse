@@ -2,8 +2,8 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useTranslation } from "@/i18n/client";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/status-badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,19 +18,6 @@ import { User, Settings, LogOut } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { clearSupplierOnboardingPrompt } from "@/components/first-supplier-onboarding";
-
-function getTierColor(tier: string) {
-  switch (tier) {
-    case "STANDARD":
-      return "bg-blue-100 text-blue-700 border-blue-200";
-    case "PREMIUM":
-      return "bg-purple-100 text-purple-700 border-purple-200";
-    case "ENTERPRISE":
-      return "bg-amber-100 text-amber-700 border-amber-200";
-    default:
-      return "bg-gray-100 text-gray-700 border-gray-200";
-  }
-}
 
 export function Header() {
   const { data: session } = useSession();
@@ -58,12 +45,7 @@ export function Header() {
         <div className="hidden md:block" />
         <div className="flex items-center gap-3">
           {session?.user?.subscriptionTier && (
-            <Badge
-              variant="outline"
-              className={getTierColor(session.user.subscriptionTier)}
-            >
-              {session.user.subscriptionTier}
-            </Badge>
+            <StatusBadge tier={session.user.subscriptionTier} />
           )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

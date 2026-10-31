@@ -30,7 +30,7 @@ const de: TranslationType = {
     standard: "Standard",
     plus: "Plus",
     premium: "Premium",
-    enterprise: "Enterprise",
+    enterprise: "Unternehmen",
     mostPopular: "Am beliebtesten",
     deepResearch: "Deep Research",
     contactSales: "Vertrieb kontaktieren",
@@ -72,6 +72,19 @@ const de: TranslationType = {
     latestReportRun: "Letzter Berichtslauf",
     weekOf: "Woche vom {date}",
     viewAllReports: "Alle Berichte ansehen",
+    nextReportAt: "Nächster Bericht: {when} ({timezone})",
+    reportTitle: "Bericht für die Woche vom {date}",
+    generated: "Erstellt am",
+    supplierCoverage: "{count} von {total} Lieferanten",
+    openReport: "Bericht öffnen",
+    downloadPdf: "PDF herunterladen",
+    riskHigh: "Hohes Risiko",
+    riskMedium: "Mittleres Risiko",
+    riskLow: "Geringes Risiko",
+    noAlerts: "Keine relevanten Hinweise",
+    itemPending: "Analyse ausstehend",
+    itemProcessing: "Analyse läuft",
+    itemFailed: "Analyse fehlgeschlagen",
   },
 
   suppliers: {
@@ -87,6 +100,8 @@ const de: TranslationType = {
     noSearchResults: "Keine Lieferanten entsprechen Ihrer Suche.",
     addSupplier: "Lieferant hinzufügen",
     editSupplier: "Lieferant bearbeiten",
+    editNamed: "{name} bearbeiten",
+    deleteNamed: "{name} löschen",
     addDialogDesc:
       "Fügen Sie einen neuen Lieferanten hinzu, der in Ihren Wochenberichten überwacht wird.",
     editDialogDesc: "Aktualisieren Sie Ihre Lieferanteninformationen.",
@@ -156,7 +171,7 @@ const de: TranslationType = {
     statusReady: "Bereit",
     statusEmailed: "Per E-Mail versendet",
     statusFailed: "Fehlgeschlagen",
-    statusSuccess: "Erfolgreich",
+    statusSuccess: "Abgeschlossen",
     pdf: "PDF",
     generatedCount:
       "{count} von {total} Lieferantenberichten erfolgreich erstellt",
@@ -827,6 +842,13 @@ const de: TranslationType = {
     title: "Plan erfolgreich upgradet!",
     description:
       "Ihr Abonnement wurde aktiviert. Sie können jetzt weitere Lieferanten hinzufügen.",
+  },
+
+  errorPage: {
+    title: "Etwas ist schiefgelaufen",
+    description:
+      "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support, wenn das Problem weiterhin besteht.",
+    tryAgain: "Erneut versuchen",
   },
 } as const;
 
