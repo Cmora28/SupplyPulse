@@ -53,7 +53,7 @@ export function DeleteReportButton({ reportRunId }: { reportRunId: string }) {
       variant="outline"
       onClick={handleDelete}
       disabled={loading}
-      className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+      className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950/40 dark:border-red-800"
     >
       {loading ? (
         <Loader2 className="mr-1 h-3 w-3 animate-spin" />
