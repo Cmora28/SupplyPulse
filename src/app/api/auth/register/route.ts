@@ -6,6 +6,7 @@ import { rateLimit, getClientIp } from "@/lib/security";
 import { AuditAction } from "@prisma/client";
 import { logAudit } from "@/lib/audit";
 import { calculateNextReportAt } from "@/lib/schedule";
+import { termsAcceptanceData, termsConsentRejection } from "@/lib/terms";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,20 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
+
+    const consent = termsConsentRejection(body?.termsAccepted);
+    if (consent) {
+      const attemptEmail =
+        typeof body?.email === "string" ? body.email.toLowerCase().trim() : undefined;
+      void logAudit({
+        action: AuditAction.REGISTER,
+        success: false,
+        actorEmail: attemptEmail,
+        request,
+        metadata: { reason: "terms_not_accepted" },
+      });
+      return NextResponse.json({ error: consent.error }, { status: consent.status });
+    }
 
     // Verify Cloudflare Turnstile token before any processing
     const captchaToken = body?.captchaToken;
@@ -117,6 +132,7 @@ export async function POST(request: Request) {
     const day = reportDay ?? 1;
     const hour = reportHour ?? 8;
     const nextReportAt = calculateNextReportAt(day, hour);
+    const acceptance = termsAcceptanceData();
 
     const user = await prisma.user.create({
       data: {
@@ -127,6 +143,8 @@ export async function POST(request: Request) {
         reportDay: day,
         reportHour: hour,
         nextReportAt,
+        termsAcceptedAt: acceptance.termsAcceptedAt,
+        termsVersion: acceptance.termsVersion,
       },
     });
 

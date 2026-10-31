@@ -30,13 +30,14 @@ export default function TermsOfServicePage() {
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-3xl font-bold tracking-tight mb-2">{t("legal.termsTitle")}</h1>
-        <p className="text-sm text-muted-foreground mb-8">{t("legal.lastUpdated", { date: "February 2026" })}</p>
+        <p className="text-sm text-muted-foreground mb-8">{t("legal.lastUpdated", { date: t("legal.updatedDate") })}</p>
 
         <div className="prose prose-sm dark:prose-invert max-w-none space-y-8">
           {/* 1. Acceptance */}
           <section>
             <h2 className="text-xl font-semibold mt-8 mb-3">{t("legal.termsSection1Title")}</h2>
             <p className="text-muted-foreground text-sm">{t("legal.termsAcceptance")}</p>
+            <p className="text-muted-foreground text-sm mt-2">{t("legal.termsBusinessOnly")}</p>
           </section>
 
           {/* 2. Service Description */}

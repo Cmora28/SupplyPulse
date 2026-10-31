@@ -28,6 +28,9 @@ export const registerSchema = z.object({
   locale: z.enum(["en", "es", "pt", "fr", "de"]).optional().default("en"),
   reportDay: z.number().int().min(0).max(6).optional().default(1),  // 0=Sun..6=Sat
   reportHour: z.number().int().min(0).max(23).optional().default(8), // 0-23 UTC
+  termsAccepted: z.literal(true, {
+    error: "You must accept the Terms of Service and Privacy Policy.",
+  }),
 });
 
 export const loginSchema = z.object({
