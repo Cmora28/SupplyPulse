@@ -15,6 +15,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MobileNav } from "@/components/mobile-nav";
 import { User, Settings, LogOut } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { clearSupplierOnboardingPrompt } from "@/components/first-supplier-onboarding";
@@ -44,6 +45,7 @@ export function Header() {
         </div>
         <div className="hidden md:block" />
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           {session?.user?.subscriptionTier && (
             <StatusBadge tier={session.user.subscriptionTier} />
           )}

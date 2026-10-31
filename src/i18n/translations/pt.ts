@@ -38,6 +38,8 @@ const pt: TranslationType = {
     unlimited: "ilimitado",
     dashboard: "Painel",
     pricing: "Preços",
+    switchToLight: "Mudar para o modo claro",
+    switchToDark: "Mudar para o modo escuro",
   },
 
   nav: {
