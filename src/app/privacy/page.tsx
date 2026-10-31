@@ -30,7 +30,7 @@ export default function PrivacyPolicyPage() {
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-3xl font-bold tracking-tight mb-2">{t("legal.privacyTitle")}</h1>
-        <p className="text-sm text-muted-foreground mb-8">{t("legal.lastUpdated", { date: "February 2026" })}</p>
+        <p className="text-sm text-muted-foreground mb-8">{t("legal.lastUpdated", { date: t("legal.updatedDate") })}</p>
 
         <div className="prose prose-sm dark:prose-invert max-w-none space-y-8">
           {/* Introduction */}
@@ -77,10 +77,13 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-xl font-semibold mt-8 mb-3">{t("legal.privacySection3Title")}</h2>
             <p className="text-muted-foreground text-sm mb-3">{t("legal.privacyThirdPartyIntro")}</p>
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground text-sm">
-              <li><strong>AI Research Provider</strong> — {t("legal.privacyThirdParty1")}</li>
+              <li><strong>Perplexity</strong> — {t("legal.privacyThirdParty1")}</li>
               <li><strong>Resend</strong> — {t("legal.privacyThirdParty2")}</li>
               <li><strong>Polar</strong> — {t("legal.privacyThirdParty3")}</li>
               <li><strong>Meta (Facebook)</strong> — {t("legal.privacyThirdParty4")}</li>
+              <li><strong>Vercel</strong> ({t("legal.processorHosting")}) — {t("legal.privacyThirdParty5")}</li>
+              <li><strong>Railway</strong> ({t("legal.processorData")}) — {t("legal.privacyThirdParty6")}</li>
+              <li><strong>Cloudflare</strong> ({t("legal.processorTurnstile")}) — {t("legal.privacyThirdParty7")}</li>
             </ul>
           </section>
 
@@ -111,6 +114,7 @@ export default function PrivacyPolicyPage() {
               <li>{t("legal.privacyRight2")}</li>
               <li>{t("legal.privacyRight3")}</li>
               <li>{t("legal.privacyRight4")}</li>
+              <li>{t("legal.privacyRight5")}</li>
             </ul>
             <p className="text-muted-foreground text-sm mt-2">{t("legal.privacyRightsDelete")}</p>
           </section>
