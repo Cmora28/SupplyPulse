@@ -32,6 +32,7 @@ import { Info, ArrowLeft, Clock } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { useTranslation } from "@/i18n/client";
 import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { locales, localeNames, localeFlags, type Locale } from "@/i18n";
 import { Separator } from "@/components/ui/separator";
 import { Logo } from "@/components/logo";
@@ -114,7 +115,8 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4 relative">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex items-center gap-1">
+        <ThemeToggle />
         <PublicLanguageSwitcher />
       </div>
       <div className="w-full max-w-md space-y-4">

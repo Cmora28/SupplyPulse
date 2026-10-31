@@ -99,8 +99,13 @@ export default async function RootLayout({
   const locale = getServerLocale(await cookies(), await headers());
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className="dark" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var d=document.documentElement,t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t="dark";d.classList.remove("light","dark");d.classList.add(t);d.style.colorScheme=t;}catch(e){}})();`,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

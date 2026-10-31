@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import { PublicLanguageSwitcher } from "@/components/public-language-switcher";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://supplypulse.net";
 
@@ -236,6 +237,7 @@ export default async function LandingPage() {
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/login">{t("common.signIn")}</Link>
               </Button>
+              <ThemeToggle />
               <PublicLanguageSwitcher />
               <Button size="sm" asChild className="whitespace-nowrap">
                 <Link href="/register">{t("common.getStartedFree")}</Link>

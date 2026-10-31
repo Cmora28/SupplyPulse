@@ -1,6 +1,7 @@
 "use client";
 
 import { SessionProvider } from "next-auth/react";
+import { ThemeProvider } from "next-themes";
 import { LanguageProvider } from "@/i18n/client";
 import type { Locale } from "@/i18n";
 
@@ -12,8 +13,15 @@ export function Providers({
   locale: Locale;
 }) {
   return (
-    <SessionProvider refetchInterval={30} refetchOnWindowFocus={true}>
-      <LanguageProvider initialLocale={locale}>{children}</LanguageProvider>
-    </SessionProvider>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="dark"
+      enableSystem={false}
+      disableTransitionOnChange
+    >
+      <SessionProvider refetchInterval={30} refetchOnWindowFocus={true}>
+        <LanguageProvider initialLocale={locale}>{children}</LanguageProvider>
+      </SessionProvider>
+    </ThemeProvider>
   );
 }
