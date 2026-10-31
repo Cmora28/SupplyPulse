@@ -6,9 +6,8 @@
 import Redis from "ioredis";
 import { REDIS_URL } from "@/lib/redis";
 
-// ---- Admin ----
-
-export { ADMIN_EMAIL } from "@/lib/admin-config";
+// Admin authorization is requireAdmin() in src/lib/admin.ts (User.isAdmin).
+// Do not compare emails or read NEXT_PUBLIC_ADMIN_EMAIL.
 
 // ---- A03: Input validation ----
 

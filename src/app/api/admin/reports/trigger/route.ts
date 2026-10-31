@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { Queue } from "bullmq";
 import { startOfWeek } from "date-fns";
 import { cuidSchema } from "@/lib/validations";
 import { AuditAction } from "@prisma/client";
 import { logAudit } from "@/lib/audit";
-import { ADMIN_EMAIL, rateLimitAsync } from "@/lib/security";
+import { rateLimitAsync } from "@/lib/security";
 
 export const dynamic = "force-dynamic";
 
@@ -17,12 +16,11 @@ const connection = {
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user || session.user.email !== ADMIN_EMAIL) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+    const access = await requireAdmin();
+    if (!access.ok) return access.response;
+    const admin = access.user;
 
-    const rl = await rateLimitAsync(`admin:trigger:${session.user.id}`, 10, 10 * 60 * 1000);
+    const rl = await rateLimitAsync(`admin:trigger:${admin.id}`, 10, 10 * 60 * 1000);
     if (!rl.success) {
       return NextResponse.json(
         { error: "Too many requests" },
@@ -100,8 +98,8 @@ export async function POST(request: Request) {
 
     void logAudit({
       action: AuditAction.REPORT_TRIGGER_ADMIN,
-      actorUserId: session.user.id,
-      actorEmail: session.user.email,
+      actorUserId: admin.id,
+      actorEmail: admin.email,
       request,
       targetType: "ReportRun",
       targetId: reportRun.id,

@@ -40,7 +40,6 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { StatusBadge } from "@/components/status-badge";
 import { useTranslation } from "@/i18n/client";
-import { ADMIN_EMAIL } from "@/lib/admin-config";
 
 type Tab = "items" | "skipped";
 
@@ -194,7 +193,7 @@ export default function AdminNewsPage() {
   const [detail, setDetail] = useState<ItemDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
 
-  const allowed = session?.user?.email === ADMIN_EMAIL;
+  const allowed = session?.user?.isAdmin === true;
 
   const filterParams = useCallback(
     (extra?: { cursor?: string | null; view?: string }) => {

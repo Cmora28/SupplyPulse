@@ -82,6 +82,7 @@ describe("news audit SQL", () => {
   it("applies the news tables before the audit script and keeps purge foreign keys safe", () => {
     assert.equal(STARTUP_SQL_FILES[0].includes("news_items_supplier_alerts"), true);
     assert.equal(STARTUP_SQL_FILES[1].includes("news_pipeline_audit"), true);
+    assert.equal(STARTUP_SQL_FILES[2].includes("user_is_admin"), true);
     const sql = readFileSync(new URL("../../prisma/sql/20261031_news_pipeline_audit.sql", import.meta.url), "utf8");
     assert.match(sql, /CREATE TABLE IF NOT EXISTS "NewsRun"/);
     assert.match(sql, /CREATE TABLE IF NOT EXISTS "JevCall"/);

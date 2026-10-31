@@ -75,15 +75,16 @@ In **Variables**, set (or **Reference** from other services if you prefer):
 - `JEV_API_KEY` – TypeSafe classifier for daily supplier alerts. Worker only. If unset, news is still collected and weekly reports still run; mid-week alerts are not sent. See `docs/DAILY_SUPPLIER_ALERTS.md`.
 - `NEXT_PUBLIC_APP_URL` – e.g. `https://supplypulse.net` (used in emails/links).
 - `EMAIL_FROM` – (optional) e.g. `Supply Pulse <reports@supplypulse.net>`
+- `ADMIN_EMAIL` – server-only bootstrap. On startup the worker sets `User.isAdmin` for this existing account so the current admin is not locked out. This is not a public env var. See `docs/ADMIN_ACCESS.md`.
 
 You do **not** need `NEXTAUTH_SECRET` or `NEXTAUTH_URL` for the worker.  
-Add any other env vars your worker code reads (e.g. from `.env.example`).
+Do **not** set `NEXT_PUBLIC_ADMIN_EMAIL`. Add any other env vars your worker code reads (e.g. from `.env.example`).
 
 ### 2.4 Deploy
 
 - Push to the connected branch or click **Deploy**.
 - Check **Deployments** and **Logs** to confirm the worker starts and the scheduler runs (e.g. “Setup Distributed scheduler cron set: every 15 minutes” and “Daily supplier news cron set: 06:00 UTC”).
-- The worker applies `prisma/sql/20261031_news_items_supplier_alerts.sql` and `prisma/sql/20261031_news_pipeline_audit.sql` on startup (both are idempotent). You can also run them by hand before the first daily job. Steps, cadence, and the admin news audit are in `docs/DAILY_SUPPLIER_ALERTS.md`.
+- The worker applies every idempotent script in `src/lib/apply-sql.ts` on startup, before it accepts jobs: the news tables, the news audit tables, and `prisma/sql/20261031_user_is_admin.sql`. It then grants `isAdmin` to `ADMIN_EMAIL` when that user exists. Deploy the worker before the Vercel app so the column exists. Steps are in `docs/ADMIN_ACCESS.md`. News cadence and cost notes are in `docs/DAILY_SUPPLIER_ALERTS.md`.
 
 ---
 
@@ -96,8 +97,10 @@ In your Vercel project → **Settings** → **Environment Variables**, set (for 
 - `NEXTAUTH_URL` – `https://supplypulse.net` (or your Vercel domain)
 - `NEXT_PUBLIC_APP_URL` – `https://supplypulse.net`
 - Plus all other app env vars (NEXTAUTH_SECRET, Polar, Resend, Perplexity, etc.)
+- Remove `NEXT_PUBLIC_ADMIN_EMAIL` if it is set. Admin checks do not read it.
+- `ADMIN_EMAIL` on Vercel is optional. It does not authorize requests. If set, a Node server grants that existing user `isAdmin` once the column exists. The Railway worker is the bootstrap that must run first. See `docs/ADMIN_ACCESS.md`.
 
-Redeploy the app after changing variables so it uses the production DB and Redis.
+Redeploy the app after changing variables so it uses the production DB and Redis. Deploy the Railway worker before this app so `User.isAdmin` exists.
 
 ---
 
@@ -107,7 +110,7 @@ Redeploy the app after changing variables so it uses the production DB and Redis
 |------------|----------------|--------|
 | PostgreSQL | Railway        | Public `DATABASE_URL` |
 | Redis      | Railway        | Public `REDIS_URL` |
-| Worker     | Railway        | `DATABASE_URL`, `REDIS_URL`, Perplexity, Resend, `JEV_API_KEY`, `NEXT_PUBLIC_APP_URL` |
+| Worker     | Railway        | `DATABASE_URL`, `REDIS_URL`, Perplexity, Resend, `JEV_API_KEY`, `ADMIN_EMAIL`, `NEXT_PUBLIC_APP_URL` |
 | Next.js app| **Vercel**     | Same `DATABASE_URL`, `REDIS_URL`, NextAuth, Polar, Resend, etc. |
 
 Create **PostgreSQL and Redis on Railway first**, copy their **public** URLs, add them to **Vercel** and to the **Railway worker** service, then deploy the worker.
