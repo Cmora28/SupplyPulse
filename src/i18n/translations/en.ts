@@ -451,7 +451,7 @@ const en = {
       "Reports focus on context relevant to each supplier: financial and operational signals, regional and logistics factors, and industry-specific public information. Coverage depends on what is available in public sources for that supplier and week.",
     faq4Q: "How often are reports generated?",
     faq4A:
-      "Once per week on the weekday and UTC time you choose at registration. Each run produces a new report for the suppliers on your account within plan limits.",
+      "The full report is generated once per week on the weekday and UTC time you choose at registration. Plus, Premium, and Enterprise also receive interim email alerts between reports when a collected public news item is scored as a likely disruption. Free and Standard fold those signals into the weekly report.",
     faq5Q: "What is included in a report?",
     faq5A:
       "Per-supplier analysis, executive-style summaries, risk signals, optional scenario considerations, alternative-supplier suggestions when found in research, and cited sources. Deep Research tiers include more detailed investigation per supplier.",
@@ -494,6 +494,7 @@ const en = {
     plusFeature6: "PDF downloads with full citations",
     plusFeature7: "Priority email support",
     plusFeature8: "Consolidated multi-supplier PDF",
+    plusFeature9: "Mid-week disruption alerts between weekly reports",
     premiumDesc:
       "Deep Research intelligence for serious supply chain teams.",
     premiumFeature1: "Monitor up to 15 suppliers",
@@ -505,6 +506,7 @@ const en = {
     premiumFeature6: "PDF downloads with full citations",
     premiumFeature7: "Priority email support",
     premiumFeature8: "Consolidated multi-supplier PDF",
+    premiumFeature9: "Daily disruption alerts between weekly reports",
     enterpriseDesc: "Tailored solutions for large organizations.",
     enterpriseFeature1: "Custom number of suppliers",
     enterpriseFeature2: "Deep Research AI — 10x more detailed reports",
@@ -515,6 +517,7 @@ const en = {
     enterpriseFeature6: "PDF downloads with full citations",
     enterpriseFeature7: "Priority email support",
     enterpriseFeature8: "Consolidated multi-supplier PDF",
+    enterpriseFeature9: "Daily disruption alerts between weekly reports",
     upgradeTo: "Upgrade to {tier}",
     taxNote:
       "All prices are in USD and exclude applicable taxes. Taxes will be calculated at checkout based on your location.",
@@ -641,6 +644,17 @@ const en = {
       footerQuestions: "Questions? Reply to this email or visit your",
       footerDashboard: "dashboard",
       subject: "Weekly Supply Chain Report - {weekLabel}",
+    },
+    supplierAlert: {
+      subtitle: "Disruption alert",
+      greeting: "Hi {name},",
+      intro: "We found {count} public signals that may affect suppliers you monitor. This is an interim alert between weekly reports.",
+      score: "Disruption score {score}",
+      readSource: "Read source",
+      viewDashboard: "View in Dashboard",
+      weeklyNote: "Scores come from public news (Google News and GDELT), not a confirmed outage. Verify the source before acting. Your weekly report is unchanged.",
+      footer: "Plus and above receive these alerts between weekly reports.",
+      subject: "Supply Pulse alert — {count} supplier signals",
     },
     passwordReset: {
       subtitle: "Password Reset",

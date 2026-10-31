@@ -460,7 +460,7 @@ const de: TranslationType = {
       "Reports focus on context relevant to each supplier: financial and operational signals, regional and logistics factors, and industry-specific public information. Coverage depends on what is available in public sources for that supplier and week.",
     faq4Q: "How often are reports generated?",
     faq4A:
-      "Once per week on the weekday and UTC time you choose at registration. Each run produces a new report for the suppliers on your account within plan limits.",
+      "Der vollständige Bericht wird einmal pro Woche an dem bei der Registrierung gewählten Wochentag und zur gewählten UTC-Zeit erzeugt. Plus, Premium und Enterprise erhalten zusätzlich E-Mail-Alerts zwischen den Berichten, wenn eine öffentliche Meldung als wahrscheinliche Störung eingestuft wird. Bei Free und Standard fließen diese Signale in den Wochenbericht ein.",
     faq5Q: "What is included in a report?",
     faq5A:
       "Per-supplier analysis, executive-style summaries, risk signals, optional scenario considerations, alternative-supplier suggestions when found in research, and cited sources. Deep Research tiers include more detailed investigation per supplier.",
@@ -503,6 +503,7 @@ const de: TranslationType = {
     plusFeature6: "PDF-Downloads mit vollständigen Zitaten",
     plusFeature7: "Priorisierter E-Mail-Support",
     plusFeature8: "Konsolidiertes Multi-Lieferanten-PDF",
+    plusFeature9: "Alerts unter der Woche zwischen den Wochenberichten",
     premiumDesc:
       "Deep Research-Intelligenz für anspruchsvolle Lieferketten-Teams.",
     premiumFeature1: "Bis zu 15 Lieferanten überwachen",
@@ -514,6 +515,7 @@ const de: TranslationType = {
     premiumFeature6: "PDF-Downloads mit vollständigen Quellenangaben",
     premiumFeature7: "Prioritäts-E-Mail-Support",
     premiumFeature8: "Konsolidiertes Multi-Lieferanten-PDF",
+    premiumFeature9: "Tägliche Störungs-Alerts zwischen den Wochenberichten",
     enterpriseDesc: "Maßgeschneiderte Lösungen für große Organisationen.",
     enterpriseFeature1: "Individuelle Anzahl von Lieferanten",
     enterpriseFeature2: "Deep Research KI — 10x detailliertere Berichte",
@@ -524,6 +526,7 @@ const de: TranslationType = {
     enterpriseFeature6: "PDF-Downloads mit vollständigen Zitaten",
     enterpriseFeature7: "Priorisierter E-Mail-Support",
     enterpriseFeature8: "Konsolidiertes Multi-Lieferanten-PDF",
+    enterpriseFeature9: "Tägliche Störungs-Alerts zwischen den Wochenberichten",
     upgradeTo: "Auf {tier} upgraden",
     taxNote:
       "Alle Preise in USD ohne anfallende Steuern. Steuern werden beim Checkout basierend auf Ihrem Standort berechnet.",
@@ -650,6 +653,17 @@ const de: TranslationType = {
       footerQuestions: "Fragen? Antworten Sie auf diese E-Mail oder besuchen Sie Ihr",
       footerDashboard: "Dashboard",
       subject: "Wöchentlicher Lieferkettenbericht - {weekLabel}",
+    },
+    supplierAlert: {
+      subtitle: "Störungsalarm",
+      greeting: "Hallo {name},",
+      intro: "Wir haben {count} öffentliche Signale gefunden, die einen von Ihnen überwachten Lieferanten beeinträchtigen können. Dies ist ein Zwischenalarm zwischen den Wochenberichten.",
+      score: "Störungswert {score}",
+      readSource: "Quelle lesen",
+      viewDashboard: "Im Dashboard anzeigen",
+      weeklyNote: "Die Werte stammen aus öffentlichen Nachrichten (Google News und GDELT), nicht aus einem bestätigten Ausfall. Prüfen Sie die Quelle, bevor Sie handeln. Der Wochenbericht bleibt unverändert.",
+      footer: "Plus und höhere Pläne erhalten diese Alerts zwischen den Wochenberichten.",
+      subject: "Supply Pulse Alarm — {count} Lieferantensignale",
     },
     passwordReset: {
       subtitle: "Passwort zurücksetzen",

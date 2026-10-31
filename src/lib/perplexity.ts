@@ -1,4 +1,6 @@
 import type { Supplier } from "@prisma/client";
+import { appendCollectedSignals, type CollectedSignal } from "@/lib/collected-signals";
+import { ESCALATION_MODEL } from "@/lib/tier-limits";
 
 interface PerplexityResponse {
   choices: Array<{
@@ -136,15 +138,16 @@ Formatting rules:
 async function fetchWithRetry(
   url: string,
   options: RequestInit,
-  maxRetries: number = 3
+  maxRetries: number = 3,
+  timeoutMs: number = 300000
 ): Promise<Response> {
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       const controller = new AbortController();
-      // 5 minute timeout - sonar-pro can take a while for detailed prompts
-      const timeoutId = setTimeout(() => controller.abort(), 300000);
+      // Weekly reports can take several minutes. Escalation calls pass a shorter timeout.
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
       console.log(`[Perplexity] Attempt ${attempt + 1}/${maxRetries} - sending request...`);
 
@@ -196,7 +199,8 @@ async function fetchWithRetry(
 export async function generateSupplierReport(
   supplier: Supplier,
   model: string = "sonar-pro",
-  locale: string = "en"
+  locale: string = "en",
+  signals: CollectedSignal[] = []
 ): Promise<{ content: string; citations: string[] }> {
   const apiKey = process.env.PERPLEXITY_API_KEY;
   if (!apiKey) {
@@ -205,7 +209,7 @@ export async function generateSupplierReport(
 
   const lang = LANGUAGE_NAMES[locale] || "English";
   console.log(`[Perplexity] Using model: ${model}, language: ${lang}`);
-  const prompt = buildPrompt(supplier, locale);
+  const prompt = appendCollectedSignals(buildPrompt(supplier, locale), signals);
 
   const calibrationRules =
     "Calibration rules: (1) Confirmed risks require verifiable events in the past 7 days with dates. (2) Watch signals are not confirmed disruptions. (3) Scenarios are hypothetical and must use conditional language. (4) Do not upgrade a scenario or watch signal to confirmed without evidence. (5) Supply Alternatives: prefer verified category peers with clear Match grade and Verified status over an empty table; never invent companies, contacts, or SKUs; every listed company must trace to search evidence. (6) The Executive Summary must reflect only what is supported in the body sections.";
@@ -252,4 +256,69 @@ export async function generateSupplierReport(
   }
 
   return { content, citations };
+}
+
+export async function generateDisruptionAlert(input: {
+  supplierName: string;
+  country: string;
+  category: string;
+  title: string;
+  source: string | null;
+  url: string;
+  published: string;
+  jevP: number;
+}): Promise<string> {
+  const apiKey = process.env.PERPLEXITY_API_KEY;
+  if (!apiKey) {
+    throw new Error("PERPLEXITY_API_KEY environment variable is not set");
+  }
+
+  const prompt = `A disruption classifier scored this public news item at ${input.jevP.toFixed(2)} (0-1) for supplier ${input.supplierName} (${input.country}, ${input.category}).
+
+Title: ${input.title}
+Source: ${input.source || "unknown"}
+Published: ${input.published}
+URL: ${input.url}
+
+Write 2-4 sentences for a procurement manager:
+1) what the item reports, using only this title and what you can verify from the URL,
+2) how it could affect on-time delivery, quality, or price within 30 days,
+3) one concrete action this week.
+If you cannot verify a disruption, say the signal is unconfirmed and name what is still uncertain.
+Do not invent other events, companies, or numbers. Do not write a full report.`;
+
+  const response = await fetchWithRetry(
+    "https://api.perplexity.ai/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: ESCALATION_MODEL,
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a supply chain risk analyst. Write a short interim alert. Separate confirmed facts from uncertainty. Never invent events.",
+          },
+          { role: "user", content: prompt },
+        ],
+        search_recency_filter: "week",
+        return_citations: true,
+        temperature: 0.1,
+      }),
+    },
+    2,
+    180000
+  );
+
+  const data: PerplexityResponse = await response.json();
+  const content = data.choices?.[0]?.message?.content?.trim() || "";
+  if (!content) {
+    throw new Error("Empty escalation response from Perplexity API");
+  }
+  const extra = (data.citations || []).filter((citation) => citation !== input.url).slice(0, 3);
+  return extra.length > 0 ? `${content}\n\nSources: ${extra.join(", ")}` : content;
 }
