@@ -17,7 +17,17 @@ For each distinct supplier (normalized name + country, for example `maersk|DK`):
    - 0.20 up to 0.60: `watch` (included in the next weekly report)
    - 0.60 and above: `escalate` (weekly report, and an interim alert when the plan allows it)
 
-If `JEV_API_KEY` is missing or JEV returns 401/403, collection still runs. Those rows stay `unclassified` and no alert is sent. The next daily run retries them. A Perplexity failure on escalation still sends the alert, using the headline, score, and source URL.
+If `JEV_API_KEY` is missing or JEV returns 401/403, collection still runs. Those rows stay `unclassified` and no alert is sent. The next daily run retries them. A Perplexity failure on escalation still sends the alert, using the headline, score, and source URL. The alert row records whether the summary came from Perplexity, a fallback, or a reused summary, and whether the email was sent or failed.
+
+## Audit trail
+
+Each daily job writes a `NewsRun` (counts, status, and an `errors` JSON array). Inserted `NewsItem` rows point at that run. Items that were fetched but not inserted are stored as `NewsCandidate` with `skipReason` of `no_keyword`, `cap`, `bad_url`, `dup_hash`, or `dup_title`. Each JEV attempt is a `JevCall`: HTTP status, latency, band, and the request and response JSON. The request body is the classifier payload only. The API key stays in the `Authorization` header and is never written. Response bodies are capped at about 8 KB.
+
+Audit writes are caught and logged. A database error on the audit tables does not stop collection, classification, or email.
+
+`JevCall.newsItemId` uses `ON DELETE SET NULL`, so the 90-day `NewsItem` purge does not fail on that foreign key. `NewsRun`, `JevCall`, and `NewsCandidate` are not part of the news-item purge. The same 90-day cutoff deletes old runs; calls and skipped candidates cascade with the run, and `NewsItem.runId` is set to null. Sent `SupplierAlert` rows are still kept.
+
+Admins open **News audit** at `/dashboard/admin/news` (linked from the admin panel and the sidebar). The page lists runs, inserted items (with JEV status, score, band, latency, alert, and email), and a Skipped tab. A row opens the raw feed, every JEV call, and the alert email outcome. CSV export uses the same filters. The API is `GET /api/admin/news` and `GET /api/admin/news/items/[id]`, with the same admin email check and rate limit as the audit log.
 
 ## Who gets an email
 
@@ -41,7 +51,17 @@ npx prisma db execute \
 
 The script creates `NewsItem` and `SupplierAlert` if they are missing, plus indexes and foreign keys. It does not rewrite existing tables. Do not run `prisma migrate reset` or `prisma db push --force-reset`.
 
-Local development can use the same command, or `npx prisma db push` against a dev database.
+The audit tables are a second script:
+
+```bash
+npx prisma db execute \
+  --file prisma/sql/20261031_news_pipeline_audit.sql \
+  --schema prisma/schema.prisma
+```
+
+That adds `NewsRun`, `JevCall`, and `NewsCandidate`, a nullable `NewsItem.runId`, and summary/email columns on `SupplierAlert`. It is safe to re-run. The worker applies both scripts at startup and again at the start of the daily job, so a new deploy creates the tables before it scores news. If `DATABASE_URL` is missing or a script fails, the error is logged and the weekly scheduler still starts.
+
+Local development can use the same commands, or `npx prisma db push` against a dev database.
 
 ## Railway deploy
 

@@ -83,7 +83,7 @@ Add any other env vars your worker code reads (e.g. from `.env.example`).
 
 - Push to the connected branch or click **Deploy**.
 - Check **Deployments** and **Logs** to confirm the worker starts and the scheduler runs (e.g. “Setup Distributed scheduler cron set: every 15 minutes” and “Daily supplier news cron set: 06:00 UTC”).
-- After this release, apply `prisma/sql/20261031_news_items_supplier_alerts.sql` to Postgres **before** expecting the daily job to succeed, then redeploy the worker. Steps, cadence, and cost notes are in `docs/DAILY_SUPPLIER_ALERTS.md`.
+- The worker applies `prisma/sql/20261031_news_items_supplier_alerts.sql` and `prisma/sql/20261031_news_pipeline_audit.sql` on startup (both are idempotent). You can also run them by hand before the first daily job. Steps, cadence, and the admin news audit are in `docs/DAILY_SUPPLIER_ALERTS.md`.
 
 ---
 

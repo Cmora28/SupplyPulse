@@ -1,18 +1,23 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { classifyJevScore } from "./collected-signals";
-import { runDailySupplierNews, type AlertEmailItem } from "./daily-news";
+import { KEYWORD_CAP, runDailySupplierNews, type AlertEmailItem } from "./daily-news";
 import type {
   ClassificationUpdate,
   DailyNewsStore,
+  JevCallInsert,
   MonitoredSupplier,
+  NewsAuditSink,
+  NewsCandidateInsert,
   NewsInsert,
+  NewsRunFinish,
   StoredAlert,
   StoredNewsItem,
 } from "./daily-news-types";
 import type { JevClassifyResult, JevNewsState } from "./jev";
 import { newsItemExpires } from "./news-retention";
-import { normalizeTitleForDedupe } from "./supplier-key";
+import { newsUrlHash } from "./news-url";
+import { normalizeTitleForDedupe, supplierKey } from "./supplier-key";
 
 const NOW = new Date("2026-10-31T06:00:00.000Z");
 const THURSDAY = new Date("2026-10-29T06:00:00.000Z");
@@ -147,6 +152,10 @@ function memoryStore(suppliers: MonitoredSupplier[], clock: Date): DailyNewsStor
         severity: row.severity,
         summary: row.summary,
         sentAt: null,
+        summarySource: row.summarySource ?? null,
+        summaryError: row.summaryError ?? null,
+        emailStatus: "pending",
+        emailError: null,
         news: news.find((item) => item.id === row.newsItemId) ?? null,
       };
       alerts.push(created);
@@ -154,7 +163,19 @@ function memoryStore(suppliers: MonitoredSupplier[], clock: Date): DailyNewsStor
     },
     async markAlertsSent(ids, sentAt) {
       for (const alert of alerts) {
-        if (ids.includes(alert.id)) alert.sentAt = sentAt;
+        if (ids.includes(alert.id)) {
+          alert.sentAt = sentAt;
+          alert.emailStatus = "sent";
+          alert.emailError = null;
+        }
+      }
+    },
+    async markAlertsEmailFailed(ids, message) {
+      for (const alert of alerts) {
+        if (ids.includes(alert.id)) {
+          alert.emailStatus = "failed";
+          alert.emailError = message;
+        }
       }
     },
     async purge(cutoff) {
@@ -289,6 +310,8 @@ describe("daily supplier news", () => {
     assert.equal(emails[0].items.length, 1);
     assert.match(emails[0].items[0].summary, /Red Sea/);
     assert.equal(store.alerts.length, 1);
+    assert.equal(store.alerts[0].summarySource, "perplexity");
+    assert.equal(store.alerts[0].emailStatus, "sent");
     assert.ok(store.alerts[0].sentAt);
 
     const second = await runDailySupplierNews({
@@ -406,6 +429,9 @@ describe("daily supplier news", () => {
     });
     assert.equal(store.alerts.length, 1);
     assert.equal(store.alerts[0].sentAt, null);
+    assert.equal(store.alerts[0].summarySource, "fallback");
+    assert.match(store.alerts[0].summaryError ?? "", /perplexity down/);
+    assert.equal(store.alerts[0].emailStatus, "failed");
     assert.match(store.alerts[0].summary, /Possible supply disruption/);
 
     failSend = false;
@@ -426,6 +452,7 @@ describe("daily supplier news", () => {
     });
     assert.match(bodies[0], /Possible supply disruption/);
     assert.ok(store.alerts[0].sentAt);
+    assert.equal(store.alerts[0].emailStatus, "sent");
   });
 
   it("purges aged low scores and keeps escalations and recent rows", async () => {
@@ -482,5 +509,285 @@ describe("daily supplier news", () => {
       store.news.map((row) => row.id),
       ["old-high"]
     );
+  });
+});
+
+function recordingAudit() {
+  const runs: NewsRunFinish[] = [];
+  const candidates: NewsCandidateInsert[] = [];
+  const calls: JevCallInsert[] = [];
+  const audit: NewsAuditSink = {
+    async startRun() {
+      return "run-1";
+    },
+    async finishRun(_id, data) {
+      runs.push(data);
+    },
+    async insertCandidates(rows) {
+      candidates.push(...rows);
+    },
+    async insertJevCall(row) {
+      calls.push(row);
+    },
+    async purge() {
+      return 0;
+    },
+  };
+  return { audit, runs, candidates, calls };
+}
+
+function feedResponse(items: string): typeof fetch {
+  const xml = `<?xml version="1.0"?><rss><channel>${items}</channel></rss>`;
+  return async (url) => {
+    const href = String(url);
+    if (href.includes("news.google.com")) return new Response(xml, { status: 200 });
+    if (href.includes("gdeltproject.org")) {
+      return new Response(JSON.stringify({ articles: [] }), { status: 200 });
+    }
+    throw new Error(`unexpected URL ${href}`);
+  };
+}
+
+function rssItem(title: string, link: string): string {
+  return `<item><title>${title}</title><link>${link}</link><pubDate>${FEED_DATE}</pubDate><description>note</description><source>Reuters</source></item>`;
+}
+
+describe("news audit trail", () => {
+  it("records skip reasons and keeps going when audit writes throw", async () => {
+    const store = memoryStore([supplier({ id: "free", subscriptionTier: "FREE" })], NOW);
+    const strikes = Array.from({ length: KEYWORD_CAP + 1 }, (_, index) =>
+      rssItem(`Plant strike number ${index}`, `https://example.com/strike-${index}`)
+    );
+    const xml = [
+      rssItem("Plant strike with a bad link", "not a url"),
+      rssItem("Maersk posts an earnings beat", "https://example.com/earnings"),
+      ...strikes,
+    ].join("");
+    let auditCalls = 0;
+    const audit: NewsAuditSink = {
+      async startRun() {
+        auditCalls += 1;
+        throw new Error("audit down");
+      },
+      async finishRun() {
+        throw new Error("audit down");
+      },
+      async insertCandidates() {
+        throw new Error("audit down");
+      },
+      async insertJevCall() {
+        throw new Error("audit down");
+      },
+      async purge() {
+        throw new Error("audit down");
+      },
+    };
+
+    const result = await runDailySupplierNews({
+      store,
+      audit,
+      now: NOW,
+      fetchImpl: feedResponse(xml),
+      logger: () => {},
+      classify: async () => ({
+        ok: true,
+        p: 0.04,
+        band: "ignored",
+        model: "jev-latest",
+        promptVersion: "v1",
+        httpStatus: 200,
+        latencyMs: 8,
+        attempt: 1,
+      }),
+      sendEmail: async () => {
+        throw new Error("no email");
+      },
+    });
+
+    assert.equal(auditCalls, 1);
+    assert.equal(result.runId, null);
+    assert.equal(result.inserted, KEYWORD_CAP);
+    assert.equal(result.keywordHits, KEYWORD_CAP + 2);
+    assert.equal(result.skipped, 3);
+    assert.equal(store.news.length, KEYWORD_CAP);
+
+    const recorded = recordingAudit();
+    const second = await runDailySupplierNews({
+      store: memoryStore([supplier({ id: "free", subscriptionTier: "FREE" })], NOW),
+      audit: recorded.audit,
+      now: NOW,
+      fetchImpl: feedResponse(xml),
+      logger: () => {},
+      classify: async () => ({
+        ok: true,
+        p: 0.04,
+        band: "ignored",
+        model: "jev-latest",
+        promptVersion: "v1",
+      }),
+      sendEmail: async () => undefined,
+    });
+    assert.equal(second.runId, "run-1");
+    assert.equal(recorded.runs[0]?.status, "ok");
+    assert.equal(recorded.runs[0]?.inserted, KEYWORD_CAP);
+    const reasons = recorded.candidates.map((row) => row.skipReason).sort();
+    assert.deepEqual(reasons, ["bad_url", "cap", "no_keyword"]);
+    assert.equal(recorded.calls.length, KEYWORD_CAP);
+    assert.equal(recorded.calls[0]?.ok, true);
+    assert.equal(recorded.calls[0]?.latencyMs, null);
+    assert.equal(JSON.stringify(recorded.calls[0]?.requestBody).includes("Bearer"), false);
+  });
+
+  it("records duplicate url and duplicate title skips", async () => {
+    const row = supplier({ id: "free", subscriptionTier: "FREE" });
+    const key = supplierKey(row.name, row.country);
+    const store = memoryStore([row], NOW);
+    const known = "https://example.com/known";
+    store.news.push({
+      id: "seed-hash",
+      supplierKey: key,
+      urlHash: newsUrlHash(known)!,
+      title: "Unrelated headline",
+      url: known,
+      source: "Reuters",
+      publishedAt: NOW,
+      fetchedAt: NOW,
+      raw: {},
+      jevP: 0.1,
+      promptVersion: "v1",
+      model: "jev-latest",
+      status: "ignored",
+    });
+    store.news.push({
+      id: "seed-title",
+      supplierKey: key,
+      urlHash: newsUrlHash("https://example.com/old")!,
+      title: "Warehouse strike stops shipping - BBC",
+      url: "https://example.com/old",
+      source: "BBC",
+      publishedAt: NOW,
+      fetchedAt: NOW,
+      raw: {},
+      jevP: 0.2,
+      promptVersion: "v1",
+      model: "jev-latest",
+      status: "watch",
+    });
+
+    const recorded = recordingAudit();
+    await runDailySupplierNews({
+      store,
+      audit: recorded.audit,
+      now: NOW,
+      fetchImpl: feedResponse(
+        [
+          rssItem("Dock strike halts ships - Reuters", known),
+          rssItem("Warehouse strike stops shipping - Reuters", "https://example.com/fresh-title"),
+          rssItem("Port strike closes the lane - Reuters", "https://example.com/fresh-port"),
+        ].join("")
+      ),
+      logger: () => {},
+      classify: async () => ({
+        ok: true,
+        p: 0.1,
+        band: "ignored",
+        model: "jev-latest",
+        promptVersion: "v1",
+        httpStatus: 200,
+        latencyMs: 4,
+        attempt: 1,
+      }),
+      sendEmail: async () => undefined,
+    });
+
+    const byReason = new Map(recorded.candidates.map((item) => [item.skipReason, item.url]));
+    assert.equal(byReason.get("dup_hash"), known);
+    assert.equal(byReason.get("dup_title"), "https://example.com/fresh-title");
+    assert.equal(store.news.some((item) => item.url === "https://example.com/fresh-port"), true);
+    assert.equal(recorded.calls.length, 1);
+  });
+
+  it("stores JEV success, HTTP error, and timeout without the API key", async () => {
+    const recorded = recordingAudit();
+    const store = memoryStore(
+      [supplier({ id: "prem", subscriptionTier: "PREMIUM", email: "prem@example.com" })],
+      NOW
+    );
+    await runDailySupplierNews({
+      store,
+      audit: recorded.audit,
+      now: NOW,
+      fetchImpl: feedResponse(
+        [
+          rssItem("Factory strike success case - Reuters", "https://example.com/ok"),
+          rssItem("Factory strike http case - Reuters", "https://example.com/http"),
+          rssItem("Factory strike timeout case - Reuters", "https://example.com/timeout"),
+        ].join("")
+      ),
+      logger: () => {},
+      classify: async (input) => {
+        const body = { model: "jev-latest", questions: { p: { type: "noul" } } };
+        if (input.title.includes("http")) {
+          return {
+            ok: false,
+            reason: "http_error",
+            message: "JEV HTTP 500",
+            httpStatus: 500,
+            latencyMs: 12,
+            attempt: 1,
+            requestBody: body,
+            responseRaw: { text: "upstream" },
+          };
+        }
+        if (input.title.includes("timeout")) {
+          return {
+            ok: false,
+            reason: "timeout",
+            message: "The operation was aborted due to timeout",
+            httpStatus: null,
+            latencyMs: 60000,
+            attempt: 1,
+            requestBody: body,
+            responseRaw: null,
+          };
+        }
+        return {
+          ok: true,
+          p: 0.91,
+          band: "escalate",
+          model: "jev-latest",
+          promptVersion: "v1",
+          httpStatus: 200,
+          latencyMs: 40,
+          attempt: 1,
+          requestBody: body,
+          responseRaw: { answers: { p: { noul: 0.91 } } },
+        };
+      },
+      summarize: async () => "summary",
+      sendEmail: async () => undefined,
+    });
+
+    const byTitle = new Map(store.news.map((row) => [row.url, row]));
+    const callFor = (url: string) =>
+      recorded.calls.find((call) => call.newsItemId === byTitle.get(url)?.id);
+    const ok = callFor("https://example.com/ok");
+    const http = callFor("https://example.com/http");
+    const timeout = callFor("https://example.com/timeout");
+    assert.equal(ok?.ok, true);
+    assert.equal(ok?.p, 0.91);
+    assert.equal(ok?.band, "escalate");
+    assert.equal(ok?.httpStatus, 200);
+    assert.equal(ok?.latencyMs, 40);
+    assert.equal(http?.ok, false);
+    assert.equal(http?.reason, "http_error");
+    assert.equal(http?.httpStatus, 500);
+    assert.equal(timeout?.reason, "timeout");
+    assert.equal(timeout?.latencyMs, 60000);
+    const serialized = JSON.stringify(recorded.calls);
+    assert.equal(serialized.includes("super-secret"), false);
+    assert.equal(serialized.includes("Bearer"), false);
+    assert.equal(store.alerts[0]?.summarySource, "perplexity");
+    assert.equal(store.alerts[0]?.emailStatus, "sent");
   });
 });
