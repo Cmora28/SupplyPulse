@@ -204,7 +204,7 @@ export default function BillingPage() {
                         <div className="flex items-center gap-2">
                           <CardTitle className="text-base">{upgradeTier}</CardTitle>
                           {isDeepResearch && (
-                            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-300 text-xs">
+                            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-300 text-xs dark:bg-amber-950/50 dark:text-amber-200 dark:border-amber-800">
                               {t("common.deepResearch")}
                             </Badge>
                           )}
@@ -230,7 +230,7 @@ export default function BillingPage() {
                             : t("billing.upToSuppliers", { limit: String(TIER_LIMITS[upgradeTier]) })}
                         </p>
                         {isDeepResearch && (
-                          <p className="text-xs text-amber-700 font-medium">
+                          <p className="text-xs text-amber-700 dark:text-amber-300 font-medium">
                             {t("billing.deepResearchBadge")}
                           </p>
                         )}

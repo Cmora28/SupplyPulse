@@ -38,6 +38,8 @@ const de: TranslationType = {
     unlimited: "unbegrenzt",
     dashboard: "Dashboard",
     pricing: "Preise",
+    switchToLight: "Zum hellen Modus wechseln",
+    switchToDark: "Zum dunklen Modus wechseln",
   },
 
   nav: {
