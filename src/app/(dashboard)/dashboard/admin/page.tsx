@@ -31,6 +31,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   ClipboardList,
+  Newspaper,
 } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -347,7 +348,7 @@ export default function AdminPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-lg bg-red-100 dark:bg-red-950 flex items-center justify-center">
             <Shield className="h-5 w-5 text-red-600 dark:text-red-400" />
@@ -359,7 +360,13 @@ export default function AdminPage() {
             <p className="text-muted-foreground">{t("admin.subtitle")}</p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/dashboard/admin/news">
+              <Newspaper className="mr-2 h-4 w-4" />
+              {t("admin.openNewsAudit")}
+            </Link>
+          </Button>
           <Button variant="outline" size="sm" asChild>
             <Link href="/dashboard/admin/audit">
               <ClipboardList className="mr-2 h-4 w-4" />

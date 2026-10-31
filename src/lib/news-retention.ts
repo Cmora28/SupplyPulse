@@ -13,6 +13,11 @@ export function retentionCutoff(now: Date): Date {
  * True when the daily job should delete the row.
  * Unclassified rows (null score) follow the same 90-day schedule as scores
  * below 0.6. A linked SupplierAlert is never deleted by this rule.
+ *
+ * NewsRun, JevCall, and NewsCandidate are not part of this filter. They use
+ * the same cutoff in the audit sink: deleting a run cascades to its calls and
+ * skipped candidates, and JevCall.newsItemId is ON DELETE SET NULL so a
+ * NewsItem delete cannot fail on that foreign key.
  */
 export function newsItemExpires(
   item: { fetchedAt: Date; jevP: number | null; hasAlert: boolean },
