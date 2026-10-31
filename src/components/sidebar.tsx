@@ -18,7 +18,6 @@ import {
   ClipboardList,
   Newspaper,
 } from "lucide-react";
-import { ADMIN_EMAIL } from "@/lib/admin-config";
 
 const navItems = [
   { key: "nav.overview" as const, href: "/dashboard", icon: LayoutDashboard },
@@ -33,7 +32,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const { t } = useTranslation();
-  const isAdmin = session?.user?.email === ADMIN_EMAIL;
+  const isAdmin = session?.user?.isAdmin === true;
 
   return (
     <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-30">

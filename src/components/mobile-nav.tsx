@@ -26,7 +26,6 @@ import {
   ClipboardList,
   Newspaper,
 } from "lucide-react";
-import { ADMIN_EMAIL } from "@/lib/admin-config";
 
 const navItems = [
   { key: "nav.overview" as const, href: "/dashboard", icon: LayoutDashboard },
@@ -42,7 +41,7 @@ export function MobileNav() {
   const [open, setOpen] = useState(false);
   const { data: session } = useSession();
   const { t } = useTranslation();
-  const isAdmin = session?.user?.email === ADMIN_EMAIL;
+  const isAdmin = session?.user?.isAdmin === true;
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
