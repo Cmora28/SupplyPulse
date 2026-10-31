@@ -454,7 +454,7 @@ const pt: TranslationType = {
       "Os relatórios focam contexto por fornecedor: sinais financeiros e operacionais, fatores regionais e logísticos, e informação pública do setor. A cobertura depende do que estiver disponível nas fontes públicas naquela semana.",
     faq4Q: "Com que frequência são gerados os relatórios?",
     faq4A:
-      "Uma vez por semana, no dia e hora (UTC) escolhidos no registo. Cada execução produz um novo relatório para os fornecedores da conta, dentro dos limites do plano.",
+      "O relatório completo é gerado uma vez por semana, no dia e hora (UTC) escolhidos no registo. Os planos Plus, Premium e Enterprise também recebem alertas por e-mail entre relatórios quando uma notícia pública é classificada como provável disrupção. Nos planos Free e Standard esses sinais entram no relatório semanal.",
     faq5Q: "O que inclui um relatório?",
     faq5A:
       "Análise por fornecedor, resumos executivos, sinais de risco, cenários opcionais, sugestões de fornecedores alternativos quando encontradas na pesquisa, e fontes citadas. Os planos Deep Research incluem investigação mais detalhada por fornecedor.",
@@ -497,6 +497,7 @@ const pt: TranslationType = {
     plusFeature6: "Downloads em PDF com citações completas",
     plusFeature7: "Suporte prioritário por e-mail",
     plusFeature8: "PDF consolidado multifornecedor",
+    plusFeature9: "Alertas a meio da semana entre relatórios semanais",
     premiumDesc:
       "Inteligência de Pesquisa Aprofundada para equipes sérias de cadeia de suprimentos.",
     premiumFeature1: "Monitorar até 15 fornecedores",
@@ -508,6 +509,7 @@ const pt: TranslationType = {
     premiumFeature6: "Downloads em PDF com citações completas",
     premiumFeature7: "Suporte prioritário por e-mail",
     premiumFeature8: "PDF consolidado multifornecedor",
+    premiumFeature9: "Alertas diários de disrupção entre relatórios semanais",
     enterpriseDesc: "Soluções personalizadas para grandes organizações.",
     enterpriseFeature1: "Número personalizado de fornecedores",
     enterpriseFeature2: "IA Deep Research — relatórios 10x mais detalhados",
@@ -518,6 +520,7 @@ const pt: TranslationType = {
     enterpriseFeature6: "Downloads em PDF com citações completas",
     enterpriseFeature7: "Suporte prioritário por e-mail",
     enterpriseFeature8: "PDF consolidado multi-fornecedor",
+    enterpriseFeature9: "Alertas diários de disrupção entre relatórios semanais",
     upgradeTo: "Fazer Upgrade para {tier}",
     taxNote:
       "Todos os preços estão em USD e excluem impostos aplicáveis. Os impostos serão calculados no checkout com base na sua localização.",
@@ -644,6 +647,17 @@ const pt: TranslationType = {
       footerQuestions: "Perguntas? Responda a este e-mail ou visite o seu",
       footerDashboard: "painel de controlo",
       subject: "Relatório Semanal da Cadeia de Suprimentos - {weekLabel}",
+    },
+    supplierAlert: {
+      subtitle: "Alerta de disrupção",
+      greeting: "Olá {name},",
+      intro: "Encontrámos {count} sinais públicos que podem afetar fornecedores que monitoriza. Este é um alerta intercalar entre os relatórios semanais.",
+      score: "Pontuação de disrupção {score}",
+      readSource: "Ler a fonte",
+      viewDashboard: "Ver no Painel",
+      weeklyNote: "As pontuações vêm de notícias públicas (Google News e GDELT), não de uma paragem confirmada. Confirme a fonte antes de agir. O relatório semanal mantém-se.",
+      footer: "Os planos Plus e superiores recebem estes alertas entre os relatórios semanais.",
+      subject: "Alerta Supply Pulse — {count} sinais de fornecedor",
     },
     passwordReset: {
       subtitle: "Redefinição de Senha",
