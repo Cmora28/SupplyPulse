@@ -469,7 +469,7 @@ export default function AdminNewsPage() {
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="glass-solid">
                 <SelectItem value="all">{t("admin.news.allRuns")}</SelectItem>
                 {runs.map((run) => (
                   <SelectItem key={run.id} value={run.id}>

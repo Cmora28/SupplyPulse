@@ -38,6 +38,10 @@ const en = {
     pricing: "Pricing",
     switchToLight: "Switch to light mode",
     switchToDark: "Switch to dark mode",
+    theme: "Theme",
+    themeLight: "Light",
+    themeDark: "Dark",
+    themeSystem: "System",
   },
 
   nav: {
