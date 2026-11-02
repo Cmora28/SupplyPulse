@@ -211,17 +211,22 @@ export default function PricingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="relative z-0">
+          <div className="pointer-events-none absolute inset-x-0 top-4 bottom-0" aria-hidden>
+            <div className="absolute left-[6%] top-0 h-40 w-40 rounded-full bg-primary/30 blur-3xl" />
+            <div className="absolute bottom-0 right-[8%] h-40 w-40 rounded-full bg-violet-500/25 blur-3xl" />
+          </div>
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {plans.map((plan) => {
             const isCurrent = currentTier === plan.tier;
             return (
               <Card
                 key={plan.tier}
-                className={`relative flex flex-col ${
+                className={`glass relative flex flex-col ${
                   plan.popular
                     ? "border-primary shadow-lg"
                     : plan.tier === "PREMIUM" || plan.tier === "PLUS"
-                    ? "border-amber-500 shadow-lg shadow-amber-100 dark:shadow-amber-950/40"
+                    ? "border-amber-500 shadow-lg"
                     : ""
                 }`}
               >
@@ -294,6 +299,7 @@ export default function PricingPage() {
               </Card>
             );
           })}
+        </div>
         </div>
         <p className="text-center text-xs text-muted-foreground mt-8">
           {t("pricing.taxNote")}
