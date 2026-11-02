@@ -180,7 +180,12 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       ) : latestRun ? (
-        <Card className="border-l-4 border-l-primary">
+        <div className="relative z-0">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-lg" aria-hidden>
+            <div className="absolute -left-8 -top-10 h-40 w-40 rounded-full bg-primary/40 blur-3xl" />
+            <div className="absolute -bottom-10 -right-6 h-40 w-40 rounded-full bg-violet-500/30 blur-3xl" />
+          </div>
+        <Card className="glass glass-glow relative z-10 border-l-4 border-l-primary">
           <CardHeader>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
@@ -203,11 +208,11 @@ export default async function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div>
+            <div className="rounded-md border bg-card">
               {riskRows.map((row) => (
                 <div
                   key={row.id}
-                  className="flex flex-wrap items-center justify-between gap-3 border-b py-2 last:border-0"
+                  className="flex flex-wrap items-center justify-between gap-3 border-b px-3 py-2 last:border-0"
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-semibold">{row.name}</p>
@@ -236,6 +241,7 @@ export default async function DashboardPage() {
             </div>
           </CardContent>
         </Card>
+        </div>
       ) : null}
 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
