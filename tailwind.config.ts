@@ -67,6 +67,17 @@ const config: Config = {
         neutral: {
           DEFAULT: "hsl(var(--neutral))",
         },
+        glass: {
+          bg: "var(--glass-bg)",
+          border: "var(--glass-border)",
+          muted: "hsl(var(--glass-muted))",
+        },
+      },
+      boxShadow: {
+        glass: "var(--glass-shadow)",
+      },
+      backdropBlur: {
+        glass: "var(--glass-blur)",
       },
       borderRadius: {
         lg: "var(--radius)",

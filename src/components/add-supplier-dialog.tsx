@@ -281,7 +281,7 @@ export function AddSupplierDialog({
                 <SelectTrigger>
                   <SelectValue placeholder={t("suppliers.selectCountry")} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="glass-solid">
                   {COUNTRIES.map((country) => (
                     <SelectItem key={country} value={country}>
                       {country}
