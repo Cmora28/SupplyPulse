@@ -40,6 +40,10 @@ const fr: TranslationType = {
     pricing: "Tarifs",
     switchToLight: "Passer en mode clair",
     switchToDark: "Passer en mode sombre",
+    theme: "Thème",
+    themeLight: "Clair",
+    themeDark: "Sombre",
+    themeSystem: "Système",
   },
 
   nav: {

@@ -36,6 +36,13 @@
     --premium: 273 67% 39%;
     --premium-bg: 270 100% 98%;
     --neutral: 215 25% 27%;
+    /* Glass is opt-in. Opacity stays at or above 85% so text behind the blur cannot drop under WCAG AA. */
+    --glass-bg: hsl(0 0% 100% / 0.85);
+    --glass-border: hsl(0 0% 100% / 0.6);
+    --glass-blur: 12px;
+    --glass-shadow: 0 8px 32px hsl(222.2 47.4% 11.2% / 0.08);
+    /* slate-700. Global --muted-foreground stays for solid surfaces; this is only for text on glass. */
+    --glass-muted: 215 25% 27%;
     color-scheme: light;
   }
 }
@@ -81,5 +88,85 @@
   --premium: 269 97% 85%;
   --premium-bg: 261 62% 23%;
   --neutral: 213 27% 84%;
+  /* Opacity stays at or above 80%. */
+  --glass-bg: hsl(222.2 84% 4.9% / 0.8);
+  --glass-border: hsl(0 0% 100% / 0.1);
+  --glass-blur: 12px;
+  --glass-shadow: 0 8px 32px hsl(0 0% 0% / 0.45);
+  /* slate-300. Secondary text on an 80% dark pane over white stays at or above 4.5:1. */
+  --glass-muted: 213 27% 84%;
   color-scheme: dark;
+}
+
+/* Outside @layer so these beat bg-card / bg-popover / bg-background utilities on the same node. */
+.glass {
+  background-color: var(--glass-bg);
+  border-color: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+}
+
+/* Accent borders on a glass surface (pricing highlight, latest-report frame). */
+.glass.border-primary {
+  border-color: hsl(var(--primary));
+}
+.glass.border-l-primary {
+  border-left-color: hsl(var(--primary));
+}
+.glass.border-amber-500 {
+  border-color: #f59e0b;
+}
+
+/* Dark-only glow for the single highlighted glass frame. */
+.dark .glass-glow {
+  box-shadow:
+    var(--glass-shadow),
+    0 0 0 1px hsl(var(--primary) / 0.35),
+    0 0 24px hsl(var(--primary) / 0.18);
+}
+
+/* Secondary text on glass. Does not change --muted-foreground on solid surfaces. */
+.glass .text-muted-foreground {
+  color: hsl(var(--glass-muted));
+}
+.glass .bg-card .text-muted-foreground,
+.glass .bg-background .text-muted-foreground,
+.glass .bg-popover .text-muted-foreground,
+.glass .bg-muted .text-muted-foreground {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Long scrolling option lists opt out (country picker). Opaque menu, no blur. */
+.glass.glass-solid {
+  background-color: hsl(var(--popover));
+  border-color: hsl(var(--border));
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.glass.glass-solid .text-muted-foreground {
+  color: hsl(var(--muted-foreground));
+}
+
+@media (max-width: 767px) {
+  .glass {
+    --glass-blur: 10px;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .glass {
+    background-color: hsl(var(--card));
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .glass {
+    background-color: hsl(var(--card));
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }

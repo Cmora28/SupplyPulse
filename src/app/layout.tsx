@@ -103,7 +103,7 @@ export default async function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var d=document.documentElement,t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t="dark";d.classList.remove("light","dark");d.classList.add(t);d.style.colorScheme=t;}catch(e){}})();`,
+            __html: `(function(){try{var d=document.documentElement,t=localStorage.getItem("theme"),mode=t==="light"||t==="dark"||t==="system"?t:"dark",resolved=mode==="system"?(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):mode;d.classList.remove("light","dark");d.classList.add(resolved);d.style.colorScheme=resolved;}catch(e){}})();`,
           }}
         />
         <script

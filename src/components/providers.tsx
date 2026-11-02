@@ -16,7 +16,7 @@ export function Providers({
     <ThemeProvider
       attribute="class"
       defaultTheme="dark"
-      enableSystem={false}
+      enableSystem
       disableTransitionOnChange
     >
       <SessionProvider refetchInterval={30} refetchOnWindowFocus={true}>

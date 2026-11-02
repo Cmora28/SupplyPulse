@@ -40,6 +40,10 @@ const de: TranslationType = {
     pricing: "Preise",
     switchToLight: "Zum hellen Modus wechseln",
     switchToDark: "Zum dunklen Modus wechseln",
+    theme: "Design",
+    themeLight: "Hell",
+    themeDark: "Dunkel",
+    themeSystem: "System",
   },
 
   nav: {

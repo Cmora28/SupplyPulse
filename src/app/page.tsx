@@ -224,7 +224,7 @@ export default async function LandingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 
-      <nav className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50" aria-label="Main">
+      <nav className="glass sticky top-0 z-50 border-b" aria-label="Main">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-2">
             <Link href="/" className="flex items-center gap-2 shrink-0">
@@ -249,13 +249,14 @@ export default async function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="relative pt-16 pb-20 md:pt-20 md:pb-28 overflow-hidden bg-background text-foreground">
-        <div className="absolute inset-0 overflow-hidden z-0 opacity-20 pointer-events-none" aria-hidden>
-          <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-primary blur-[100px]" />
-          <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-primary blur-[120px]" />
+      <section className="relative overflow-hidden bg-background pt-16 pb-20 text-foreground md:pt-20 md:pb-28">
+        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
+          <div className="absolute top-[-10%] right-[-5%] h-[500px] w-[500px] rounded-full bg-primary/40 blur-[100px]" />
+          <div className="absolute bottom-[-10%] left-[-10%] h-[520px] w-[520px] rounded-full bg-violet-500/25 blur-[120px]" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="glass rounded-2xl px-5 py-8 sm:px-8 sm:py-10 lg:px-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
             <div className="max-w-2xl text-center lg:text-left mx-auto lg:mx-0">
               <Badge
@@ -298,6 +299,7 @@ export default async function LandingPage() {
                 />
               </div>
             </div>
+          </div>
           </div>
         </div>
       </section>
@@ -445,11 +447,16 @@ export default async function LandingPage() {
             <p className="text-sm text-muted-foreground mt-2">{t("landing.pricingUsdNote")}</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
+          <div className="relative z-0">
+            <div className="pointer-events-none absolute inset-x-0 top-6 bottom-0" aria-hidden>
+              <div className="absolute left-[8%] top-0 h-40 w-40 rounded-full bg-primary/30 blur-3xl" />
+              <div className="absolute bottom-0 right-[12%] h-40 w-40 rounded-full bg-violet-500/25 blur-3xl" />
+            </div>
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
             {landingPlans.map((plan) => (
               <Card
                 key={plan.name}
-                className={`relative flex flex-col ${
+                className={`glass relative flex flex-col ${
                   plan.badge ? "border-primary shadow-lg md:scale-[1.02] z-10" : "border-border shadow-sm"
                 }`}
               >
@@ -483,6 +490,7 @@ export default async function LandingPage() {
                 </div>
               </Card>
             ))}
+          </div>
           </div>
 
           <AnalysisComparison t={t} />
